@@ -1,0 +1,14 @@
+{
+    "name": "obray/ipp",
+    "description": "A PHP implemntation of the Internet Printing Protocol (IPP)",
+    "license": "MIT",
+    "require": {
+        "php": ">=7.1",
+        "obray/http": "dev-master"
+    },
+    "autoload": {
+        "psr-4": {
+            "obray\\": "src"
+        }
+    }
+}
