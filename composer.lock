@@ -1,0 +1,53 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "This file is @generated automatically"
+    ],
+    "content-hash": "fbf7d6ae803f5d175c6636985a4a17fd",
+    "packages": [
+        {
+            "name": "obray/http",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/nateobray/http.git",
+                "reference": "2a95882c6e25e99b9213a0e1a4bea2b112951c8e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/nateobray/http/zipball/2a95882c6e25e99b9213a0e1a4bea2b112951c8e",
+                "reference": "2a95882c6e25e99b9213a0e1a4bea2b112951c8e",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.1"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "obray\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "obray compatible http client.",
+            "homepage": "http://www.obray.net",
+            "time": "2018-05-26T21:24:53+00:00"
+        }
+    ],
+    "packages-dev": [],
+    "aliases": [],
+    "minimum-stability": "stable",
+    "stability-flags": {
+        "obray/http": 20
+    },
+    "prefer-stable": false,
+    "prefer-lowest": false,
+    "platform": {
+        "php": ">=7.1"
+    },
+    "platform-dev": []
+}
