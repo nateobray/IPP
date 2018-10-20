@@ -1,7 +1,7 @@
 <?php
+
 namespace obray;
 
-class Job
-{
+class JobObjectAttributes{
     
 }

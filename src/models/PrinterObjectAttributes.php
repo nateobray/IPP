@@ -1,7 +1,8 @@
 <?php
+
 namespace obray;
 
-class Job
+class PrinterObjectAttributes
 {
     
 }
