@@ -1,10 +1,7 @@
 <?php
-namespace obray\types;
+namespace obray\ipp\types;
 
-class URI
+class URI extends USASCIIString
 {
-    public function __construct($value)
-    {
-        $this->uri = $value;
-    }
+    
 }

@@ -1,9 +1,9 @@
 <?php
-namespace obray\transport;
+namespace obray\ipp\transport;
 
 class IPPEncoder
 {
-    public function __construct(\obray\transport\IPPPayload $payload)
+    public function __construct(\obray\ipp\transport\IPPPayload $payload)
     {
         
     }

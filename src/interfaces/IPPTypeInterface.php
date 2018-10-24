@@ -1,9 +1,9 @@
 <?php
 
-namespace obray\interfaces;
+namespace obray\ipp\interfaces;
 
-interface IPPTypeInterface{
-    public function __toString();
+interface IPPTypeInterface
+{
     public function encode();
     public function decode();
 }

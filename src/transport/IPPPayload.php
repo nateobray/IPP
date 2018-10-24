@@ -1,4 +1,5 @@
 <?php
+namespace obray\ipp\transport;
 
 class IPPPayload
 {
@@ -14,22 +15,41 @@ class IPPPayload
     private $document;
 
     public function __construct(
-        int $operationId,
-        int $requestId,
-        \obray\OperationAttributes $operationAttributes,
-        \obray\JobTemplateAttributes $jobTemplateAttributes = NULL,
-        \obray\JobDescriptionAttributes $jobDescriptionAttributes = NULL,
-        \obray\PrinterDescriptionAttributes $printerDescriptionAttributes = NULL,
-        \obray\UnsupportedAttributes $unsupportedAttributes = NULL)
+        \obray\ipp\types\VersionNumber $versionNumber,
+        \obray\ipp\types\Operation $operation,
+        \obray\ipp\types\Integer $requestId,
+        \obray\ipp\OperationAttributes $operationAttributes,
+        \obray\ipp\JobTemplateAttributes $jobTemplateAttributes = NULL,
+        \obray\ipp\JobDescriptionAttributes $jobDescriptionAttributes = NULL,
+        \obray\ipp\PrinterDescriptionAttributes $printerDescriptionAttributes = NULL,
+        \obray\ipp\UnsupportedAttributes $unsupportedAttributes = NULL)
     {
-        $this->versionNumber = \obray\types\IPPVersionNumber('1.1');
-        $this->operationId = $operationId;
+        $this->versionNumber = $versionNumber;
+        $this->operation = $operation;
         $this->requestId = $requestId;
         $this->operationAttributes = $operationAttributes;
         $this->jobTemplateAttributes = $jobTemplateAttributes;
         $this->jobDescriptionAttributes = $jobDescriptionAttributes;
         $this->printerDescriptionAttributes = $printerDescriptionAttributes;
         $this->unsupportedAttributes = $unsupportedAttributes;
+    }
+
+    public function encode()
+    {
+        print_r("encoding binary...\n");
+        $binary = $this->versionNumber->encode();
+        $binary .= $this->operation->encode();
+        $binary .= $this->requestId->encode();
+        $binary .= $this->operationAttributes->encode();
+        //$binary .= $this->request->encode()
+        print_r("Binary String: ");
+        print_r(bin2hex($binary));
+        print_r("\n");
+    }
+
+    public function decode()
+    {
+
     }
 
 }
