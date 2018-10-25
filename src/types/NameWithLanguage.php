@@ -3,6 +3,8 @@ namespace obray\ipp\types;
 
 class NameWithLanguage extends \obray\ipp\types\basic\OctetString
 {
+    protected $valueTag = 0x36;
+
     public function __construct(string $naturalLanguage, string $string)
     {
         $this->naturalLanguage = $naturalLanguage;

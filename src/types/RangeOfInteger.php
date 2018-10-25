@@ -1,8 +1,9 @@
 <?php
 namespace obray\ipp\types;
 
-class RangeOfInteger implements \obray\ipp\interfaces\IPPTypeInterface
+class RangeOfInteger implements \obray\ipp\interfaces\TypeInterface
 {
+    protected $valueTag = 0x33;
     private $lowerBound;
     private $upperBound;
 

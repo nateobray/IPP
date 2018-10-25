@@ -1,8 +1,9 @@
 <?php
 namespace obray\ipp\types;
 
-class Resolution
+class Resolution implements \obray\ipp\interfaces\TypeInterface
 {
+    protected $valueTag = 0x32;
     private $crossFeedDirectionResolution;
     private $feedDirectionResolution;
     private $units;

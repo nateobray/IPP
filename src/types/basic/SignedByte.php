@@ -1,9 +1,11 @@
 <?php
 namespace obray\ipp\types\basic;
 
-class SignedByte
+class SignedByte implements \obray\ipp\interfaces\TypeInterface
 {
-    private $value;
+    protected $value;
+    protected $valueTag;
+    private $length = 1;
 
     public function __construct($value)
     {
@@ -15,11 +17,21 @@ class SignedByte
 
     public function encode()
     {
-        return \upack('c',$this->value);
+        return pack('c',$this->value);
     }
 
     public function decode()
     {
         
+    }
+
+    public function getValueTag()
+    {
+        return $this->valueTag;
+    }
+
+    public function getLength()
+    {
+        return $this->length;
     }
 }

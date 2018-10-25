@@ -33,7 +33,7 @@ class OperationAttributes
     private $attribute_group_tag = 0x01;
 
     public $charset;
-    public $naturalLanguage = 'en';
+    public $naturalLanguage;
     public $statusCode;
     public $statusMessage;
     public $detailedStatusMessage;
@@ -52,15 +52,17 @@ class OperationAttributes
 
     public function __construct(){
         $this->charset = new \obray\ipp\types\Charset('utf-8');
+        $this->naturalLanguage = new \obray\ipp\types\NaturalLanguage('en');
     }
 
     public function __set(string $name, $value)
     {
         switch($name){
             case 'charset':
-                $this->$name = new \obray\ipp\types\Charset($value);
+                $this->$name = new \obray\ipp\types\Attribute($name, new \obray\ipp\types\Charset($value));
                 break;
             case 'naturalLanguage':
+                $this->$name = new \obray\ipp\types\Attribute($name, new \obray\ipp\types\NaturalLanguage($value));
                 break;
             case 'statusCode':
                 break;
@@ -108,7 +110,19 @@ class OperationAttributes
 
     public function encode()
     {
-        $binary = pack('c', $this->attribute_group_tag);
+        $binary = '';
+        $reflection = new \ReflectionClass($this);
+        $properties = $reflection->getProperties(\ReflectionProperty::IS_PUBLIC);
+        //print_r($properties);
+        
+        forEach($properties as $property){
+            
+            if( !empty($this->{$property->name}) && method_exists($this->{$property->name}, 'encode') ){
+                print_r("\tEncoding ".$property->name."\n");
+                $binary .= $this->{$property->name}->encode();
+            }
+        }
+        
 
         return $binary;
     }

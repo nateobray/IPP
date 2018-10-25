@@ -1,8 +1,9 @@
 <?php
 namespace obray\ipp\types;
 
-class VersionNumber implements \obray\ipp\interfaces\IPPTypeInterface
+class VersionNumber implements \obray\ipp\interfaces\TypeInterface
 {
+    private $valueTag = 0x12;
     private $majorVersionNumber;
     private $minorVersionNumber;
 
@@ -18,6 +19,11 @@ class VersionNumber implements \obray\ipp\interfaces\IPPTypeInterface
     public function __toString()
     {
         return $this->majorVersionNumber . '.' . $this->minorVersionNumber;
+    }
+
+    public function getValueTag()
+    {
+        return $valueTag;
     }
 
     public function encode()

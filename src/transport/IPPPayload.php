@@ -43,7 +43,7 @@ class IPPPayload
         $binary .= $this->operationAttributes->encode();
         //$binary .= $this->request->encode()
         print_r("Binary String: ");
-        print_r(bin2hex($binary));
+        print_r(unpack("cMajor/cMinor/lOperation/lRequestID",$binary));
         print_r("\n");
     }
 

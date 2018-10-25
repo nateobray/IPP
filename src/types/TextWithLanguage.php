@@ -3,6 +3,7 @@ namespace obray\ipp\types;
 
 class TextWithLanguage extends \obray\ipp\types\basic\OctetString
 {
+    protected $valueTag = 0x35;
     private $naturalLanguage;
     private $naturalLanguageOctets;
     private $string;

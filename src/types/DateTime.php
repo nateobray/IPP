@@ -3,6 +3,7 @@ namespace obray\types;
 
 class DateTime extends \obray\ipp\types\basic\OctetString
 {
+    protected $valueTag = 0x31;
     private $unixTimeStamp;
 
     public function __construct(string $dateTimeString)
@@ -28,5 +29,4 @@ class DateTime extends \obray\ipp\types\basic\OctetString
                 unpack('c', $utcDiffHours) .
                 unpack('c', $urcDiffMins);
     }
-    
 }

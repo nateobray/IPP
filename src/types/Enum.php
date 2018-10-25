@@ -3,6 +3,8 @@ namespace obray\ipp\types;
 
 class Enum extends \obray\ipp\types\basic\SignedInteger
 {
+    protected $valueTag = 0x23;
+
     public function __construct($code)
     {
         $constants = $this->getConstants();
@@ -23,5 +25,10 @@ class Enum extends \obray\ipp\types\basic\SignedInteger
     {
         $reflectionClass = new \ReflectionClass($this);
         return $reflectionClass->getConstants();
+    }
+
+    public function getValueTag()
+    {
+        return $this->valueTag;
     }
 }

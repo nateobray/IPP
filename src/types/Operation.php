@@ -1,22 +1,22 @@
 <?php
 namespace obray\ipp\types;
 
-class Operation extends \obray\ipp\types\Enum implements \obray\ipp\interfaces\IPPTypeInterface
+class Operation extends \obray\ipp\types\Enum
 {
-    const printJob = 2;
-    const printURI = 3;
-    const validateJob = 4;
-    const createJob = 5;
-    const sendDocument = 6;
-    const sendURI = 7;
-    const cancelJob = 8;
-    const getJobAttributes = 9;
-    const getJobs = 10;
-    const getPrinterAttributes = 11;
-    const holdJob = 12;
-    const releaseJob = 13;
-    const restartJob = 14;
-    const pausePrinter = 15;
-    const resumePrinter = 16;
-    const purgeJobs = 17;
+    const printJob = 0x0002;
+    const printURI = 0x0003;
+    const validateJob = 0x0004;
+    const createJob = 0x0005;
+    const sendDocument = 0x0006;
+    const sendURI = 0x0007;
+    const cancelJob = 0x0008;
+    const getJobAttributes = 0x0009;
+    const getJobs = 0x000A;
+    const getPrinterAttributes = 0x000B;
+    const holdJob = 0x000C;
+    const releaseJob = 0x000D;
+    const restartJob = 0x000E;
+    const pausePrinter = 0x0010;
+    const resumePrinter = 0x0011;
+    const purgeJobs = 0x0012;
 }

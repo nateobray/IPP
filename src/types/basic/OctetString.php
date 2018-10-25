@@ -1,20 +1,23 @@
 <?php
 namespace obray\ipp\types\basic;
 
-class OctetString
+class OctetString implements \obray\ipp\interfaces\TypeInterface
 {
-    private $value;
+    protected $value;
+    protected $valueTag;
+    private $length;
 
     public function __construct($value)
     {
         $this->value = $value;
+        $this->length = strlen($value);
     }
 
     public function encode()
     {
-        $binary;
-        forEach(\str_split($this->value) as $char){
-            $binary .= \unpack('c',$char);
+        $binary = '';
+        forEach(str_split($this->value) as $char){
+            $binary .= pack('c',$char);
         }
         return $binary;
     }
@@ -22,5 +25,15 @@ class OctetString
     public function decode()
     {
         
+    }
+
+    public function getValueTag()
+    {
+        return $this->valueTag;
+    }
+
+    public function getLength()
+    {
+        return $this->length;
     }
 }
