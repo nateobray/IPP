@@ -3,17 +3,17 @@ namespace obray\ipp\types;
 
 class Attribute
 {
+    protected $name;
     private $valueTag;
     private $nameLength;
-    private $name;
     private $valueLength;
     private $value;
 
-    public function __construct(string $name, \obray\ipp\interfaces\TypeInterface $value)
+    public function __construct($name, \obray\ipp\interfaces\TypeInterface $value)
     {
         $this->valueTag = $value->getValueTag();
-        $this->nameLength = new \obray\ipp\types\basic\SignedShort(strlen($name));
-        $this->name = new \obray\ipp\types\basic\LocalizedString($name);
+        $this->nameLength = new \obray\ipp\types\basic\SignedShort(strlen($this->name));
+        $this->name = new \obray\ipp\types\basic\LocalizedString($this->name);
         $this->valueLength = new \obray\ipp\types\basic\SignedShort($value->getLength());
         $this->value = $value;
     }

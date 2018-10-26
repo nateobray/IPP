@@ -55,7 +55,7 @@ class OperationAttributes
         $this->naturalLanguage = new \obray\ipp\types\NaturalLanguage('en');
     }
 
-    public function __set(string $name, $value)
+    public function __set(string $name, $value, string $naturalLanguage=NULL)
     {
         switch($name){
             case 'charset':
@@ -65,14 +65,25 @@ class OperationAttributes
                 $this->$name = new \obray\ipp\types\Attribute($name, new \obray\ipp\types\NaturalLanguage($value));
                 break;
             case 'statusCode':
+                $this->$name = new \obray\ipp\attributes\StatusCode($value);
                 break;
             case 'statusMessage':
+                $this->$name = new \obray\ipp\attributes\Text('status-message', $value, $naturalLanguage,255);
                 break;
             case 'detailedStatusMessage':
+                $this->name = new \obray\ipp\attributes\Text('detailed-status-message', $value, $naturalLanguage,\obray\ipp\attributes\Text::MaxLength);
                 break;
             case 'documentAccessError':
+                $this->name = new \obray\ipp\attributes\Text('document-access-error', $value, $naturalLanguage,\obray\ipp\attributes\Text::MaxLength);
+                break;
+            case 'printerURI':
+                break;
+            case 'jobURI':
+                break;
+            case 'jobID':
                 break;
             case 'documentURI':
+                
                 break;
             case 'target':
                 break;
