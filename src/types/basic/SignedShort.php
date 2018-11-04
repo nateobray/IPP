@@ -31,4 +31,14 @@ class SignedShort implements \obray\ipp\interfaces\TypeInterface
     {
         return $this->length;
     }
+
+    public function getValue()
+    {
+        return $this->value;
+    }
+
+    public function __toString()
+    {
+        return (string)$this->value;
+    }
 }

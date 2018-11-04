@@ -45,6 +45,7 @@ class IPPPayload
         print_r("Binary String: ");
         print_r(unpack("cMajor/cMinor/lOperation/lRequestID",$binary));
         print_r("\n");
+        return $binary;
     }
 
     public function decode()

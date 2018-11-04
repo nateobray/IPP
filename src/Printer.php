@@ -15,7 +15,11 @@ class Printer
             $operationAttributes,
             $jobTemplateAttributes
         );
-        $payload->encode();
+        $encodedPayload = $payload->encode();
+
+        $http = new \obray\HTTP();
+        $http->addRequest("http://10.5.2.82:631", \obray\HTTP::POST, $encodedPayload);
+        $responses = $http->send();
         //$this->ipp->setPostData($data);
         //$this->ipp->send();
     }

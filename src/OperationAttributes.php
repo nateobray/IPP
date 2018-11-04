@@ -31,79 +31,84 @@ namespace obray\ipp;
 class OperationAttributes
 {
     private $attribute_group_tag = 0x01;
+    private $naturalLanguageOverride;
 
-    public $charset;
-    public $naturalLanguage;
-    public $statusCode;
-    public $statusMessage;
-    public $detailedStatusMessage;
-    public $documentAccessError;
-    public $documentURI;
-    public $target;
-    public $userName;
-    public $jobName;
-    public $ippAttributeFidelity;
-    public $documentName;
-    public $compression;
-    public $documentType;
-    public $jobKOctets;
-    public $jobImpressions;
-    public $jobMediaSheets;
+    private $attributes = array();
 
     public function __construct(){
-        $this->charset = new \obray\ipp\types\Charset('utf-8');
-        $this->naturalLanguage = new \obray\ipp\types\NaturalLanguage('en');
+        $this->charset = 'utf-8';
+        $this->naturalLanguage = 'en';
     }
 
-    public function __set(string $name, $value, string $naturalLanguage=NULL)
+    public function setNaturalLanguage($lang=NULL){
+        $this->naturalLanguageOverride = $lang;
+    }
+
+    public function __set(string $name, $value)
     {
+        print_r("----  ATTRIBUTE: ".$name."\n");
+
         switch($name){
             case 'charset':
-                $this->$name = new \obray\ipp\types\Attribute($name, new \obray\ipp\types\Charset($value));
+
+                $this->attributes[$name] = new \obray\ipp\Attribute('charset', $value, \obray\ipp\enums\Types::CHARSET);
                 break;
             case 'naturalLanguage':
-                $this->$name = new \obray\ipp\types\Attribute($name, new \obray\ipp\types\NaturalLanguage($value));
+                $this->attributes[$name] = new \obray\ipp\Attribute('natural-language', $value, \obray\ipp\enums\Types::NATURALLANGUAGE);
                 break;
             case 'statusCode':
-                $this->$name = new \obray\ipp\attributes\StatusCode($value);
+                $this->attributes[$name] = new \obray\ipp\Attribute('status-code', $value, \obray\ipp\enums\Types::STATUSCODE);
                 break;
             case 'statusMessage':
-                $this->$name = new \obray\ipp\attributes\Text('status-message', $value, $naturalLanguage,255);
+                $this->attributes[$name] = new \obray\ipp\Attribute('status-message', $value, \obray\ipp\enums\Types::TEXT, 255, $this->naturalLanguageOverride);
                 break;
             case 'detailedStatusMessage':
-                $this->name = new \obray\ipp\attributes\Text('detailed-status-message', $value, $naturalLanguage,\obray\ipp\attributes\Text::MaxLength);
+                $this->attributes[$name] = new \obray\ipp\Attribute('detailed-status-message', $value, \obray\ipp\enums\Types::TEXT, 1024, $this->naturalLanguageOverride);
                 break;
             case 'documentAccessError':
-                $this->name = new \obray\ipp\attributes\Text('document-access-error', $value, $naturalLanguage,\obray\ipp\attributes\Text::MaxLength);
+                $this->attributes[$name] = new \obray\ipp\Attribute('document-access-error', $value, \obray\ipp\enums\Types::TEXT, $this->naturalLanguageOverride,\obray\ipp\attributes\Text::MaxLength);
                 break;
             case 'printerURI':
+                $this->attributes[$name] = new \obray\ipp\Attribute('printer-uri', $value, \obray\ipp\enums\Types::URI, 1023);
                 break;
             case 'jobURI':
+                $this->attributes[$name] = new \obray\ipp\Attribute('job-uri', $value, \obray\ipp\enums\Types::URI, 1023);
                 break;
             case 'jobID':
+                $this->attributes[$name] = new \obray\ipp\Attribute('job-id', $value, \obray\ipp\enums\Types::INTEGER);
                 break;
             case 'documentURI':
-                
+                $this->attributes[$name] = new \obray\ipp\Attribute('document-uri', $value, \obray\ipp\enums\Types::URI, 1023);
                 break;
-            case 'target':
-                break;
-            case 'userName':
+            case 'requestingUserName':
+                $this->attributes[$name] = new \obray\ipp\Attribute('requesting-user-name', $value, \obray\ipp\enums\Types::NAME, 255, $this->naturalLanguageOverride);
                 break;
             case 'jobName':
+                $this->attributes[$name] = new \obray\ipp\Attribute('job-name', $value, \obray\ipp\enums\Types::NAME, 255, $this->naturalLanguageOverride);
                 break;
             case 'ippAttributeFidelity':
+                $this->attributes[$name] = new \obray\ipp\Attribute('job-name', $value, \obray\ipp\enums\Types::BOOLEAN);
                 break;
             case 'documentName':
+                $this->attributes[$name] = new \obray\ipp\Attribute('document-name', $value, \obray\ipp\enums\Types::NAME, 255, $this->naturalLanguageOverride);
                 break;
             case 'compression':
+                $this->attributes[$name] = new \obray\ipp\Attribute('compression', $value, \obray\ipp\enums\Types::KEYWORD);
                 break;
-            case 'documentType':
+            case 'documentFormat':
+                $this->attributes[$name] = new \obray\ipp\Attribute('document-format', $value, \obray\ipp\enums\Types::MIMEMEDIATYPE);
+                break;
+            case 'documentNaturalLanguage':
+                $this->attributes[$name] = new \obray\ipp\Attribute('document-natural-language', $value, \obray\ipp\enums\Types::NATURALLANGUAGE);
                 break;
             case 'jobKOctets':
+                $this->attributes[$name] = new \obray\ipp\Attribute('job-k-octets', $value, \obray\ipp\enums\Types::INTEGER);
                 break;
             case 'jobImpressions':
+                $this->attributes[$name] = new \obray\ipp\Attribute('job-impressions', $value, \obray\ipp\enums\Types::INTEGER);
                 break;
             case 'jobMediaSheets':
+                $this->attributes[$name] = new \obray\ipp\Attribute('job-media-sheets', $value, \obray\ipp\enums\Types::INTEGER);
                 break;
 
         }
@@ -122,19 +127,11 @@ class OperationAttributes
     public function encode()
     {
         $binary = '';
-        $reflection = new \ReflectionClass($this);
-        $properties = $reflection->getProperties(\ReflectionProperty::IS_PUBLIC);
-        //print_r($properties);
         
-        forEach($properties as $property){
-            
-            if( !empty($this->{$property->name}) && method_exists($this->{$property->name}, 'encode') ){
-                print_r("\tEncoding ".$property->name."\n");
-                $binary .= $this->{$property->name}->encode();
-            }
+        forEach($this->attributes as $name => $attribute){
+                print_r("\tEncoding ".$name."\n");
+                $binary .= $attribute->encode();
         }
-        
-
         return $binary;
     }
 }
