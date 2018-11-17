@@ -36,8 +36,8 @@ class OperationAttributes
     private $attributes = array();
 
     public function __construct(){
-        $this->charset = 'utf-8';
-        $this->naturalLanguage = 'en';
+        $this->attributes['charset'] = new \obray\ipp\Attribute('charset', 'utf-8', \obray\ipp\enums\Types::CHARSET);
+        $this->attributes['naturalLanguage'] = new \obray\ipp\Attribute('natural-language', 'en', \obray\ipp\enums\Types::NATURALLANGUAGE);
     }
 
     public function setNaturalLanguage($lang=NULL){
@@ -50,7 +50,6 @@ class OperationAttributes
 
         switch($name){
             case 'charset':
-
                 $this->attributes[$name] = new \obray\ipp\Attribute('charset', $value, \obray\ipp\enums\Types::CHARSET);
                 break;
             case 'naturalLanguage':
@@ -127,7 +126,7 @@ class OperationAttributes
     public function encode()
     {
         $binary = '';
-        
+        $binary .= pack('c',$this->attribute_group_tag);
         forEach($this->attributes as $name => $attribute){
                 print_r("\tEncoding ".$name."\n");
                 $binary .= $attribute->encode();

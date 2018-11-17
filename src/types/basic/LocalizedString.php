@@ -15,11 +15,7 @@ class LocalizedString implements \obray\ipp\interfaces\TypeInterface
 
     public function encode()
     {
-        $binary = '';
-        forEach(str_split($this->value) as $char){
-            $binary .= pack('c',$char);
-        }
-        return $binary;
+        return pack('a'.($this->length), $this->value);
     }
 
     public function decode()

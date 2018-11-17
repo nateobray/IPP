@@ -97,12 +97,17 @@ class Attribute
 
     public function encode()
     {
-        print_r("Encoding: ".$this->name."\n");
+        print_r("Encoding: (".$this->valueTag.") ".$this->name."\n");
         $binary = pack('c',$this->valueTag);
         $binary .= $this->nameLength->encode();
         $binary .= $this->name->encode();
         $binary .= $this->valueLength->encode();
         $binary .= $this->value->encode();
+
+        print_r(unpack('cValueTag/sNameLength/a7Name/sValueLength/a5Value',$binary));
+        
+        exit();
+
         return $binary;
     }
 
