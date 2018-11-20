@@ -20,9 +20,4 @@ class Operation extends \obray\ipp\types\Enum
     const resumePrinter = 0x0011;
     const purgeJobs = 0x0012;
 
-    public function encode()
-    {
-        print_r("encoding: ".$this->value."\n");
-        return pack('s',$this->value);
-    }
 }

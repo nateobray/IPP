@@ -36,8 +36,8 @@ class OperationAttributes
     private $attributes = array();
 
     public function __construct(){
-        $this->attributes['charset'] = new \obray\ipp\Attribute('charset', 'utf-8', \obray\ipp\enums\Types::CHARSET);
-        $this->attributes['naturalLanguage'] = new \obray\ipp\Attribute('natural-language', 'en', \obray\ipp\enums\Types::NATURALLANGUAGE);
+        $this->attributes['charset'] = new \obray\ipp\Attribute('attributes-charset', 'utf-8', \obray\ipp\enums\Types::CHARSET);
+        $this->attributes['naturalLanguage'] = new \obray\ipp\Attribute('attributes-natural-language', 'en', \obray\ipp\enums\Types::NATURALLANGUAGE);
     }
 
     public function setNaturalLanguage($lang=NULL){
@@ -46,14 +46,12 @@ class OperationAttributes
 
     public function __set(string $name, $value)
     {
-        print_r("----  ATTRIBUTE: ".$name."\n");
-
         switch($name){
             case 'charset':
-                $this->attributes[$name] = new \obray\ipp\Attribute('charset', $value, \obray\ipp\enums\Types::CHARSET);
+                $this->attributes[$name] = new \obray\ipp\Attribute('attributes-charset', $value, \obray\ipp\enums\Types::CHARSET);
                 break;
             case 'naturalLanguage':
-                $this->attributes[$name] = new \obray\ipp\Attribute('natural-language', $value, \obray\ipp\enums\Types::NATURALLANGUAGE);
+                $this->attributes[$name] = new \obray\ipp\Attribute('attributes-natural-language', $value, \obray\ipp\enums\Types::NATURALLANGUAGE);
                 break;
             case 'statusCode':
                 $this->attributes[$name] = new \obray\ipp\Attribute('status-code', $value, \obray\ipp\enums\Types::STATUSCODE);
@@ -86,7 +84,7 @@ class OperationAttributes
                 $this->attributes[$name] = new \obray\ipp\Attribute('job-name', $value, \obray\ipp\enums\Types::NAME, 255, $this->naturalLanguageOverride);
                 break;
             case 'ippAttributeFidelity':
-                $this->attributes[$name] = new \obray\ipp\Attribute('job-name', $value, \obray\ipp\enums\Types::BOOLEAN);
+                $this->attributes[$name] = new \obray\ipp\Attribute('ipp-attribute-fidelity', $value, \obray\ipp\enums\Types::BOOLEAN);
                 break;
             case 'documentName':
                 $this->attributes[$name] = new \obray\ipp\Attribute('document-name', $value, \obray\ipp\enums\Types::NAME, 255, $this->naturalLanguageOverride);
@@ -109,7 +107,8 @@ class OperationAttributes
             case 'jobMediaSheets':
                 $this->attributes[$name] = new \obray\ipp\Attribute('job-media-sheets', $value, \obray\ipp\enums\Types::INTEGER);
                 break;
-
+            default:
+                throw new \Exception("Invalid operational parameter.");
         }
     }
 
@@ -125,12 +124,35 @@ class OperationAttributes
 
     public function encode()
     {
-        $binary = '';
-        $binary .= pack('c',$this->attribute_group_tag);
+        $binary = pack('c',$this->attribute_group_tag);
         forEach($this->attributes as $name => $attribute){
-                print_r("\tEncoding ".$name."\n");
+                //print_r("\tEncoding ".$name."\n");
                 $binary .= $attribute->encode();
         }
         return $binary;
+    }
+
+    public function decode($binary, $offset)
+    {
+        
+        $AttributeGroupTag = (unpack("cAttributeGroupTag", $binary, 8))['AttributeGroupTag'];
+        $validAttributeGroupTags = [0x01,0x02,0x03,0x04];
+        $offset = 9; 
+        while(true){
+            print_r($offset."\n");
+            $attribute = (new \obray\ipp\Attribute())->decode($binary, $offset);
+            print_r($attribute);
+            print_r($attribute->getName()."\n");
+            $this->attributes[$attribute->getName()] = $attribute;
+            $offset += $attribute->getOffset();
+            print_r($offset."\n");
+            $newTag = (unpack("cAttributeGroupTag", $binary, $offset))['AttributeGroupTag'];
+            //print_r($newTag."\n");
+            if(in_array($newTag,$validAttributeGroupTags)){
+                print_r("break\n");
+                break;
+            }
+        }
+        
     }
 }

@@ -1,7 +1,7 @@
 <?php
-namespace obray\types;
+namespace obray\ipp\types;
 
-class StatusCode extends \obray\types\Enum {
+class StatusCode extends \obray\ipp\types\Enum {
     
     // success codes
     const successful_ok = 0;

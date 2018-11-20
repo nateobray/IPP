@@ -7,19 +7,26 @@ class SignedShort implements \obray\ipp\interfaces\TypeInterface
     protected $value;
     private $length = 2;
     
-    public function __construct($value)
+    public function __construct($value=NULL)
     {
+        if($value===NULL) return $this;
         $this->value = $value;
     }
 
     public function encode()
     {
-        return pack('s',$this->value);
+        return pack('n',$this->value);
     }
 
-    public function decode()
+    public function decode($binary, $offset=0, $length=NULL)
     {
+        $this->value = (unpack('n', $binary, $offset))[1];
+        return $this;
+    }
 
+    public function len()
+    {
+        return $this->length;
     }
 
     public function getValueTag()

@@ -7,18 +7,19 @@ class SignedInteger implements \obray\ipp\interfaces\TypeInterface
     protected $valueTag;
     private $length = 4;
 
-    public function __construct($value)
+    public function __construct($value=NULL)
     {
+        if($value===NULL) return $this;
         $this->value = $value;
     }
 
     public function encode()
     {
         print_r("encoding: ".$this->value."\n");
-        return pack('l',$this->value);
+        return pack('N',$this->value);
     }
 
-    public function decode()
+    public function decode($binary, $offset=0, $length=NULL)
     {
 
     }

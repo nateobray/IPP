@@ -15,10 +15,11 @@ class IPPPayload
     private $document;
 
     public function __construct(
-        \obray\ipp\types\VersionNumber $versionNumber,
-        \obray\ipp\types\Operation $operation,
-        \obray\ipp\types\Integer $requestId,
-        \obray\ipp\OperationAttributes $operationAttributes,
+        \obray\ipp\types\VersionNumber $versionNumber = NULL,
+        \obray\ipp\types\Operation $operation = NULL,
+        \obray\ipp\types\Integer $requestId = NULL,
+        \obray\ipp\types\OctetString $document = NULL,
+        \obray\ipp\OperationAttributes $operationAttributes = NULL,
         \obray\ipp\JobTemplateAttributes $jobTemplateAttributes = NULL,
         \obray\ipp\JobDescriptionAttributes $jobDescriptionAttributes = NULL,
         \obray\ipp\PrinterDescriptionAttributes $printerDescriptionAttributes = NULL,
@@ -27,6 +28,7 @@ class IPPPayload
         $this->versionNumber = $versionNumber;
         $this->operation = $operation;
         $this->requestId = $requestId;
+        $this->document = $document;
         $this->operationAttributes = $operationAttributes;
         $this->jobTemplateAttributes = $jobTemplateAttributes;
         $this->jobDescriptionAttributes = $jobDescriptionAttributes;
@@ -41,15 +43,32 @@ class IPPPayload
         $binary .= $this->operation->encode();
         $binary .= $this->requestId->encode();
         $binary .= $this->operationAttributes->encode();
-        //$binary .= $this->request->encode()
+        $binary .= pack('c',0x03); // end-of-attributes-tag
+        print_r($this->document);
+        if(!empty($this->document)){
+            print_r("encoding document\n");
+            $binary .= $this->document->encode();
+        }
         print_r("Binary String: ");
-        print_r(unpack("cMajor/cMinor/sOperation/lRequestID/cAttributeGroupTag/cAttributeValueTag/sAttributeNameLength/a1AttributeName/a7AttributeName",$binary));
+        print_r(unpack("cMajor/cMinor/nOperation/lRequestID/cAttributeGroupTag/cAttributeValueTag/nAttributeNameLength/a7AttributeName/nAttributeValueLength/a5AttributeValue/cAttributeValueTag2/nAttributeNameLength2/a16AttributeName2/nAttributeValueLength2/a2AttributeValue2",$binary));
         print_r("\n");
         return $binary;
     }
 
-    public function decode()
+    public function decode($binary)
     {
+        
+        print_r("\n------------------------------------\n");
+        print_r("Decoding IPP Payload");
+        print_r("\n------------------------------------\n\n");
+        
+        $unpacked = unpack("cMajor/cMinor/nStatusCode/lRequestID", $binary);
+        print_r($unpacked);
+        $this->versionNumber = new \obray\ipp\types\VersionNumber($unpacked['Major'] . '.' . $unpacked['Minor']);
+        $this->operation = new \obray\ipp\types\StatusCode($unpacked['StatusCode']);
+
+        $this->operationAttributes = new \obray\ipp\OperationAttributes();
+        $this->operationAttributes->decode($binary, 8);
 
     }
 

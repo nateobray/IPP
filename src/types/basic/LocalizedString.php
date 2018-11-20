@@ -7,10 +7,16 @@ class LocalizedString implements \obray\ipp\interfaces\TypeInterface
     protected $valueTag;
     private $length;
 
-    public function __construct($value)
+    public function __construct($value=NULL, $length=NULL)
     {
-        $this->length = strlen($value);
+        
+        if($value===NULL) return $this;
         $this->value = $value;
+        $this->length = strlen($value);
+        if($length!==NULL){
+            $this->length = $length;
+        }
+        return $this;
     }
 
     public function encode()
@@ -18,9 +24,17 @@ class LocalizedString implements \obray\ipp\interfaces\TypeInterface
         return pack('a'.($this->length), $this->value);
     }
 
-    public function decode()
+    public function decode($binary, $offset=0, $length=NULL)
     {
-        
+        $this->length = $length;
+        if($length===NULL) throw new \Exception("Decoding localized string requires a length parameter.");
+        $this->value = (unpack('a'.$length, $binary, $offset))[1];
+        return $this;
+    }
+
+    public function len()
+    {
+        return $this->length;
     }
 
     public function getValueTag()

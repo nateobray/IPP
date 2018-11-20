@@ -7,24 +7,22 @@ class USASCIIString implements \obray\ipp\interfaces\TypeInterface
     protected $valueTag;
     private $length;
 
-    public function __construct($value)
+    public function __construct($value=NULL)
     {
+        if($value===NULL) return $this;
         $this->length = strlen($value);
         $this->value = $value;
     }
 
     public function encode()
     {
-        $binary = '';
-        forEach(str_split($this->value) as $char){
-            $binary .= pack('c',$char);
-        }
-        return $binary;
+        return pack('a'.($this->length), $this->value);
     }
 
-    public function decode()
+    public function decode($binary, $offset=0, $length=NULL)
     {
-        
+        $this->value = (unpack('a'.$length, $binary, $offset))[1];
+        return $this;
     }
 
     public function getValueTag()

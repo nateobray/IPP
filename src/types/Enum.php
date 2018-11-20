@@ -1,7 +1,7 @@
 <?php
 namespace obray\ipp\types;
 
-class Enum extends \obray\ipp\types\basic\SignedInteger
+class Enum extends \obray\ipp\types\basic\SignedShort
 {
     protected $valueTag = 0x23;
 

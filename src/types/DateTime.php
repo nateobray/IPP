@@ -29,4 +29,5 @@ class DateTime extends \obray\ipp\types\basic\OctetString
                 unpack('c', $utcDiffHours) .
                 unpack('c', $urcDiffMins);
     }
+
 }

@@ -7,8 +7,9 @@ class SignedByte implements \obray\ipp\interfaces\TypeInterface
     protected $valueTag;
     private $length = 1;
 
-    public function __construct($value)
+    public function __construct($value=NULL)
     {
+        if($value===NULL) return $this;
         if(strlen($value)>1){
             throw new \Exception("Invalid signed byte.");
         }
@@ -20,7 +21,7 @@ class SignedByte implements \obray\ipp\interfaces\TypeInterface
         return pack('c',$this->value);
     }
 
-    public function decode()
+    public function decode($binary, $offset=0, $length=NULL)
     {
         
     }

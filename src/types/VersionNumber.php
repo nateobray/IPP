@@ -32,7 +32,7 @@ class VersionNumber implements \obray\ipp\interfaces\TypeInterface
         return pack('c',$this->majorVersionNumber) . pack('c',$this->minorVersionNumber);
     }
 
-    public function decode()
+    public function decode($binary, $offset=0, $length=NULL)
     {
 
     }

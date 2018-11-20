@@ -29,6 +29,6 @@ class TextWithLanguage extends \obray\ipp\types\basic\OctetString
             $stringBinary .= unpack('c',$char);
         }
 
-        return unpack('s',$this->naturalLanguageOctets) . $naturalLanguageBinary . unpack('s',$this->stringOctets) . $stringBinary;
+        return unpack('n',$this->naturalLanguageOctets) . $naturalLanguageBinary . unpack('n',$this->stringOctets) . $stringBinary;
     }
 }
