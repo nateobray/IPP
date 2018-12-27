@@ -19,8 +19,7 @@ class Attribute
         $this->nameLength = new \obray\ipp\types\basic\SignedShort(strlen($name));
         $this->name = new \obray\ipp\types\basic\LocalizedString($name);
 
-        $this->getValue($type);
-
+        $this->getValue($type, $value, $naturalLanguage);
         
 
         $this->valueTag = $this->value->getValueTag();
@@ -69,7 +68,7 @@ class Attribute
         return $this;
     }
 
-    private function getValue($type, $value=NULL)
+    private function getValue($type, $value=NULL, $natuarlLanguage=NULL)
     {
         switch($type){
             case \obray\ipp\enums\Types::BOOLEAN:

@@ -14,11 +14,14 @@ class Printer
         $this->user = $user;
     }
 
-    public function printJob($document)
+    public function printJob($document, array $attributes=NULL)
     {
         $operationAttributes = new \obray\ipp\OperationAttributes();
         $operationAttributes->printerURI = $this->printerURI;
         $operationAttributes->requestingUserName = $this->user;
+        if(!empty($attributes['documentFormat'])){
+        	$operationAttributes->documentFormat = $attributes['documentFormat'];
+        }
 
         $payload = new \obray\ipp\transport\IPPPayload(
             new \obray\ipp\types\VersionNumber('1.1'),
@@ -32,15 +35,16 @@ class Printer
         // debug encoded payload
         $hex = bin2hex($encodedPayload);
         $hex = str_split($hex,4);
-        print_r($hex);
+        //print_r($hex);
 
         $headers = array(
             "Content-Type" => "application/ipp",
-            "Authorization" => 'Basic ' . base64_encode('nate:**')
+            "Authorization" => 'Basic ' . base64_encode('nate:y3knights')
         );
-
+		
         $http = new \obray\HTTP();
-        $http->addRequest("http://10.5.2.82:631/printers/devprinter", \obray\HTTP::POST, $encodedPayload, $headers);
+        print_r("Adding Request\n");
+        $http->addRequest($this->printerURI, \obray\HTTP::POST, $encodedPayload, $headers);
         $requests = ($http->getRequests())[0];
         echo "\n--------------------------------\n";
         echo "Request\n";
