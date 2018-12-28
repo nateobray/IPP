@@ -126,32 +126,43 @@ class OperationAttributes
     {
         $binary = pack('c',$this->attribute_group_tag);
         forEach($this->attributes as $name => $attribute){
-                //print_r("\tEncoding ".$name."\n");
                 $binary .= $attribute->encode();
         }
         return $binary;
     }
 
-    public function decode($binary, $offset)
+    public function decode($binary, $offset=8)
     {
-        
-        $AttributeGroupTag = (unpack("cAttributeGroupTag", $binary, 8))['AttributeGroupTag'];
-        $validAttributeGroupTags = [0x01,0x02,0x03,0x04];
-        $offset = 9; 
+ 		       
+        $AttributeGroupTag = (unpack("cAttributeGroupTag", $binary, $offset))['AttributeGroupTag'];
+        $validAttributeGroupTags = [0x01,0x02,0x03,0x04,0x05];
+        $endOfAttributesTag = 0x03;
+        $offset += 1; 
+        $count = 0;
         while(true){
+            ++$count;
+            
             print_r($offset."\n");
-            $attribute = (new \obray\ipp\Attribute())->decode($binary, $offset);
+            //if($count>1){exit();}
+            $attribute = (new \obray\ipp\Attribute())->decode($binary, $offset, ($count>1)?1:0);
+			
             print_r($attribute);
             print_r($attribute->getName()."\n");
             $this->attributes[$attribute->getName()] = $attribute;
-            $offset += $attribute->getOffset();
+            $offset = $attribute->getOffset();
             print_r($offset."\n");
             $newTag = (unpack("cAttributeGroupTag", $binary, $offset))['AttributeGroupTag'];
-            //print_r($newTag."\n");
-            if(in_array($newTag,$validAttributeGroupTags)){
-                print_r("break\n");
+			print_r($newTag."\n");
+            if($newTag===$endOfAttributesTag){
+                print_r("end of attributes - break\n");
                 break;
             }
+            if(in_array($newTag,$validAttributeGroupTags)){
+            	print_r("Found new valid value tag.\n");
+            	$offset += 8;
+            }
+            
+            
         }
         
     }

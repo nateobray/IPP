@@ -19,7 +19,7 @@ class Attribute
         $this->nameLength = new \obray\ipp\types\basic\SignedShort(strlen($name));
         $this->name = new \obray\ipp\types\basic\LocalizedString($name);
 
-        $this->getValue($type, $value, $naturalLanguage);
+        $this->getValue($type, $value, $naturalLanguage, $maxLength);
         
 
         $this->valueTag = $this->value->getValueTag();
@@ -28,39 +28,45 @@ class Attribute
 
     public function encode()
     {
-        print_r("Encoding: (".$this->valueTag.") ".$this->name."\n");
         $binary = pack('c',$this->valueTag);
         $binary .= $this->nameLength->encode();
         $binary .= $this->name->encode();
         $binary .= $this->valueLength->encode();
         $binary .= $this->value->encode();
-
-        print_r(unpack('cValueTag/sNameLength/a'.$this->nameLength.'Name/sValueLength/a'.$this->valueLength.'Value',$binary));
-        
         return $binary;
     }
 
-    public function decode($binary, $offset=0)
+    public function decode($binary, $offset=0, $debugExit=0)
     {
+    	
         // unpack the attribute value tag
+        print_r("binary length: ".strlen($binary)."\n");
         $this->valueTag = (unpack('cValueTag', $binary, $offset))['ValueTag'];
+        $offset += 1;
+        print_r("interpreted value tag: ".$this->valueTag."\n");
         
         // decode the name length and adjust offset
-        $this->nameLength = (new \obray\ipp\types\basic\SignedShort())->decode($binary, ++$offset);
+        $this->nameLength = (new \obray\ipp\types\basic\SignedShort())->decode($binary, $offset);
         $offset += $this->nameLength->len();
-        
+        print_r("interpreted length: ".$this->nameLength->len()."\n");
+		
+  		      
         // decode the attribute name and adjust offset
         $this->name = (new \obray\ipp\types\basic\LocalizedString(NULL))->decode($binary, $offset, $this->nameLength->getValue());
         $offset += $this->name->len();
+        print_r("interpreted name length:".$this->name->len()."\n");
         
         // decode the value length and adjust offset
         $this->valueLength = (new \obray\ipp\types\basic\SignedShort())->decode($binary, $offset);
         $offset += $this->valueLength->len();
+        print_r("interpreted length:".$this->valueLength->len()."\n");
         
         // get the correct value type and decode
         $this->getValue($this->valueTag);
+		if($debugExit){exit();}
         $this->value->decode($binary, $offset, $this->valueLength->getValue());
         $offset += $this->valueLength->getValue();
+        print_r("interpreted value length:".$this->valueLength->getValue()."\n");
 
         // set offset for retreival of next attribute
         $this->offset = $offset;
@@ -68,7 +74,7 @@ class Attribute
         return $this;
     }
 
-    private function getValue($type, $value=NULL, $natuarlLanguage=NULL)
+    private function getValue($type, $value=NULL, $natuarlLanguage=NULL, $maxLength=NULL)
     {
         switch($type){
             case \obray\ipp\enums\Types::BOOLEAN:

@@ -15,7 +15,6 @@ class SignedInteger implements \obray\ipp\interfaces\TypeInterface
 
     public function encode()
     {
-        print_r("encoding: ".$this->value."\n");
         return pack('N',$this->value);
     }
 

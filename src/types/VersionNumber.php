@@ -28,7 +28,6 @@ class VersionNumber implements \obray\ipp\interfaces\TypeInterface
 
     public function encode()
     {
-        print_r("Encoding version number: " . $this->majorVersionNumber . '.' . $this->minorVersionNumber . "\n");
         return pack('c',$this->majorVersionNumber) . pack('c',$this->minorVersionNumber);
     }
 

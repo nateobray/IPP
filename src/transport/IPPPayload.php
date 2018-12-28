@@ -38,20 +38,14 @@ class IPPPayload
 
     public function encode()
     {
-        print_r("encoding binary...\n");
         $binary = $this->versionNumber->encode();
         $binary .= $this->operation->encode();
         $binary .= $this->requestId->encode();
         $binary .= $this->operationAttributes->encode();
         $binary .= pack('c',0x03); // end-of-attributes-tag
-        print_r($this->document);
         if(!empty($this->document)){
-            print_r("encoding document\n");
             $binary .= $this->document->encode();
         }
-        print_r("Binary String: ");
-        print_r(unpack("cMajor/cMinor/nOperation/lRequestID/cAttributeGroupTag/cAttributeValueTag/nAttributeNameLength/a7AttributeName/nAttributeValueLength/a5AttributeValue/cAttributeValueTag2/nAttributeNameLength2/a16AttributeName2/nAttributeValueLength2/a2AttributeValue2",$binary));
-        print_r("\n");
         return $binary;
     }
 
@@ -64,12 +58,14 @@ class IPPPayload
         
         $unpacked = unpack("cMajor/cMinor/nStatusCode/lRequestID", $binary);
         print_r($unpacked);
+        
         $this->versionNumber = new \obray\ipp\types\VersionNumber($unpacked['Major'] . '.' . $unpacked['Minor']);
         $this->operation = new \obray\ipp\types\StatusCode($unpacked['StatusCode']);
-
+		
         $this->operationAttributes = new \obray\ipp\OperationAttributes();
+		
         $this->operationAttributes->decode($binary, 8);
-
+		exit();
     }
 
 }

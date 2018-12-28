@@ -56,6 +56,8 @@ class Printer
             echo "Response with HTTP 200\n";
             echo "--------------------------------\n\n";
             echo $response;
+            $responsePayload = new \obray\ipp\transport\IPPPayload();
+            $responsePayload->decode($response->getBody());
         } else {
             echo "\n--------------------------------\n";
             echo "Response with HTTP Error Code\n";
@@ -108,11 +110,11 @@ class Printer
         $encodedPayload = $payload->encode();
         $headers = array(
             "Content-Type" => "application/ipp",
-            "Authorization" => 'Basic ' . base64_encode('nate:**')
+            "Authorization" => 'Basic ' . base64_encode('nate:y3knights')
         );
 
         $http = new \obray\HTTP();
-        $http->addRequest("http://10.5.2.82:631/printers/devprinter", \obray\HTTP::POST, $encodedPayload, $headers);
+        $http->addRequest($this->printerURI, \obray\HTTP::POST, $encodedPayload, $headers);
         $requests = ($http->getRequests())[0];
         echo "\n--------------------------------\n";
         echo "Request\n";
@@ -164,6 +166,7 @@ class Printer
         echo $requests;
         $response = ($http->send())[0];
         if($response->getStatusCode()>=200 && $response->getStatusCode()<300){
+        
             echo "\n--------------------------------\n";
             echo "Response with HTTP 200\n";
             echo "--------------------------------\n\n";
