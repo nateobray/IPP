@@ -1,13 +1,13 @@
 <?php
-namespace obray\enums;
+namespace obray\ipp\enums;
 
-class JobState extends SplEnum
+class JobState  extends \obray\ipp\types\Enum
 {
-    const pending = 3;
-    const pendingHeld = 4;
-    const processing = 5;
-    const processingStopped = 6;
-    const canceled = 7;
-    const aborted = 8;
-    const completed = 9;
+    const PENDING = 3;
+    const PENDINGHELD = 4;
+    const PROCESSING = 5;
+    const PROCESSINGSTOPPED = 6;
+    const CANCELED = 7;
+    const ABORTED = 8;
+    const COMPLETED = 9;
 }

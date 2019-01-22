@@ -1,7 +1,7 @@
 <?php
 namespace obray\ipp\types\basic;
 
-class SignedShort implements \obray\ipp\interfaces\TypeInterface
+class SignedShort implements \obray\ipp\interfaces\TypeInterface, \JsonSerializable
 {
     protected $valueTag;
     protected $value;
@@ -47,5 +47,10 @@ class SignedShort implements \obray\ipp\interfaces\TypeInterface
     public function __toString()
     {
         return (string)$this->value;
+    }
+
+    public function jsonSerialize()
+    {
+        return $this->value;
     }
 }

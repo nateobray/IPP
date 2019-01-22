@@ -1,7 +1,7 @@
 <?php
 namespace obray\ipp\types\basic;
 
-class SignedInteger implements \obray\ipp\interfaces\TypeInterface
+class SignedInteger implements \obray\ipp\interfaces\TypeInterface, \JsonSerializable
 {
     protected $value;
     protected $valueTag;
@@ -20,7 +20,8 @@ class SignedInteger implements \obray\ipp\interfaces\TypeInterface
 
     public function decode($binary, $offset=0, $length=NULL)
     {
-
+        $this->value = unpack('N',$binary,$offset)[1];
+        return $this;
     }
 
     public function getValueTag()
@@ -41,5 +42,10 @@ class SignedInteger implements \obray\ipp\interfaces\TypeInterface
     public function __toString()
     {
         return (string)$this->value;
+    }
+
+    public function jsonSerialize()
+    {
+        return $this->value;
     }
 }

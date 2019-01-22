@@ -1,7 +1,7 @@
 <?php
 namespace obray\ipp;
 
-class Attribute
+class Attribute implements \JsonSerializable
 {
     protected $name;
     private $valueTag;
@@ -9,6 +9,7 @@ class Attribute
     private $valueLength;
     private $value;
     private $offset;
+    private $previousNameKey;
 
    
     public function __construct($name=NULL, $value=NULL, int $type=NULL, int $maxLength=NULL, string $naturalLanguage=NULL)
@@ -19,6 +20,9 @@ class Attribute
         $this->nameLength = new \obray\ipp\types\basic\SignedShort(strlen($name));
         $this->name = new \obray\ipp\types\basic\LocalizedString($name);
 
+        if($value===NULL){
+            return $this;
+        }
         $this->getValue($type, $value, $naturalLanguage, $maxLength);
         
 
@@ -38,36 +42,31 @@ class Attribute
 
     public function decode($binary, $offset=0, $debugExit=0)
     {
-    	
+        if(!empty($this->nameLength) && $this->nameLength->getValue()!==0){
+            $this->previousNameKey = $this->name->getValue();
+        }
         // unpack the attribute value tag
-        print_r("binary length: ".strlen($binary)."\n");
         $this->valueTag = (unpack('cValueTag', $binary, $offset))['ValueTag'];
         $offset += 1;
-        print_r("interpreted value tag: ".$this->valueTag."\n");
-        
+                
         // decode the name length and adjust offset
         $this->nameLength = (new \obray\ipp\types\basic\SignedShort())->decode($binary, $offset);
         $offset += $this->nameLength->len();
-        print_r("interpreted length: ".$this->nameLength->len()."\n");
-		
-  		      
+        
         // decode the attribute name and adjust offset
         $this->name = (new \obray\ipp\types\basic\LocalizedString(NULL))->decode($binary, $offset, $this->nameLength->getValue());
-        $offset += $this->name->len();
-        print_r("interpreted name length:".$this->name->len()."\n");
+        $offset += $this->name->len();        
         
         // decode the value length and adjust offset
         $this->valueLength = (new \obray\ipp\types\basic\SignedShort())->decode($binary, $offset);
         $offset += $this->valueLength->len();
-        print_r("interpreted length:".$this->valueLength->len()."\n");
         
         // get the correct value type and decode
         $this->getValue($this->valueTag);
-		if($debugExit){exit();}
+		
         $this->value->decode($binary, $offset, $this->valueLength->getValue());
         $offset += $this->valueLength->getValue();
-        print_r("interpreted value length:".$this->valueLength->getValue()."\n");
-
+        
         // set offset for retreival of next attribute
         $this->offset = $offset;
 
@@ -87,7 +86,21 @@ class Attribute
                 $this->value = new \obray\ipp\types\DateTime($value);
                 break;
             case \obray\ipp\enums\Types::ENUM:
-                $this->value = new \obray\ipp\types\Enum($value);
+                $nameToSwitchOn = $this->name->getValue();
+                if(empty($nameToSwitchOn)){
+                    $nameToSwitchOn = $this->previousNameKey;
+                }
+                switch($nameToSwitchOn){
+                    case 'orientation-requested': case 'orientation-requested-supported':
+                        $this->value = new \obray\ipp\enums\OrientationRequested();
+                        break;
+                    case 'job-state':
+                        $this->value = new \obray\ipp\enums\JobState($value);
+                        break;
+                    default:
+                        $this->value = new \obray\ipp\types\Integer();
+                        break;
+                }
                 break;
             case \obray\ipp\enums\Types::INTEGER:
                 $this->value = new \obray\ipp\types\Integer($value);
@@ -117,14 +130,14 @@ class Attribute
             case \obray\ipp\enums\Types::RANGEOFINTEGER:
                 $value = explode('-',$value);
                 if(count($value)!=2){
-                    throw new \Exception("Invalid range provided: ".$value);
+                    $value = array(0=>0, 1=>0);
                 }
                 $this->value = new \obray\ipp\types\RangeOfInteger($value[0], $value[1]);
                 break;
             case \obray\ipp\enums\Types::RESOLUTION:
                 $value = explode('x',$value);
                 if(count($value)!=3){
-                    throw new \Exception("Invalid resolution provided: ".$value);
+                    $value = array(0=>0, 1=>0, 2=>0);
                 }
                 $this->value = new \obray\ipp\types\Resolution($value[0], $value[1], $value[2]);
                 break;
@@ -141,15 +154,27 @@ class Attribute
                     $this->value = new \obray\ipp\types\TextWithoutLangauge($value);
                 }
                 break;
+            case \obray\ipp\enums\Types::TEXTWITHOUTLANGUAGE:
+                $this->value = new \obray\ipp\types\TextWithoutLanguage($value);
+                break;
+            case \obray\ipp\enums\Types::NAMEWITHOUTLANGUAGE:
+                $this->value = new \obray\ipp\types\NameWithoutLanguage($value);
+                break;
             case \obray\ipp\enums\Types::URI:
                 $this->value = new \obray\ipp\types\URI($value);
                 break;
             case \obray\ipp\enums\Types::URISCHEME:
                 $this->value = new \obray\ipp\types\URIScheme($value);
                 break;
-            case \obray\ipp\enums\Types::VERSIONNUMBER:
-                $this->value = new \obray\ipp\types\VersionNumber($value);
+            //case \obray\ipp\enums\Types::VERSIONNUMBER:
+            //    $this->value = new \obray\ipp\types\VersionNumber($value);
+            //    break;
+            case \obray\ipp\enums\Types::NOVAL:
+                $this->value = new \obray\ipp\types\NoVal($value);
                 break;
+            case \obray\ipp\enums\Types::UNKNOWN:
+                $this->value = new \obray\ipp\types\Unknown($value);
+            break;
             default:
                 throw new \Exception("The type specified does not exists.");
                 break;
@@ -162,9 +187,24 @@ class Attribute
         return $this->name->__toString();
     }
 
+    public function getNameLength()
+    {
+        return $this->nameLength->getValue();
+    }
+
     public function getOffset()
     {
         return $this->offset;
+    }
+
+    public function jsonSerialize()
+    {
+        return $this->value;
+    }
+
+    public function __toString()
+    {
+        return $this->value->__toString();
     }
 
 }

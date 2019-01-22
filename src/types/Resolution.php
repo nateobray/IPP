@@ -1,7 +1,7 @@
 <?php
 namespace obray\ipp\types;
 
-class Resolution implements \obray\ipp\interfaces\TypeInterface
+class Resolution implements \obray\ipp\interfaces\TypeInterface, \JsonSerializable
 {
     protected $valueTag = 0x32;
     private $crossFeedDirectionResolution;
@@ -27,5 +27,27 @@ class Resolution implements \obray\ipp\interfaces\TypeInterface
     public function encode()
     {
         return $this->crossFeedDirectionResolution->encode() . $this->feedDirectionResolution->encode() . $this->units->encode();
+    }
+
+    public function decode($binary, $offset=0, $length=NULL){
+        
+        $this->crossFeedDirectionResolution = (new \obray\ipp\types\basic\SignedInteger())->decode($binary, $offset);
+        $offset += $this->crossFeedDirectionResolution->getLength();
+        $this->feedDirectionResolution = (new \obray\ipp\types\basic\SignedInteger())->decode($binary, $offset);
+        $offset += $this->feedDirectionResolution->getLength();
+        $this->units = (new \obray\ipp\types\basic\SignedByte())->decode($binary, $offset);
+        return $this;
+    }
+
+    public function getValueTag()
+    {
+        return $valueTag;
+    }
+
+    public function jsonSerialize()
+    {
+        $units = '';
+        if( $this->units->getValue() === 3 ){ $units = 'dpi'; }
+        return $this->crossFeedDirectionResolution . 'x' . $this->feedDirectionResolution . ' dpi';
     }
 }

@@ -1,10 +1,11 @@
 <?php
-namespace obray;
+namespace obray\ipp\enums;
 
-class OrientationRequested extends SplEnum
+class OrientationRequested  extends \obray\ipp\types\Enum
 {
-    const portrait = 3;
-    const landscape = 4;
-    const reverse_landscape = 5;
-    const reverse_portrait = 6;
+    const PORTRAIT = 3;
+    const LANDSCAPE = 4;
+    const REVERSE_LANDSCAPE = 5;
+    const REVERSE_PORTRAIT = 6;
+
 }

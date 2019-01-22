@@ -1,7 +1,7 @@
 <?php
 namespace obray\ipp\types\basic;
 
-class USASCIIString implements \obray\ipp\interfaces\TypeInterface
+class USASCIIString implements \obray\ipp\interfaces\TypeInterface, \JsonSerializable
 {
     protected $value;
     protected $valueTag;
@@ -43,5 +43,10 @@ class USASCIIString implements \obray\ipp\interfaces\TypeInterface
     public function __toString()
     {
         return (string)$this->value;
+    }
+
+    public function jsonSerialize()
+    {
+        return $this->value;
     }
 }

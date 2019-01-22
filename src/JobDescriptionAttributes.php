@@ -1,42 +1,11 @@
 <?php
 
-namespace obray;
+namespace obray\ipp;
 
-class JobDescriptionAttributes
+class JobDescriptionAttributes implements \JsonSerializable
 {
     private $attribute_group_tag = 0x02;
     
-    public $jobURI;
-    public $jobId;
-    public $jobPrinterUri;
-    public $jobMoreInfo;
-    public $jobName;
-    public $jobOriginatingUserName;
-    public $jobState;
-    public $jobStateReasons;
-    public $jobStateMessage;
-    public $jobDetailedStatusMessages;
-    public $jobDocumentAccessErrors;
-    public $numberOfDocuments;
-    public $outputDeviceAssigned;
-    public $timeAtCreation;
-    public $timeAtProcessing;
-    public $timeAtCompleted;
-    public $jobPrinterUpTime;
-    public $dateTimeAtCreation;
-    public $dateTimeAtProcessing;
-    public $dateTimeAtCompleted;
-    public $numberOfInterveningJobs;
-    public $jobMessageFromOperator;
-    public $jobKOctets;
-    public $jobImpressions;
-    public $jobMediaSheets;
-    public $jobKOctetsProcessed;
-    public $jobImpressionsCompleted;
-    public $jobMediaSheetsCompleted;
-    public $attributesCharset;
-    public $attributesNaturalLanguage;
-
     public function __set(string $name, $value)
     {
         switch($name) {
@@ -173,5 +142,33 @@ class JobDescriptionAttributes
                 throw new \Exception("Invalide attribute ".$name.".");
                 break;
         }
+    }
+
+    public function decode($binary, &$offset=8)
+    {	
+        $AttributeGroupTag = (unpack("cAttributeGroupTag", $binary, $offset))['AttributeGroupTag'];
+        if( $AttributeGroupTag !== $this->attribute_group_tag ){ return false; }
+        $validAttributeGroupTags = [0x01,0x02,0x03,0x04,0x05];
+        $endOfAttributesTag = 0x03;
+        $offset += 1;
+        while(true){
+            $attribute = (new \obray\ipp\Attribute())->decode($binary, $offset);
+            $this->attributes[$attribute->getName()] = $attribute;
+            $offset = $attribute->getOffset();
+            $newTag = (unpack("cAttributeGroupTag", $binary, $offset))['AttributeGroupTag'];
+            if($newTag===$endOfAttributesTag){
+                //print_r("end of attributes - break\n");
+                return false;
+            }
+            if(in_array($newTag,$validAttributeGroupTags)){
+                //print_r("Found new valid attribute tag.\n");
+                return $newTag;
+            }       
+        }
+    }
+
+    public function jsonSerialize()
+    {
+        return $this->attributes;
     }
 }

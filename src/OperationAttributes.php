@@ -28,7 +28,7 @@ namespace obray\ipp;
  * @property string $jobMediaSheets
 */
 
-class OperationAttributes
+class OperationAttributes implements \JsonSerializable
 {
     private $attribute_group_tag = 0x01;
     private $naturalLanguageOverride;
@@ -36,8 +36,8 @@ class OperationAttributes
     private $attributes = array();
 
     public function __construct(){
-        $this->attributes['charset'] = new \obray\ipp\Attribute('attributes-charset', 'utf-8', \obray\ipp\enums\Types::CHARSET);
-        $this->attributes['naturalLanguage'] = new \obray\ipp\Attribute('attributes-natural-language', 'en', \obray\ipp\enums\Types::NATURALLANGUAGE);
+        $this->attributes['attributes-charset'] = new \obray\ipp\Attribute('attributes-charset', 'utf-8', \obray\ipp\enums\Types::CHARSET);
+        $this->attributes['attributes-natural-language'] = new \obray\ipp\Attribute('attributes-natural-language', 'en', \obray\ipp\enums\Types::NATURALLANGUAGE);
     }
 
     public function setNaturalLanguage($lang=NULL){
@@ -47,67 +47,68 @@ class OperationAttributes
     public function __set(string $name, $value)
     {
         switch($name){
-            case 'charset':
+            case 'attributes-charset':
                 $this->attributes[$name] = new \obray\ipp\Attribute('attributes-charset', $value, \obray\ipp\enums\Types::CHARSET);
                 break;
-            case 'naturalLanguage':
+            case 'attributes-natural-language':
                 $this->attributes[$name] = new \obray\ipp\Attribute('attributes-natural-language', $value, \obray\ipp\enums\Types::NATURALLANGUAGE);
                 break;
-            case 'statusCode':
+            case 'status-code':
                 $this->attributes[$name] = new \obray\ipp\Attribute('status-code', $value, \obray\ipp\enums\Types::STATUSCODE);
                 break;
-            case 'statusMessage':
+            case 'status-message':
                 $this->attributes[$name] = new \obray\ipp\Attribute('status-message', $value, \obray\ipp\enums\Types::TEXT, 255, $this->naturalLanguageOverride);
                 break;
-            case 'detailedStatusMessage':
+            case 'detailed-status-message':
                 $this->attributes[$name] = new \obray\ipp\Attribute('detailed-status-message', $value, \obray\ipp\enums\Types::TEXT, 1024, $this->naturalLanguageOverride);
                 break;
-            case 'documentAccessError':
+            case 'document-access-error':
                 $this->attributes[$name] = new \obray\ipp\Attribute('document-access-error', $value, \obray\ipp\enums\Types::TEXT, $this->naturalLanguageOverride,\obray\ipp\attributes\Text::MaxLength);
                 break;
-            case 'printerURI':
+            case 'printer-uri':
                 $this->attributes[$name] = new \obray\ipp\Attribute('printer-uri', $value, \obray\ipp\enums\Types::URI, 1023);
                 break;
-            case 'jobURI':
+            case 'job-uri':
                 $this->attributes[$name] = new \obray\ipp\Attribute('job-uri', $value, \obray\ipp\enums\Types::URI, 1023);
                 break;
-            case 'jobID':
+            case 'job-id':
                 $this->attributes[$name] = new \obray\ipp\Attribute('job-id', $value, \obray\ipp\enums\Types::INTEGER);
                 break;
-            case 'documentURI':
+            case 'document-uri':
                 $this->attributes[$name] = new \obray\ipp\Attribute('document-uri', $value, \obray\ipp\enums\Types::URI, 1023);
                 break;
-            case 'requestingUserName':
+            case 'requesting-user-name':
                 $this->attributes[$name] = new \obray\ipp\Attribute('requesting-user-name', $value, \obray\ipp\enums\Types::NAME, 255, $this->naturalLanguageOverride);
                 break;
-            case 'jobName':
+            case 'job-name':
                 $this->attributes[$name] = new \obray\ipp\Attribute('job-name', $value, \obray\ipp\enums\Types::NAME, 255, $this->naturalLanguageOverride);
                 break;
-            case 'ippAttributeFidelity':
+            case 'ipp-attribute-fidelity':
                 $this->attributes[$name] = new \obray\ipp\Attribute('ipp-attribute-fidelity', $value, \obray\ipp\enums\Types::BOOLEAN);
                 break;
-            case 'documentName':
+            case 'document-name':
                 $this->attributes[$name] = new \obray\ipp\Attribute('document-name', $value, \obray\ipp\enums\Types::NAME, 255, $this->naturalLanguageOverride);
                 break;
             case 'compression':
                 $this->attributes[$name] = new \obray\ipp\Attribute('compression', $value, \obray\ipp\enums\Types::KEYWORD);
                 break;
-            case 'documentFormat':
+            case 'document-format':
                 $this->attributes[$name] = new \obray\ipp\Attribute('document-format', $value, \obray\ipp\enums\Types::MIMEMEDIATYPE);
                 break;
-            case 'documentNaturalLanguage':
+            case 'document-natural-language':
                 $this->attributes[$name] = new \obray\ipp\Attribute('document-natural-language', $value, \obray\ipp\enums\Types::NATURALLANGUAGE);
                 break;
-            case 'jobKOctets':
+            case 'job-k-octets':
                 $this->attributes[$name] = new \obray\ipp\Attribute('job-k-octets', $value, \obray\ipp\enums\Types::INTEGER);
                 break;
-            case 'jobImpressions':
+            case 'job-impressions':
                 $this->attributes[$name] = new \obray\ipp\Attribute('job-impressions', $value, \obray\ipp\enums\Types::INTEGER);
                 break;
-            case 'jobMediaSheets':
+            case 'job-media-sheets':
                 $this->attributes[$name] = new \obray\ipp\Attribute('job-media-sheets', $value, \obray\ipp\enums\Types::INTEGER);
                 break;
             default:
+                exit();
                 throw new \Exception("Invalid operational parameter.");
         }
     }
@@ -131,39 +132,30 @@ class OperationAttributes
         return $binary;
     }
 
-    public function decode($binary, $offset=8)
-    {
- 		       
+    public function decode($binary, &$offset=8)
+    {	
         $AttributeGroupTag = (unpack("cAttributeGroupTag", $binary, $offset))['AttributeGroupTag'];
-        $validAttributeGroupTags = [0x01,0x02,0x03,0x04,0x05];
+        $validAttributeGroupTags = [0x01,0x02,0x03,0x04,0x05,0x06,0x07];
         $endOfAttributesTag = 0x03;
-        $offset += 1; 
-        $count = 0;
+        $offset += 1;
         while(true){
-            ++$count;
-            
-            print_r($offset."\n");
-            //if($count>1){exit();}
-            $attribute = (new \obray\ipp\Attribute())->decode($binary, $offset, ($count>1)?1:0);
-			
-            print_r($attribute);
-            print_r($attribute->getName()."\n");
+            $attribute = (new \obray\ipp\Attribute())->decode($binary, $offset);
             $this->attributes[$attribute->getName()] = $attribute;
             $offset = $attribute->getOffset();
-            print_r($offset."\n");
             $newTag = (unpack("cAttributeGroupTag", $binary, $offset))['AttributeGroupTag'];
-			print_r($newTag."\n");
             if($newTag===$endOfAttributesTag){
-                print_r("end of attributes - break\n");
-                break;
+                //print_r("end of attributes - break\n");
+                return false;
             }
             if(in_array($newTag,$validAttributeGroupTags)){
-            	print_r("Found new valid value tag.\n");
-            	$offset += 8;
-            }
-            
-            
+                //print_r("Found new valid attribute tag.\n");
+                return $newTag;
+            }       
         }
-        
+    }
+
+    public function jsonSerialize()
+    {
+        return $this->attributes;
     }
 }

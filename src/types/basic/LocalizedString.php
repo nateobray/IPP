@@ -1,7 +1,7 @@
 <?php
 namespace obray\ipp\types\basic;
 
-class LocalizedString implements \obray\ipp\interfaces\TypeInterface
+class LocalizedString implements \obray\ipp\interfaces\TypeInterface, \JsonSerializable
 {
     protected $value;
     protected $valueTag;
@@ -56,4 +56,10 @@ class LocalizedString implements \obray\ipp\interfaces\TypeInterface
     {
         return (string)$this->value;
     }
+
+    public function jsonSerialize()
+    {
+        return $this->value;
+    }
+    
 }

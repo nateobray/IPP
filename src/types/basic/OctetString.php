@@ -1,7 +1,7 @@
 <?php
 namespace obray\ipp\types\basic;
 
-class OctetString implements \obray\ipp\interfaces\TypeInterface
+class OctetString implements \obray\ipp\interfaces\TypeInterface, \JsonSerializable
 {
     protected $value;
     protected $valueTag;
@@ -42,5 +42,10 @@ class OctetString implements \obray\ipp\interfaces\TypeInterface
     public function __toString()
     {
         return (string)$this->value;
+    }
+
+    public function jsonSerialize()
+    {
+        return $this->value;
     }
 }

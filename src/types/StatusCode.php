@@ -57,4 +57,5 @@ class StatusCode extends \obray\ipp\types\Enum {
             $this->class = 'server-error';
         }
     }
+    
 }

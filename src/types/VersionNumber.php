@@ -1,7 +1,7 @@
 <?php
 namespace obray\ipp\types;
 
-class VersionNumber implements \obray\ipp\interfaces\TypeInterface
+class VersionNumber implements \obray\ipp\interfaces\TypeInterface, \JsonSerializable
 {
     private $valueTag = 0x12;
     private $majorVersionNumber;
@@ -34,5 +34,10 @@ class VersionNumber implements \obray\ipp\interfaces\TypeInterface
     public function decode($binary, $offset=0, $length=NULL)
     {
 
+    }
+
+    public function jsonSerialize()
+    {
+        return $this->majorVersionNumber . '.' . $this->minorVersionNumber;
     }
 }

@@ -1,7 +1,7 @@
 <?php
 namespace obray\ipp\types\basic;
 
-class SignedByte implements \obray\ipp\interfaces\TypeInterface
+class SignedByte implements \obray\ipp\interfaces\TypeInterface, \JsonSerializable
 {
     protected $value;
     protected $valueTag;
@@ -18,12 +18,13 @@ class SignedByte implements \obray\ipp\interfaces\TypeInterface
 
     public function encode()
     {
-        return pack('c',$this->value);
+        return pack('c', $this->value);
     }
 
     public function decode($binary, $offset=0, $length=NULL)
     {
-        
+        $this->value = unpack('c', $binary, $offset)[1];
+        return $this;
     }
 
     public function getValueTag()
@@ -44,5 +45,10 @@ class SignedByte implements \obray\ipp\interfaces\TypeInterface
     public function __toString()
     {
         return (string)$this->value;
+    }
+
+    public function jsonSerialize()
+    {
+        return $this->value;
     }
 }
