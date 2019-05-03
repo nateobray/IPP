@@ -72,6 +72,8 @@ $printer = new /obray/IPP/Printer(
 | password | no | If your printer or print server needs to authenticate supply the password here |
 
 
+
+
 ### Method `printJob`
 [RFC 2911 3.2.1](https://tools.ietf.org/html/rfc2911#section-3.2.1): This _REQUIRED_ operation allows a client to submit a print job with only one document and supply the document data (rather than just a reference to the data).  See Section 15 for the suggested steps for processing create operations and their Operation and Job Template attributes.
 ###### Usage:
