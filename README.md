@@ -71,6 +71,7 @@ $printer = new /obray/IPP/Printer(
 | username | no | If your printer or print server needs to authenticate supply the username here |
 | password | no | If your printer or print server needs to authenticate supply the password here |
 
+
 ### Method `printJob`
 [RFC 2911 3.2.1](https://tools.ietf.org/html/rfc2911#section-3.2.1): This _REQUIRED_ operation allows a client to submit a print job with only one document and supply the document data (rather than just a reference to the data).  See Section 15 for the suggested steps for processing create operations and their Operation and Job Template attributes.
 ###### Usage:
@@ -87,6 +88,7 @@ $response = $printer->printJob(
 | attributes | no | An array of print job attributes.  For more information see [Print Job Attributes](#print-job-attributes) |
 | request-id | no | A unique identifier for the print request, if not specified it will pass 0 |
 
+
 ### Method `PrintURI`
 OPTIONAL: NOT IMPLEMENTED YET
 
@@ -101,6 +103,7 @@ $response = $printer->validateJob({request-id}, {[attributes]});
 | --------- | -------- | ----------- |
 | request-id | no | A unique identifier for the print request, if not specified it will pass 0 |
 | attributes | no | An array of print job attributes.  For more information see [Print Job Attributes](#print-job-attributes) |
+
 
 ### Method `createJob`
 **NOT IMPELMENTED YET***
@@ -117,6 +120,7 @@ $response = $printer->getPrinterAttributes({request-id});
 | --------- | -------- | ----------- |
 | request-id | no | A unique identifier for the print request, if not specified it will pass 0 |
 
+
 ### Method `getJobs`
 [RFC 2911 3.2.6](https://tools.ietf.org/html/rfc2911#section-3.2.6): This _REQUIRED_ operation allows a client to retrieve the list of Job objects belonging to the target Printer object.  The client may also supply a list of Job attribute names and/or attribute group names.  A group of Job object attributes will be returned for each Job object that is returned.
 
@@ -128,6 +132,7 @@ $response = $printer->getJobs({request-id});
 | --------- | -------- | ----------- |
 | request-id | no | A unique identifier for the print request, if not specified it will pass 0 |
 
+
 ### Method `pausePrinter`
 [RFC 2911 3.2.7](https://tools.ietf.org/html/rfc2911#section-3.2.7): This _OPTIONAL_ operation allows a client to stop the Printer object from scheduling jobs on all its devices.  Depending on implementation, the Pause-Printer operation MAY also stop the Printer from processing the current job or jobs.  Any job that is currently being printed is either stopped as soon as the implementation permits
 
@@ -138,6 +143,7 @@ $response = $printer->pausePrinter({request-id});
 | Parameter | Required | Description |
 | --------- | -------- | ----------- |
 | request-id | no | A unique identifier for the print request, if not specified it will pass 0 |
+
 
 ### Method `resumePrinter`
 [RFC 2911 3.2.8](https://tools.ietf.org/html/rfc2911#section-3.2.8): This operation allows a client to resume the Printer object scheduling jobs on all its devices.  The Printer object MUST remove the ’paused’ and ’moving-to-paused’ values from the Printer object’s "printer-state-reasons" attribute, if present.  If there are no other reasons to keep a device paused (such as media-jam), the IPP Printer is free to transition itself to the ’processing’ or ’idle’ states, depending on whether there are jobs to be processed or not, respectively, and the device(s) resume processing jobs.
@@ -151,6 +157,7 @@ $response = $printer->resumePrinter({request-id});
 | Parameter | Required | Description |
 | --------- | -------- | ----------- |
 | request-id | no | A unique identifier for the print request, if not specified it will pass 0 |
+
 
 ### Method `purgeJobs`
 [RFC 2911 3.2.9](https://tools.ietf.org/html/rfc2911#section-3.2.9): This _OPTIONAL_ operation allows a client to remove all jobs from an IPP Printer object, regardless of their job states, including jobs in the Printer object’s Job History (see Section 4.3.7.2).  After a Purge-Jobs operation has been performed, a Printer object MUST return no jobs in subsequent Get-Job-Attributes and Get-Jobs responses (until new jobs are submitted).
