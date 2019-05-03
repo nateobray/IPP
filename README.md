@@ -42,7 +42,7 @@ Then just run `composer install` or `composer update`. Alternatively you can clo
 code and use it the way that best suites you use case. 
 
 ## Usage
-
+The most basic way of using this implementation is to create a `Printer` object and call `printJob` method like this:
 ```PHP
 $printer = new /obray/IPP/Printer(
   {printer-uri},
@@ -51,6 +51,7 @@ $printer = new /obray/IPP/Printer(
 );
 $response = $printer->printJob({raw document}, {attributes});
 ```
+To see what other methods are available see the below documentation on [Printer Object and Methods](#printer-object-and-methods) and [Job Object and Methods](#job-object-and-methods)
 
 ## Printer Object and Methods
 The printer object defines a printer based on a specified URI.  When a method is called on a printer it will attempt to connect and send the request and interpret the response.
