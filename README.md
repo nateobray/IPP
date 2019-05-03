@@ -184,8 +184,82 @@ $response = $printer->purgeJobs({request-id});
 
 ## Job Object and Methods
 
-coming soon (not implemented)
+#  
+### Method `sendDocument`
+**NOT IMPLEMENTED YET**
 
+[RFC 2911 3.3.1](https://tools.ietf.org/html/rfc2911#section-3.3.1): This _OPTIONAL_ operation allows a client to create a multi-document Job object that is initially "empty" (contains no documents).  In the Create-Job response, the Printer object returns the Job object's URI (the "job-uri" attribute) and the Job object's 32-bit identifier (the "job-id" attribute).  For each new document that the client desires to add, the client uses a Send-Document operation.  Each Send-Document Request contains the entire stream of document data for one document.
+
+### Method `sendURI`
+**NOT IMPLEMENTED YET**
+
+[RFC 2911 3.3.2](https://tools.ietf.org/html/rfc2911#section-3.3.2): This _OPTIONAL_ operation is identical to the Send-Document operation (see section 3.3.1) except that a client MUST supply a URI reference ("document-uri" operation attribute) rather than the document data itself.  If a Printer object supports this operation, clients can use both Send-URI or Send-Document operations to add new documents to an existing multi-document Job object.  However, if a client needs to indicate that the previous Send-URI or Send-Document was the last document,  the client MUST use the Send-Document operation with no document data and the "last-document" flag set to 'true' (rather than using a Send-URI operation with no "document-uri" operation attribute).
+
+The Printer object MUST validate the syntax and URI scheme of the supplied URI before returning a response, just as in the Print-URI operation.  The IPP Printer MAY validate the accessibility of the document as part of the operation or subsequently (see section 3.2.2).
+
+#  
+### Method `cancelJob`
+[RFC 2911 3.3.3](https://tools.ietf.org/html/rfc2911#section-3.3.3): This _REQUIRED_ operation allows a client to cancel a Print Job from the time the job is created up to the time it is completed, canceled, or aborted.  Since a Job might already be printing by the time a Cancel-Job is received, some media sheet pages might be printed before the job is actually terminated.
+
+###### Usage:
+```PHP
+$response = $job->cancelJob({request-id});
+```
+| Parameter | Required | Description |
+| --------- | -------- | ----------- |
+| request-id | no | Client request id, will be passed back in the response _(default 0)_ |
+
+#  
+### Method `getJobAttributes`
+[RFC 2911 3.3.4](https://tools.ietf.org/html/rfc2911#section-3.3.4): This _REQUIRED_ operation allows a client to request the values of attributes of a Job object and it is almost identical to the Get-Printer-Attributes operation (see section 3.2.5).  The only differences are that the operation is directed at a Job object rather than a Printer object, there is no "document-format" operation attribute used when querying a Job object, and the returned attribute group is a set of Job object attributes rather than a set of Printer object attributes.
+
+###### Usage:
+```PHP
+$response = $job->getJobAttributes({request-id});
+```
+| Parameter | Required | Description |
+| --------- | -------- | ----------- |
+| request-id | no | Client request id, will be passed back in the response _(default 0)_ |
+
+#  
+### Method `holdJob`
+[RFC 2911 3.3.5](https://tools.ietf.org/html/rfc2911#section-3.3.5): This _OPTIONAL_ operation allows a client to hold a pending job in the queue so that it is not eligible for scheduling.  If the Hold-Job operation is supported, then the Release-Job operation MUST be supported, and vice-versa.  The OPTIONAL "job-hold-until" operation attribute allows a client to specify whether to hold the job indefinitely or until a specified time period, if supported.
+
+###### Usage:
+```PHP
+$response = $job->holdJob({request-id});
+```
+| Parameter | Required | Description |
+| --------- | -------- | ----------- |
+| request-id | no | Client request id, will be passed back in the response _(default 0)_ |
+
+#  
+### Method `releaseJob`
+[RFC 2911 3.3.6](https://tools.ietf.org/html/rfc2911#section-3.3.6): This OPTIONAL operation allows a client to release a previously held job so that it is again eligible for scheduling.  If the Hold-Job operation is supported, then the Release-Job operation MUST be supported, and vice-versa.
+ 
+This operation removes the "job-hold-until" job attribute, if present, from the job object that had been supplied in the create or most recent Hold-Job or Restart-Job operation and removes its effect on the job.  The IPP object MUST remove the 'job-hold-until-specified' value from the job's "job-state-reasons" attribute, if present.
+
+###### Usage:
+```PHP
+$response = $job->releaseJob({request-id});
+```
+| Parameter | Required | Description |
+| --------- | -------- | ----------- |
+| request-id | no | Client request id, will be passed back in the response _(default 0)_ |
+
+#  
+### Method `restartJob`
+[RFC 2911 3.3.7](https://tools.ietf.org/html/rfc2911#section-3.3.7): This OPTIONAL operation allows a client to restart a job that is retained in the queue after processing has completed
+
+###### Usage:
+```PHP
+$response = $job->restartJob({request-id});
+```
+| Parameter | Required | Description |
+| --------- | -------- | ----------- |
+| request-id | no | Client request id, will be passed back in the response _(default 0)_ |
+
+#   
 ## Printer URIs
 Each printer object is identified by a unique URI that must be supplied to the Printer constructor.  Here are a few examples of 
 possible printer URIs:
