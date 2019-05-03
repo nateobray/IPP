@@ -3,7 +3,7 @@
 # IPP
 An Internet Printing Protocol (IPP) PHP Client Implementation.  This implements the raw IPP protocol defined in [RFC2911](https://tools.ietf.org/html/rfc2911) & [RFC2910](https://tools.ietf.org/html/rfc2910) and will work with any IPP printer or IPP print server such as CUPS.
 
-The goals of this implementation is to follow the IPP specification as closely as possible and offer a raw interface to that protocol in a form that is as simple as possible.
+The goals of this implementation is to follow the IPP specification as closely as possible and offer a raw interface to that protocol in a form that is as simple as possible to use.
 
 **Please note the current version is in development and does not have a stable release.  A stable release is planned soon.**
 
@@ -38,8 +38,8 @@ The easiest way is to use composer and add obray/IPP to the require section:
 }
 ```
 
-Then just run `composer install` or `composer update`. Alternatively you can clone the repo or down the source 
-code and use it the way that best suites you use case. 
+Then just run `composer install` or `composer update`. Alternatively you can clone the repo or download the source 
+code and use it however you see fit. 
 
 ## Usage
 The most basic way of using this implementation is to create a `Printer` object and call `printJob` method like this:
