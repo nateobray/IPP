@@ -72,7 +72,7 @@ $printer = new /obray/IPP/Printer(
 | password | no | If your printer or print server needs to authenticate supply the password here |
 
 
-
+#  
 
 ### Method `printJob`
 [RFC 2911 3.2.1](https://tools.ietf.org/html/rfc2911#section-3.2.1): This _REQUIRED_ operation allows a client to submit a print job with only one document and supply the document data (rather than just a reference to the data).  See Section 15 for the suggested steps for processing create operations and their Operation and Job Template attributes.
@@ -111,7 +111,7 @@ $response = $printer->validateJob({request-id}, {[attributes]});
 **NOT IMPELMENTED YET***
 [RFC 2911 3.2.4](https://tools.ietf.org/html/rfc2911#section-3.2.4): This _OPTIONAL_ operation is similar to the Print-Job operation (section 3.2.1) except that in the Create-Job request, a client does not supply document data or any reference to document data.  Also, the client does not supply any of the "document-name", "document-format", "compression", or "document-natural-language" operation attributes.  This operation is followed by one or more Send-Document or Send-URI operations.  In each of those operation requests, the client OPTIONALLY supplies the "document-name", "document-format", and "document-natural-language" attributes for each document in the multi-document Job object.
 
-#### Method `getPrinterAttributes`
+### Method `getPrinterAttributes`
 [RFC 2911 3.2.5](https://tools.ietf.org/html/rfc2911#section-3.2.5): This _REQUIRED_ operation allows a client to request the values of the attributes of a Printer object. In the request, the client supplies the set of Printer attribute names and/or attribute group names in which the requester is interested.  In the response, the Printer object returns a corresponding attribute set with the appropriate attribute values filled in.
 
 ###### Usage:
