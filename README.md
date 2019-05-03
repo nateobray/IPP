@@ -4,6 +4,8 @@
 An Internet Printing Protocol PHP Implementation.  This implements the raw IPP protocol and will work with any IPP printer
 or IPP print server.
 
+Please note the current version is in development and does not have a stable release.  A stable release is planned soon.
+
 ## Installation
 The easiest way is to use composer and add obray/IPP to the require section:
 ```JSON
