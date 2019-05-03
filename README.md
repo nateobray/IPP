@@ -18,6 +18,12 @@ The goals of this implementation is to follow the IPP specification as closely a
    - [Method `printJob`](#method-printjob)
    - [Method `printURI`](#method-printuri)
    - [Method `validateJob`](#method-validateJob)
+   - [Method `createJob`](#method-createjob)
+   - [Method `getPrinterAttributes`](#method-getprinterattributes)
+   - [Method `getJobs`](#method-getjobs)
+   - [Method `pausePrinter`](#method-pauseprinter)
+   - [Method `resumePrinter`](#method-resumeprinter)
+   - [Method `purgeJobs`](#method-purgejobs)
  - [Job Object & Methods](#job-object-and-methods)
  - [Printer URIs](#printer-uris)
  - [Print Job Attributes](#print-job-attributes)
@@ -66,7 +72,7 @@ $printer = new /obray/IPP/Printer(
 | password | no | If your printer or print server needs to authenticate supply the password here |
 
 #### Method `printJob`
-[RFC 2911 3.2.1](https://tools.ietf.org/html/rfc2911#section-3.2.1): This REQUIRED operation allows a client to submit a print job with only one document and supply the document data (rather than just a reference to the data).  See Section 15 for the suggested steps for processing create operations and their Operation and Job Template attributes.
+[RFC 2911 3.2.1](https://tools.ietf.org/html/rfc2911#section-3.2.1): This _REQUIRED_ operation allows a client to submit a print job with only one document and supply the document data (rather than just a reference to the data).  See Section 15 for the suggested steps for processing create operations and their Operation and Job Template attributes.
 ###### Usage:
 ```PHP
 $response = $printer->printJob(
@@ -85,7 +91,7 @@ $response = $printer->printJob(
 OPTIONAL: NOT IMPLEMENTED YET
 
 #### Method `validateJob`
-[RFC 2911 3.2.3](https://tools.ietf.org/html/rfc2911#section-3.2.3): This REQUIRED operation is similar to the Print-Job operation (section 3.2.1) except that a client supplies no document data and the Printer allocates no resources (i.e., it does not create a new Job object).  This operation is used only to verify capabilities of a printer object against whatever attributes are supplied by the client in the Validate-Job request.  By using the Validate-Job operation a client can validate that an identical Print-Job operation (with the document data) would be accepted. The Validate-Job operation also performs the same security negotiation as the Print-Job operation (see section 8), so that a client can check that the client and Printer object security requirements can be met before performing a Print-Job operation.
+[RFC 2911 3.2.3](https://tools.ietf.org/html/rfc2911#section-3.2.3): This _REQUIRED_ operation is similar to the Print-Job operation (section 3.2.1) except that a client supplies no document data and the Printer allocates no resources (i.e., it does not create a new Job object).  This operation is used only to verify capabilities of a printer object against whatever attributes are supplied by the client in the Validate-Job request.  By using the Validate-Job operation a client can validate that an identical Print-Job operation (with the document data) would be accepted. The Validate-Job operation also performs the same security negotiation as the Print-Job operation (see section 8), so that a client can check that the client and Printer object security requirements can be met before performing a Print-Job operation.
 
 ###### Usage:
 ```PHP
@@ -95,6 +101,70 @@ $response = $printer->validateJob({request-id}, {[attributes]});
 | --------- | -------- | ----------- |
 | request-id | no | A unique identifier for the print request, if not specified it will pass 0 |
 | attributes | no | An array of print job attributes.  For more information see [Print Job Attributes](#print-job-attributes) |
+
+#### Method `createJob`
+**NOT IMPELMENTED YET***
+[RFC 2911 3.2.4](https://tools.ietf.org/html/rfc2911#section-3.2.4): This _OPTIONAL_ operation is similar to the Print-Job operation (section 3.2.1) except that in the Create-Job request, a client does not supply document data or any reference to document data.  Also, the client does not supply any of the "document-name", "document-format", "compression", or "document-natural-language" operation attributes.  This operation is followed by one or more Send-Document or Send-URI operations.  In each of those operation requests, the client OPTIONALLY supplies the "document-name", "document-format", and "document-natural-language" attributes for each document in the multi-document Job object.
+
+#### Method `getPrinterAttributes`
+[RFC 2911 3.2.5](https://tools.ietf.org/html/rfc2911#section-3.2.5): This _REQUIRED_ operation allows a client to request the values of the attributes of a Printer object. In the request, the client supplies the set of Printer attribute names and/or attribute group names in which the requester is interested.  In the response, the Printer object returns a corresponding attribute set with the appropriate attribute values filled in.
+
+###### Usage:
+```PHP
+$response = $printer->getPrinterAttributes({request-id});
+```
+| Parameter | Required | Description |
+| --------- | -------- | ----------- |
+| request-id | no | A unique identifier for the print request, if not specified it will pass 0 |
+
+#### Method `getJobs`
+[RFC 2911 3.2.6](https://tools.ietf.org/html/rfc2911#section-3.2.6): This _REQUIRED_ operation allows a client to retrieve the list of Job objects belonging to the target Printer object.  The client may also supply a list of Job attribute names and/or attribute group names.  A group of Job object attributes will be returned for each Job object that is returned.
+
+###### Usage:
+```PHP
+$response = $printer->getJobs({request-id});
+```
+| Parameter | Required | Description |
+| --------- | -------- | ----------- |
+| request-id | no | A unique identifier for the print request, if not specified it will pass 0 |
+
+#### Method `pausePrinter`
+[RFC 2911 3.2.7](https://tools.ietf.org/html/rfc2911#section-3.2.7): This _OPTIONAL_ operation allows a client to stop the Printer object from scheduling jobs on all its devices.  Depending on implementation, the Pause-Printer operation MAY also stop the Printer from processing the current job or jobs.  Any job that is currently being printed is either stopped as soon as the implementation permits
+
+###### Usage:
+```PHP
+$response = $printer->pausePrinter({request-id});
+```
+| Parameter | Required | Description |
+| --------- | -------- | ----------- |
+| request-id | no | A unique identifier for the print request, if not specified it will pass 0 |
+
+#### Method `resumePrinter`
+[RFC 2911 3.2.8](https://tools.ietf.org/html/rfc2911#section-3.2.8): This operation allows a client to resume the Printer object scheduling jobs on all its devices.  The Printer object MUST remove the ’paused’ and ’moving-to-paused’ values from the Printer object’s "printer-state-reasons" attribute, if present.  If there are no other reasons to keep a device paused (such as media-jam), the IPP Printer is free to transition itself to the ’processing’ or ’idle’ states, depending on whether there are jobs to be processed or not, respectively, and the device(s) resume processing jobs.
+
+_If the Pause-Printer operation is supported, then the Resume-Printer operation MUST be supported, and vice-versa._
+
+###### Usage:
+```PHP
+$response = $printer->resumePrinter({request-id});
+```
+| Parameter | Required | Description |
+| --------- | -------- | ----------- |
+| request-id | no | A unique identifier for the print request, if not specified it will pass 0 |
+
+#### Method `purgeJobs`
+[RFC 2911 3.2.9](https://tools.ietf.org/html/rfc2911#section-3.2.9): This _OPTIONAL_ operation allows a client to remove all jobs from an IPP Printer object, regardless of their job states, including jobs in the Printer object’s Job History (see Section 4.3.7.2).  After a Purge-Jobs operation has been performed, a Printer object MUST return no jobs in subsequent Get-Job-Attributes and Get-Jobs responses (until new jobs are submitted).
+     
+Whether the Purge-Jobs (and Get-Jobs) operation affects jobs that were submitted to the device from other sources than the IPP Printer object in the same way that the Purge-Jobs operation affects jobs that were submitted to the IPP Printer object using IPP, depends on implementation, i.e., on whether the IPP protocol is being used as a universal management protocol or just to manage IPP jobs, respectively.
+
+###### Usage:
+```PHP
+$response = $printer->purgeJobs({request-id});
+```
+| Parameter | Required | Description |
+| --------- | -------- | ----------- |
+| request-id | no | A unique identifier for the print request, if not specified it will pass 0 |
+
 
 ## Job Object and Methods
 
