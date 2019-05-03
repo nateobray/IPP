@@ -12,7 +12,7 @@ class Printer
     private $lastRequest;
     private $lastResponse;
 
-    public function __construct($uri, $user, $password=NULL)
+    public function __construct(string $uri, string $user, string $password=NULL)
     {
         $this->printerURI = $uri;
         $this->user = $user;
@@ -35,7 +35,7 @@ class Printer
      * @return \obray\ipp\transport\IPPPayload
      */
 
-    public function printJob(string $document, array $attributes=NULL)
+    public function printJob(string $document, int $requestId=0, array $attributes=NULL)
     {
         $operationAttributes = new \obray\ipp\OperationAttributes();
         $operationAttributes->{'printer-uri'} = $this->printerURI;
@@ -47,7 +47,7 @@ class Printer
         $payload = new \obray\ipp\transport\IPPPayload(
             new \obray\ipp\types\VersionNumber('1.1'),
             new \obray\ipp\types\Operation(\obray\ipp\types\Operation::printJob),
-            new \obray\ipp\types\Integer(123456),
+            new \obray\ipp\types\Integer($requestId),
             new \obray\ipp\types\OctetString($document),
             $operationAttributes
         );
@@ -74,7 +74,7 @@ class Printer
 
     public function printURI(string $documentURI, array $attributes)
     {
-
+        throw new \Exception("Print URI is not implemented.");
     }
 
     /**
@@ -94,12 +94,13 @@ class Printer
      * Printer object security requirements can be met before performing a
      * Print-Job operation.
      *
+     * @param int $requestId    Client request id
      * @param array $attributes An array of parameters to pass to the method
      * 
      * @return \obray\ipp\transport\IPPPayload
      */
 
-    public function validateJob(array $attributes=NULL)
+    public function validateJob(int $requestId=0, array $attributes=NULL)
     {
         $operationAttributes = new \obray\ipp\OperationAttributes();
         $operationAttributes->{'printer-uri'} = $this->printerURI;
@@ -111,7 +112,7 @@ class Printer
         $payload = new \obray\ipp\transport\IPPPayload(
             new \obray\ipp\types\VersionNumber('1.1'),
             new \obray\ipp\types\Operation(\obray\ipp\types\Operation::validateJob),
-            new \obray\ipp\types\Integer(123456),
+            new \obray\ipp\types\Integer($requestId),
             NULL,
             $operationAttributes
         );
@@ -137,7 +138,7 @@ class Printer
 
     public function createJob()
     {
-        
+        throw new \Exception("Create Job is not implemented.")
     }
 
     /**
@@ -150,9 +151,13 @@ class Printer
      * which the requester is interested.  In the response, the Printer
      * object returns a corresponding attribute set with the appropriate
      * attribute values filled in.
+     * 
+     * @param int $requestId    Client request id
+     * 
+     * @return \obray\ipp\transport\IPPPayload
      */
 
-    public function getPrinterAttributes()
+    public function getPrinterAttributes(int $requestId=0)
     {
         $operationAttributes = new \obray\ipp\OperationAttributes();
         $operationAttributes->{'printer-uri'} = $this->printerURI;
@@ -178,9 +183,13 @@ class Printer
      * supply a list of Job attribute names and/or attribute group names.  A
      * group of Job object attributes will be returned for each Job object
      * that is returned.
+     * 
+     * @param int $requestId    Client request id
+     * 
+     * @return \obray\ipp\transport\IPPPayload
      */
 
-    public function getJobs()
+    public function getJobs(int $requestId=0)
     {
         $operationAttributes = new \obray\ipp\OperationAttributes();
         $operationAttributes->{'printer-uri'} = $this->printerURI;
@@ -189,7 +198,7 @@ class Printer
         $payload = new \obray\ipp\transport\IPPPayload(
             new \obray\ipp\types\VersionNumber('1.1'),
             new \obray\ipp\types\Operation(\obray\ipp\types\Operation::getJobs),
-            new \obray\ipp\types\Integer(123456),
+            new \obray\ipp\types\Integer($requestId),
             NULL,
             $operationAttributes
         );
@@ -206,9 +215,13 @@ class Printer
      * implementation, the Pause-Printer operation MAY also stop the Printer
      * from processing the current job or jobs.  Any job that is currently
      * being printed is either stopped as soon as the implementation permits
+     * 
+     * @param int $requestId    Client request id
+     * 
+     * @return \obray\ipp\transport\IPPPayload
      */
 
-    public function pausePrinter()
+    public function pausePrinter(int $requestId=0)
     {
         $operationAttributes = new \obray\ipp\OperationAttributes();
         $operationAttributes->{'printer-uri'} = $this->printerURI;
@@ -217,7 +230,7 @@ class Printer
         $payload = new \obray\ipp\transport\IPPPayload(
             new \obray\ipp\types\VersionNumber('1.1'),
             new \obray\ipp\types\Operation(\obray\ipp\types\Operation::pausePrinter),
-            new \obray\ipp\types\Integer(123456),
+            new \obray\ipp\types\Integer($requestId),
             NULL,
             $operationAttributes
         );
@@ -240,9 +253,13 @@ class Printer
      * 
      * If the Pause-Printer operation is supported, then the Resume-Printer
      * operation MUST be supported, and vice-versa.
+     * 
+     * @param int $requestId    Client request id
+     * 
+     * @return \obray\ipp\transport\IPPPayload
      */
 
-    public function resumePrinter()
+    public function resumePrinter(int $requestId=0)
     {
         $operationAttributes = new \obray\ipp\OperationAttributes();
         $operationAttributes->{'printer-uri'} = $this->printerURI;
@@ -251,7 +268,7 @@ class Printer
         $payload = new \obray\ipp\transport\IPPPayload(
             new \obray\ipp\types\VersionNumber('1.1'),
             new \obray\ipp\types\Operation(\obray\ipp\types\Operation::resumePrinter),
-            new \obray\ipp\types\Integer(123456),
+            new \obray\ipp\types\Integer($requestId),
             NULL,
             $operationAttributes
         );
@@ -262,7 +279,7 @@ class Printer
     /**
      * Purge Printer
      * 
-     * RFC 2911 3.2.8:
+     * RFC 2911 3.2.9:
      * This OPTIONAL operation allows a client to remove all jobs from an
      * IPP Printer object, regardless of their job states, including jobs in
      * the Printer object’s Job History (see Section 4.3.7.2).  After a
@@ -277,9 +294,13 @@ class Printer
      * implementation, i.e., on whether the IPP protocol is being used as a
      * universal management protocol or just to manage IPP jobs,
      * respectively.
+     * 
+     * @param int $requestId    Client request id
+     * 
+     * @return \obray\ipp\transport\IPPPayload
      */
 
-    public function purgeJobs(\obray\OperationAttributes $operationAttributes)
+    public function purgeJobs(int $requestId=0)
     {
         $operationAttributes = new \obray\ipp\OperationAttributes();
         $operationAttributes->{'printer-uri'} = $this->printerURI;
@@ -288,7 +309,7 @@ class Printer
         $payload = new \obray\ipp\transport\IPPPayload(
             new \obray\ipp\types\VersionNumber('1.1'),
             new \obray\ipp\types\Operation(\obray\ipp\types\Operation::purgeJobs),
-            new \obray\ipp\types\Integer(123456),
+            new \obray\ipp\types\Integer($requestId),
             NULL,
             $operationAttributes
         );
@@ -302,7 +323,7 @@ class Printer
      * This method applies request headers, formulates the request and then
      * parses the response into a response payload.
      * 
-     * @params string $encodedPayload This is the actual payload of the request
+     * @param string $encodedPayload This is the actual payload of the request
      * 
      * @return \obray\ipp\transport\IPPPayload
      */
