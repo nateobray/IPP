@@ -15,6 +15,9 @@ The goals of this implementation is to follow the IPP specification as closely a
  - [Installation](#installation)
  - [Usage](#usage)
  - [Printer Object & Methods](#printer-object-and-methods)
+   - [Method `printJob`](#method-printjob)
+   - [Method `printURI`](#method-printuri)
+   - [Method `validateJob`](#method-validateJob)
  - [Job Object & Methods](#job-object-and-methods)
  - [Printer URIs](#printer-uris)
  - [Print Job Attributes](#print-job-attributes)
@@ -47,12 +50,13 @@ $response = $printer->printJob({raw document}, {attributes});
 The printer object defines a printer based on a specified URI.  When a method is called on a printer it will attempt to connect and send the request and interpret the response.
 
 #### Printer Constructor
+Create a printer object by specifing the URI for the printer the credentials if needed.  Once you have a printer you can call it's methods.
 ###### Usage:
 ```PHP
 $printer = new /obray/IPP/Printer(
   {printer-uri},
-  {username}, // optional
-  {password}  // optional
+  {username},   // optional
+  {password}    // optional
 );
 ```
 | Parameter | Required | Description |
@@ -61,15 +65,35 @@ $printer = new /obray/IPP/Printer(
 | username | no | If your printer or print server needs to authenticate supply the username here |
 | password | no | If your printer or print server needs to authenticate supply the password here |
 
-#### Print Job
-Takes a document and prints it to the printer return the response with the print job description.
+#### Method `printJob`
+[RFC 2911 3.2.1](https://tools.ietf.org/html/rfc2911#section-3.2.1): This REQUIRED operation allows a client to submit a print job with only one document and supply the document data (rather than just a reference to the data).  See Section 15 for the suggested steps for processing create operations and their Operation and Job Template attributes.
 ###### Usage:
 ```PHP
-$response = $printer->printJob({raw document}, {[attributes]});
+$response = $printer->printJob(
+  {raw document},
+  {request-id},  // optional
+  {[attributes]} // optional
+);
 ```
 | Parameter | Required | Description |
 | --------- | -------- | ----------- |
 | document | yes | Document to be sent to the printer. |
+| attributes | no | An array of print job attributes.  For more information see [Print Job Attributes](#print-job-attributes) |
+| request-id | no | A unique identifier for the print request, if not specified it will pass 0 |
+
+#### Method `PrintURI`
+OPTIONAL: NOT IMPLEMENTED YET
+
+#### Method `validateJob`
+[RFC 2911 3.2.3](https://tools.ietf.org/html/rfc2911#section-3.2.3): This REQUIRED operation is similar to the Print-Job operation (section 3.2.1) except that a client supplies no document data and the Printer allocates no resources (i.e., it does not create a new Job object).  This operation is used only to verify capabilities of a printer object against whatever attributes are supplied by the client in the Validate-Job request.  By using the Validate-Job operation a client can validate that an identical Print-Job operation (with the document data) would be accepted. The Validate-Job operation also performs the same security negotiation as the Print-Job operation (see section 8), so that a client can check that the client and Printer object security requirements can be met before performing a Print-Job operation.
+
+###### Usage:
+```PHP
+$response = $printer->validateJob({request-id}, {[attributes]});
+```
+| Parameter | Required | Description |
+| --------- | -------- | ----------- |
+| request-id | no | A unique identifier for the print request, if not specified it will pass 0 |
 | attributes | no | An array of print job attributes.  For more information see [Print Job Attributes](#print-job-attributes) |
 
 ## Job Object and Methods
