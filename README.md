@@ -25,6 +25,13 @@ The goals of this implementation is to follow the IPP specification as closely a
    - [Method `resumePrinter`](#method-resumeprinter)
    - [Method `purgeJobs`](#method-purgejobs)
  - [Job Object & Methods](#job-object-and-methods)
+   - [Method `sendDocument`](#method-senddocument)
+   - [Method `sendURI`](#method-senduri)
+   - [Method `cancelJob`](#method-canceljob)
+   - [Method `getJobAttributes`](#method-getjobattributes)
+   - [Method `holdJob`](#method-holdjob)
+   - [Method `releaseJob`](#method-releasejob)
+   - [Method `restartJob`](#method-restartjob)
  - [Printer URIs](#printer-uris)
  - [Print Job Attributes](#print-job-attributes)
 
