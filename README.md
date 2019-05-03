@@ -1,10 +1,25 @@
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 
 # IPP
-An Internet Printing Protocol PHP Implementation.  This implements the raw IPP protocol and will work with any IPP printer
-or IPP print server.
+An Internet Printing Protocol (IPP) PHP Client Implementation.  This implements the raw IPP protocol defined in [RFC2911](https://tools.ietf.org/html/rfc2911) & [RFC2910](https://tools.ietf.org/html/rfc2910) and will work with any IPP printer or IPP print server such as CUPS.
+
+The goals of this implementation is to follow the IPP specification as closely as possible and offer a raw interface to that protocol in a form that is as simple as possible.
 
 **Please note the current version is in development and does not have a stable release.  A stable release is planned soon.**
+
+**Current Limitations**
+ - Does not support ipps:// (encryption not supported, will be added soon)
+ - Need to implement better testing with PHPUnit
+
+### Table of Contents
+ - [Installation](#installation)
+ - [Usage](#usage)
+ - [Printer Object & Methods](#printer-object-and-methods)
+ - [Job Object & Methods](#job-object-and-methods)
+ - [Printer URIs](#printer-uris)
+ - [Print Job Attributes](#print-job-attributes)
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ## Installation
 The easiest way is to use composer and add obray/IPP to the require section:
@@ -28,8 +43,8 @@ $printer = new /obray/IPP/Printer(
 $response = $printer->printJob({raw document}, {attributes});
 ```
 
-## Constructor & Methods
-A breif description of the constructor it's parameters and the available methods in this implementation of IPP.
+## Printer Object and Methods
+The printer object defines a printer based on a specified URI.  When a method is called on a printer it will attempt to connect and send the request and interpret the response.
 
 #### Printer Constructor
 ###### Usage:
@@ -56,6 +71,11 @@ $response = $printer->printJob({raw document}, {[attributes]});
 | --------- | -------- | ----------- |
 | document | yes | Document to be sent to the printer. |
 | attributes | no | An array of print job attributes.  For more information see [Print Job Attributes](#print-job-attributes) |
+
+## Job Object and Methods
+
+coming soon (not implemented)
+
 ## Printer URIs
 Each printer object is identified by a unique URI that must be supplied to the Printer constructor.  Here are a few examples of 
 possible printer URIs:
