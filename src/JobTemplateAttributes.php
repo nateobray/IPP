@@ -1,5 +1,5 @@
 <?php
-namespace obray;
+namespace obray\ipp;
 
 class JobTemplateAttributes
 {
