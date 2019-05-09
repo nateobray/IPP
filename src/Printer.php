@@ -43,13 +43,19 @@ class Printer
         if(!empty($attributes['document-format'])){
         	$operationAttributes->{'document-format'} = $attributes['document-format'];
         }
+        $jobTemplateAttributes = NULL;
+        if(!empty($attributes['media'])){
+            $jobTemplateAttributes = new \obray\ipp\JobTemplateAttributes();
+            $jobTemplateAttributes->{'media'} = $attributes['media'];
+        }
         
         $payload = new \obray\ipp\transport\IPPPayload(
             new \obray\ipp\types\VersionNumber('1.1'),
             new \obray\ipp\types\Operation(\obray\ipp\types\Operation::printJob),
             new \obray\ipp\types\Integer($requestId),
             new \obray\ipp\types\OctetString($document),
-            $operationAttributes
+            $operationAttributes,
+            $jobTemplateAttributes
         );
         $encodedPayload = $payload->encode();
         return $this->send($encodedPayload);
