@@ -144,7 +144,7 @@ class Printer
 
     public function createJob()
     {
-        throw new \Exception("Create Job is not implemented.")
+        throw new \Exception("Create Job is not implemented.");
     }
 
     /**
