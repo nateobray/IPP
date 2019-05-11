@@ -19,5 +19,4 @@ class Operation extends \obray\ipp\types\Enum
     const pausePrinter = 0x0010;
     const resumePrinter = 0x0011;
     const purgeJobs = 0x0012;
-
 }

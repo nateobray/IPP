@@ -12,7 +12,7 @@ class Printer
     private $lastRequest;
     private $lastResponse;
 
-    public function __construct(string $uri, string $user, string $password=NULL)
+    public function __construct(string $uri, string $user='', string $password='')
     {
         $this->printerURI = $uri;
         $this->user = $user;
@@ -35,21 +35,34 @@ class Printer
      * @return \obray\ipp\transport\IPPPayload
      */
 
-    public function printJob(string $document, int $requestId=0, array $attributes=NULL)
+    public function printJob(string $document, int $requestId=1, array $attributes=NULL)
     {
         $operationAttributes = new \obray\ipp\OperationAttributes();
         $operationAttributes->{'printer-uri'} = $this->printerURI;
         $operationAttributes->{'requesting-user-name'} = $this->user;
         if(!empty($attributes['document-format'])){
-        	$operationAttributes->{'document-format'} = $attributes['document-format'];
+            $operationAttributes->{'document-format'} = $attributes['document-format'];
+            unset($attributes['document-format']);
         }
-        
+
+        $jobAttributes = NULL;
+        if(!empty($attributes)){
+            $jobAttributes = new \obray\ipp\JobAttributes();
+        }
+        if(!empty($attributes['media'])){
+        	$jobAttributes->{'media'} = $attributes['media'];
+        }
+        if(!empty($attributes['media-col'])){
+            $jobAttributes->{'media-col'} = $attributes['media-col'];
+        }
+
         $payload = new \obray\ipp\transport\IPPPayload(
             new \obray\ipp\types\VersionNumber('1.1'),
             new \obray\ipp\types\Operation(\obray\ipp\types\Operation::printJob),
             new \obray\ipp\types\Integer($requestId),
             new \obray\ipp\types\OctetString($document),
-            $operationAttributes
+            $operationAttributes,
+            $jobAttributes
         );
         $encodedPayload = $payload->encode();
         return $this->send($encodedPayload);
@@ -100,7 +113,7 @@ class Printer
      * @return \obray\ipp\transport\IPPPayload
      */
 
-    public function validateJob(int $requestId=0, array $attributes=NULL)
+    public function validateJob(int $requestId=1, array $attributes=NULL)
     {
         $operationAttributes = new \obray\ipp\OperationAttributes();
         $operationAttributes->{'printer-uri'} = $this->printerURI;
@@ -138,7 +151,7 @@ class Printer
 
     public function createJob()
     {
-        throw new \Exception("Create Job is not implemented.")
+        throw new \Exception("Create Job is not implemented.");
     }
 
     /**
@@ -157,7 +170,7 @@ class Printer
      * @return \obray\ipp\transport\IPPPayload
      */
 
-    public function getPrinterAttributes(int $requestId=0)
+    public function getPrinterAttributes(int $requestId=1)
     {
         $operationAttributes = new \obray\ipp\OperationAttributes();
         $operationAttributes->{'printer-uri'} = $this->printerURI;
@@ -166,7 +179,7 @@ class Printer
         $payload = new \obray\ipp\transport\IPPPayload(
             new \obray\ipp\types\VersionNumber('1.1'),
             new \obray\ipp\types\Operation(\obray\ipp\types\Operation::getPrinterAttributes),
-            new \obray\ipp\types\Integer(123456),
+            new \obray\ipp\types\Integer($requestId),
             NULL,
             $operationAttributes
         );
@@ -189,7 +202,7 @@ class Printer
      * @return \obray\ipp\transport\IPPPayload
      */
 
-    public function getJobs(int $requestId=0)
+    public function getJobs(int $requestId=1)
     {
         $operationAttributes = new \obray\ipp\OperationAttributes();
         $operationAttributes->{'printer-uri'} = $this->printerURI;
@@ -221,7 +234,7 @@ class Printer
      * @return \obray\ipp\transport\IPPPayload
      */
 
-    public function pausePrinter(int $requestId=0)
+    public function pausePrinter(int $requestId=1)
     {
         $operationAttributes = new \obray\ipp\OperationAttributes();
         $operationAttributes->{'printer-uri'} = $this->printerURI;
@@ -259,7 +272,7 @@ class Printer
      * @return \obray\ipp\transport\IPPPayload
      */
 
-    public function resumePrinter(int $requestId=0)
+    public function resumePrinter(int $requestId=1)
     {
         $operationAttributes = new \obray\ipp\OperationAttributes();
         $operationAttributes->{'printer-uri'} = $this->printerURI;
@@ -300,7 +313,7 @@ class Printer
      * @return \obray\ipp\transport\IPPPayload
      */
 
-    public function purgeJobs(int $requestId=0)
+    public function purgeJobs(int $requestId=1)
     {
         $operationAttributes = new \obray\ipp\OperationAttributes();
         $operationAttributes->{'printer-uri'} = $this->printerURI;
@@ -336,7 +349,7 @@ class Printer
         }
 
         $http = new \obray\HTTP();
-        $http->addRequest($this->printerURI.'?waitjob=false&waitprinter=false', \obray\HTTP::POST, $encodedPayload, $headers);
+        $http->addRequest($this->printerURI, \obray\HTTP::POST, $encodedPayload, $headers);
         $this->lastRequest = ($http->getRequests())[0];
         $this->lastResponse = ($http->send())[0];
         

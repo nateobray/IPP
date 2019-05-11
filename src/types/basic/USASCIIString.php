@@ -47,6 +47,6 @@ class USASCIIString implements \obray\ipp\interfaces\TypeInterface, \JsonSeriali
 
     public function jsonSerialize()
     {
-        return $this->value;
+        return (string)$this->value;
     }
 }

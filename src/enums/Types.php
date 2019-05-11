@@ -17,6 +17,7 @@ class Types extends \obray\ipp\types\Enum
     const NATURALLANGUAGE = 0x48;
     const OCTETSTRING = 0x30;
     const RANGEOFINTEGER = 0x33;
+    const COLLECTION = 0x34;
     const TEXTWITHLANGUAGE = 0x35;
     const NAMEWITHLANGUAGE = 0x36;
     const TEXTWITHOUTLANGUAGE = 0x41;
@@ -27,4 +28,118 @@ class Types extends \obray\ipp\types\Enum
     const URI = 0x45;
     const URISCHEME = 0x46;
     const NOVAL = 0x13;
+
+    public static function getType($type, $value=NULL, $natuarlLanguage=NULL, $maxLength=NULL, $nameToSwitchOn=NULL)
+    {
+        switch($type){
+            case \obray\ipp\enums\Types::BOOLEAN:
+                return new \obray\ipp\types\Boolean($value);
+                break;
+            case \obray\ipp\enums\Types::CHARSET:
+                return new \obray\ipp\types\Charset($value);
+                break;
+            case \obray\ipp\enums\Types::DATETIME:
+                return new \obray\ipp\types\DateTime($value);
+                break;
+            case \obray\ipp\enums\Types::ENUM:
+                
+                switch($nameToSwitchOn){
+                    case 'orientation-requested': case 'orientation-requested-supported':
+                        return new \obray\ipp\enums\OrientationRequested();
+                        break;
+                    case 'job-state':
+                        return new \obray\ipp\enums\JobState($value);
+                        break;
+                    case 'finishings':
+                        return new \obray\ipp\enums\Finishings($value);
+                        break;
+                    case 'orientation-requested':
+                        return new \obray\ipp\enums\OrientationRequested($value);
+                        break;
+                    case 'print-quality':
+                        return new \obray\ipp\enums\PrintQuality($value);
+                        break;
+                    default:
+                        return new \obray\ipp\types\Integer();
+                        break;
+                }
+                break;
+            case \obray\ipp\enums\Types::INTEGER:
+                return new \obray\ipp\types\Integer($value);
+                break;
+            case \obray\ipp\enums\Types::KEYWORD:
+                return new \obray\ipp\types\Keyword($value);
+                break;
+            case \obray\ipp\enums\Types::MIMEMEDIATYPE:
+                return new \obray\ipp\types\MimeMediaType($value);
+                break;
+            case \obray\ipp\enums\Types::NAME:
+                if($maxLength!=NULL && strlen($value)>$maxLength){
+                    $value = substr($value,0,$maxLength);
+                }
+                if(!empty($naturalLanguage)){
+                    return new \obray\ipp\types\NameWithLangauge($naturalLanguage, $value);
+                } else {
+                    return new \obray\ipp\types\NameWithoutLanguage($value);
+                }
+                break;
+            case \obray\ipp\enums\Types::NATURALLANGUAGE:
+                return new \obray\ipp\types\NaturalLanguage($value);
+                break;
+            case \obray\ipp\enums\Types::OCTETSTRING:
+                return new \obray\ipp\types\OctetString($value);
+                break;
+            case \obray\ipp\enums\Types::RANGEOFINTEGER:
+                $value = explode('-',$value);
+                if(count($value)!=2){
+                    $value = array(0=>0, 1=>0);
+                }
+                return new \obray\ipp\types\RangeOfInteger($value[0], $value[1]);
+                break;
+            case \obray\ipp\enums\Types::RESOLUTION:
+                $value = explode('x',$value);
+                if(count($value)!=3){
+                    $value = array(0=>0, 1=>0, 2=>0);
+                }
+                return new \obray\ipp\types\Resolution($value[0], $value[1], $value[2]);
+                break;
+            case \obray\ipp\enums\Types::STATUSCODE:
+                return new \obray\ipp\types\StatusCode($value);
+                break;
+            case \obray\ipp\enums\Types::TEXT:
+                if($maxLength!=NULL && strlen($value)>$maxLength){
+                    $value = substr($value,0,$maxLength);
+                }
+                if(!empty($naturalLanguage)){
+                    return new \obray\ipp\types\TextWithLangauge($naturalLanguage, $value);
+                } else {
+                    return new \obray\ipp\types\TextWithoutLangauge($value);
+                }
+                break;
+            case \obray\ipp\enums\Types::TEXTWITHOUTLANGUAGE:
+                return new \obray\ipp\types\TextWithoutLanguage($value);
+                break;
+            case \obray\ipp\enums\Types::NAMEWITHOUTLANGUAGE:
+                return new \obray\ipp\types\NameWithoutLanguage($value);
+                break;
+            case \obray\ipp\enums\Types::URI:
+                return new \obray\ipp\types\URI($value);
+                break;
+            case \obray\ipp\enums\Types::URISCHEME:
+                return new \obray\ipp\types\URIScheme($value);
+                break;
+            case \obray\ipp\enums\Types::NOVAL:
+                return new \obray\ipp\types\NoVal($value);
+                break;
+            case \obray\ipp\enums\Types::UNKNOWN:
+                return new \obray\ipp\types\Unknown($value);
+                break;
+            case \obray\ipp\enums\Types::COLLECTION:
+                return new \obray\ipp\types\Collection($value);
+                break;
+            default:
+                throw new \Exception("The type specified does not exists.");
+                break;
+        }
+    }
 }

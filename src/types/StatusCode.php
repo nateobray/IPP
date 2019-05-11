@@ -1,8 +1,8 @@
 <?php
 namespace obray\ipp\types;
 
-class StatusCode extends \obray\ipp\types\Enum {
-    
+class StatusCode extends \obray\ipp\types\Enum 
+{    
     // success codes
     const successful_ok = 0;
     const successful_ok_ignored_or_substituted_attributes = 1;
@@ -57,5 +57,9 @@ class StatusCode extends \obray\ipp\types\Enum {
             $this->class = 'server-error';
         }
     }
-    
+
+    public function getClass()
+    {
+        return $this->class;
+    }
 }

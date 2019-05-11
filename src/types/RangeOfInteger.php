@@ -7,8 +7,9 @@ class RangeOfInteger implements \obray\ipp\interfaces\TypeInterface, \JsonSerial
     private $lowerBound;
     private $upperBound;
 
-    public function __construct(int $lowerBound, int $upperBound)
+    public function __construct(int $lowerBound=NULL, int $upperBound=NULL)
     {
+        if($lowerBound===NULL || $upperBound===NULL) return $this;
         $this->lowerBound = new \obray\ipp\types\basic\SignedInteger($lowerBound);
         $this->upperBound = new \obray\ipp\types\basic\SignedInteger($upperBound);
     }
@@ -22,13 +23,22 @@ class RangeOfInteger implements \obray\ipp\interfaces\TypeInterface, \JsonSerial
     {
         $this->lowerBound = (new \obray\ipp\types\basic\SignedInteger())->decode($binary, $offset);
         $offset += $this->lowerBound->getLength();
-        $this->upperBound = (new \obray\ipp\types\basic\SignedInteger());
+        $this->upperBound = (new \obray\ipp\types\basic\SignedInteger())->decode($binary, $offset);
         return $this;
     }
 
     public function getValueTag()
     {
         return $this->valueTag;
+    }
+
+    public function __toString()
+    {
+        $range = $this->lowerBound;
+        if(strlen($this->upperBound)!==0){
+            $range .= '-' . $this->upperBound;
+        }
+        return $range;
     }
 
     public function jsonSerialize()

@@ -8,17 +8,9 @@ class Resolution implements \obray\ipp\interfaces\TypeInterface, \JsonSerializab
     private $feedDirectionResolution;
     private $units;
 
-    public function __construct(int $crossFeedDirectionResolution,int $feedDirectionResolution, string $units)
+    public function __construct(int $crossFeedDirectionResolution=NULL, int $feedDirectionResolution=NULL, int $units=NULL)
     {
-        if(strlen($units)>1){
-            throw new \Exception("Invalid units specified.");
-        }
-        if(!is_int($crossFeedDirectionResolution)){
-            throw new \Exception("Cross feed direction resolution parameter invalid.");
-        }
-        if(!is_int($feedDirectionResolution)){
-            throw new \Exception("Feed direction resolution parameter invalid.");
-        }
+        if($crossFeedDirectionResolution===NULL || $feedDirectionResolution===NULL || $units===NULL) return $this;
         $this->crossFeedDirectionResolution = new \obray\ipp\types\basic\SignedInteger($crossFeedDirectionResolution);
         $this->feedDirectionResolution = new \obray\ipp\types\basic\SignedInteger($feedDirectionResolution);
         $this->units = new \obray\ipp\types\basic\SignedByte($units);
@@ -41,13 +33,19 @@ class Resolution implements \obray\ipp\interfaces\TypeInterface, \JsonSerializab
 
     public function getValueTag()
     {
-        return $valueTag;
+        return $this->valueTag;
+    }
+
+    public function __toString()
+    {
+        $units = '';
+        if( $this->units->getValue() == 3 ){ $units = 'dpi'; }
+        if( $this->units->getValue() == 4 ){ $units = 'dpc'; }
+        return $this->crossFeedDirectionResolution . 'x' . $this->feedDirectionResolution . ' ' . $units;
     }
 
     public function jsonSerialize()
     {
-        $units = '';
-        if( $this->units->getValue() === 3 ){ $units = 'dpi'; }
-        return $this->crossFeedDirectionResolution . 'x' . $this->feedDirectionResolution . ' dpi';
+        return (string)$this;
     }
 }

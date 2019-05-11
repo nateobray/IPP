@@ -21,7 +21,10 @@ class OctetString implements \obray\ipp\interfaces\TypeInterface, \JsonSerializa
 
     public function decode($binary, $offset=0, $length=NULL)
     {
-        
+        if($length===NULL) throw new \Exception("Decoding octet string requires a length parameter.");
+        $this->value = (unpack('a'.($length), $binary, $offset))[1];
+        $this->length = strlen($this->value);
+        return $this;
     }
 
     public function getValueTag()
@@ -29,7 +32,7 @@ class OctetString implements \obray\ipp\interfaces\TypeInterface, \JsonSerializa
         return $this->valueTag;
     }
 
-    public function getLength()
+    public function getLength(): int
     {
         return $this->length;
     }
@@ -46,6 +49,6 @@ class OctetString implements \obray\ipp\interfaces\TypeInterface, \JsonSerializa
 
     public function jsonSerialize()
     {
-        return $this->value;
+        return (string)$this->value;
     }
 }

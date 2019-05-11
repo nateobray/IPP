@@ -2,14 +2,23 @@
 
 $loader = require_once 'vendor/autoload.php';
 
-// binary test
-$binary = pack("n",0x0002);
-$hex = bin2hex($binary);
-//print_r($hex."\n");
-$unpacked = unpack("n",$binary);
-//print_r($unpacked);
-//exit();
+$printer = new \obray\ipp\Printer("ipp://localhost/printers/Tremonton-printer-01", "nate");
+$response = $printer->getPrinterAttributes();
 
-$printer = new \obray\ipp\Printer("ipp://10.5.2.82/printers/devprinter", "nate");
-// $printer->printJob("Hello World!");
-$printer->pausePrinter();
+$printer = new \obray\ipp\Printer("ipp://localhost/printers/Tremonton-printer-01", "nate");
+$response = $printer->printJob("Hello World!", 1, array(
+    "media-col" => array(
+        "media-source" => "tray-2"
+    )
+));
+print_r(json_encode($response, JSON_PRETTY_PRINT));
+
+$job = new \obray\ipp\Job(
+    $response->jobAttributes->{'job-uri'},
+    $response->jobAttributes->{'job-id'}->getAttributeValue(),
+    "nate"
+);
+$response = $job->getJobAttributes();
+print_r(json_encode($response, JSON_PRETTY_PRINT));
+exit();
+

@@ -10,5 +10,13 @@
         "psr-4": {
             "obray\\ipp\\": "src"
         }
+    },
+    "autoload-dev": {
+        "psr-4": { 
+            "obray\\ipp\\test\\": "test" 
+        }
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^8.1"
     }
 }

@@ -13,12 +13,17 @@ class Unknown implements \obray\ipp\interfaces\TypeInterface, \JsonSerializable
     }
 
     public function decode($binary, $offset = 0, $length = NULL){
-        return NULL;
+        return $this;
+    }
+
+    public function __toString()
+    {
+        return $this->value;
     }
 
     public function jsonSerialize()
     {
-        return 'unknown';
+        return (string)$this;
     }
 
     public function getValueTag()

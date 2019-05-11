@@ -5,15 +5,18 @@ class SignedByte implements \obray\ipp\interfaces\TypeInterface, \JsonSerializab
 {
     protected $value;
     protected $valueTag;
+    private $type;
     private $length = 1;
 
     public function __construct($value=NULL)
     {
         if($value===NULL) return $this;
-        if(strlen($value)>1){
-            throw new \Exception("Invalid signed byte.");
+        if(in_array(getType($value), ['integer', 'boolean'])){
+            $this->value = (int)$value;
+        } else {
+            $this->value = (int)ord($value);
         }
-        $this->value = $value;
+        if($this->value > 255) throw new \Exception("Invalid Signed Byte");
     }
 
     public function encode()

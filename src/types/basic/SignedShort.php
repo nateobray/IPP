@@ -15,12 +15,18 @@ class SignedShort implements \obray\ipp\interfaces\TypeInterface, \JsonSerializa
 
     public function encode()
     {
+        // take our signed integer and convert to unsigned equivalent
+        if($this->value < 0){ $this->value += 65536; }
+        // pack into binary string as signed integer big endian byte order
         return pack('n',$this->value);
     }
 
     public function decode($binary, $offset=0, $length=NULL)
     {
+        // unpack as unsigned short (no way to pull out signed short with correct byte order using unpack)
         $this->value = (unpack('n', $binary, $offset))[1];
+        // convert unsigned short into a signed short
+        if($this->value >= 32768) { $this->value -= 65536; }
         return $this;
     }
 

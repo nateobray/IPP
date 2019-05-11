@@ -13,7 +13,7 @@ class Enum extends \obray\ipp\types\basic\SignedShort implements \JsonSerializab
             $constants = $this->getConstants();
             $key = array_search($code, $constants);
             if($key === false){
-                throw new \Exception("Invalid operation specified.");
+                throw new \Exception("Invalid operation ".$code." specified.");
             }
             $this->key = $key;
             $this->value = $code;

@@ -4,27 +4,46 @@ namespace obray\ipp\types;
 class NameWithLanguage extends \obray\ipp\types\basic\OctetString
 {
     protected $valueTag = 0x36;
+    private $language;
+    private $languageSize;
+    private $name;
+    private $nameSize;
 
-    public function __construct(string $naturalLanguage, string $string)
+    public function __construct(string $naturalLanguage=NULL, string $string=NULL)
     {
-        $this->naturalLanguage = $naturalLanguage;
-        $this->naturalLanguageOctets = strlen($naturalLanguage);
-        $this->string = $string;
-        $this->stringOctets = strlen($this->string);
+        if($naturalLanguage===NULL || $string===NULL) return $this;
+        $this->language = new \obray\ipp\types\basic\OctetString($naturalLanguage);
+        $this->languageSize = new \obray\ipp\types\basic\SignedShort($this->language->getLength());
+        $this->name = new \obray\ipp\types\basic\OctetString($string);
+        $this->nameSize = new \obray\ipp\types\basic\SignedShort($this->name->getLength());
     }
 
     public function encode()
     {
-        $naturalLanguageBinary;
-        forEach(str_split($this->naturalLanguage) as $char){
-            $naturalLanguageBinary .= unpack('c',$char);
-        }
+        return $this->languageSize->encode() . $this->language->encode() . $this->nameSize->encode() . $this->name->encode();
+    }
 
-        $stringBinary;
-        forEach(str_split($this->string) as $char){
-            $stringBinary .= unpack('c',$char);
-        }
+    public function decode($binary, $offset=0, $length=NULL)
+    {
+        $this->languageSize = (new \obray\ipp\types\basic\SignedShort())->decode($binary, $offset);
+        $this->language = (new \obray\ipp\types\basic\Octetstring())->decode($binary, $offset + $this->languageSize->getLength(), $this->languageSize->getLength());
+        $this->nameSize = (new \obray\ipp\types\basic\SignedShort())->decode($binary, $offset + $this->languageSize->getLength() + $this->language->getLength());
+        $this->name = (new \obray\ipp\types\basic\Octetstring())->decode($binary, $offset + $this->languageSize->getLength() + $this->language->getLength() + $this->nameSize->getLength() , $this->nameSize->getValue());
+        return $this;
+    }
 
-        return unpack('n',$this->naturalLanguageOctets) . $naturalLanguageBinary . unpack('n',$this->stringOctets) . $stringBinary;
+    public function getLength(): int
+    {
+        return $this->languageSize->getLength() + $this->language->getLength() + $this->nameSize->getLength() + $this->name->getLength();
+    }
+
+    public function __toString()
+    {
+        return (string)$this->name;
+    }
+
+    public function jsonSerialize()
+    {
+        return (string)$this->name->getValue();
     }
 }

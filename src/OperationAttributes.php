@@ -2,38 +2,10 @@
 
 namespace obray\ipp;
 
-/*
- * Operation Attributes
- * 
- * @property string $charset            This operation attribute identifies the charset (coded
-                                        character set and encoding method) used by any ’text’ and
-                                        ’name’ attributes that the client is supplying in this request
- * @property string $naturalLanguage    This operation attribute identifies the natural language used 
- *                                      by any ’text’ and ’name’ attributes that the client is supplying 
- *                                      in this request.
- * @property string $statusCode         
- * @property string $statusMessage
- * @property string $detailedStatusMessage
- * @property string $documentURI
- * @property string $target
- * @property string $userName
- * @property string $jobName
- * @property string $ippAttributeFidelity
- * @property string $documentName
- * @property string $compression
- * @peoperty string $documentType
- * @property string $naturalLanguage
- * @property string $jobKOctets
- * @property string $jobImpressions
- * @property string $jobMediaSheets
-*/
-
-class OperationAttributes implements \JsonSerializable
+class OperationAttributes extends \obray\ipp\AttributeGroup
 {
-    private $attribute_group_tag = 0x01;
+    protected $attribute_group_tag = 0x01;
     private $naturalLanguageOverride;
-
-    private $attributes = array();
 
     public function __construct(){
         $this->attributes['attributes-charset'] = new \obray\ipp\Attribute('attributes-charset', 'utf-8', \obray\ipp\enums\Types::CHARSET);
@@ -44,7 +16,7 @@ class OperationAttributes implements \JsonSerializable
         $this->naturalLanguageOverride = $lang;
     }
 
-    public function __set(string $name, $value)
+    public function set(string $name, $value)
     {
         switch($name){
             case 'attributes-charset':
@@ -108,7 +80,6 @@ class OperationAttributes implements \JsonSerializable
                 $this->attributes[$name] = new \obray\ipp\Attribute('job-media-sheets', $value, \obray\ipp\enums\Types::INTEGER);
                 break;
             default:
-                exit();
                 throw new \Exception("Invalid operational parameter.");
         }
     }
@@ -121,41 +92,5 @@ class OperationAttributes implements \JsonSerializable
         if(empty($natuarlLanguage) && $naturalLanguage !== 'en'){
             throw new \Exception("Invalid request.");
         }
-    }
-
-    public function encode()
-    {
-        $binary = pack('c',$this->attribute_group_tag);
-        forEach($this->attributes as $name => $attribute){
-                $binary .= $attribute->encode();
-        }
-        return $binary;
-    }
-
-    public function decode($binary, &$offset=8)
-    {	
-        $AttributeGroupTag = (unpack("cAttributeGroupTag", $binary, $offset))['AttributeGroupTag'];
-        $validAttributeGroupTags = [0x01,0x02,0x03,0x04,0x05,0x06,0x07];
-        $endOfAttributesTag = 0x03;
-        $offset += 1;
-        while(true){
-            $attribute = (new \obray\ipp\Attribute())->decode($binary, $offset);
-            $this->attributes[$attribute->getName()] = $attribute;
-            $offset = $attribute->getOffset();
-            $newTag = (unpack("cAttributeGroupTag", $binary, $offset))['AttributeGroupTag'];
-            if($newTag===$endOfAttributesTag){
-                //print_r("end of attributes - break\n");
-                return false;
-            }
-            if(in_array($newTag,$validAttributeGroupTags)){
-                //print_r("Found new valid attribute tag.\n");
-                return $newTag;
-            }       
-        }
-    }
-
-    public function jsonSerialize()
-    {
-        return $this->attributes;
     }
 }
