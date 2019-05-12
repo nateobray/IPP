@@ -60,7 +60,7 @@ class Types extends \obray\ipp\types\Enum
                         return new \obray\ipp\enums\PrintQuality($value);
                         break;
                     default:
-                        return new \obray\ipp\types\Integer();
+                        return new \obray\ipp\types\Integer($value);
                         break;
                 }
                 break;
