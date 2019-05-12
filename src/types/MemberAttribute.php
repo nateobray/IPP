@@ -41,7 +41,6 @@ class MemberAttribute implements \JsonSerializable
 
     public function encode()
     {
-        print_r("Member encode!!!\n");
         /**
          * 4a                                   - value tag
          * 00 00                                - name length

@@ -52,7 +52,6 @@ class CollectionAttribute implements \JsonSerializable
          * 00 00                        - end value length
          */
         
-        print_r($this->members);
         $binary = pack('c', $this->valueTag);
         $binary .= $this->nameLength->encode();
         $binary .= $this->name->encode();
@@ -63,7 +62,6 @@ class CollectionAttribute implements \JsonSerializable
         $binary .= pack('c', $this->endValueTag);
         $binary .= $this->endNameLength->encode();
         $binary .= $this->endValueLength->encode();
-
         return $binary;        
     }
 

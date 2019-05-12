@@ -2,10 +2,10 @@
 
 $loader = require_once 'vendor/autoload.php';
 
-$printer = new \obray\ipp\Printer("ipp://localhost/printers/Tremonton-printer-01", "nate");
+$printer = new \obray\ipp\Printer("ipp://localhost/printers/DevPrinter", "nate");
 $response = $printer->getPrinterAttributes();
 
-$printer = new \obray\ipp\Printer("ipp://localhost/printers/Tremonton-printer-01", "nate");
+$printer = new \obray\ipp\Printer("ipp://localhost/printers/DevPrinter", "nate");
 $response = $printer->printJob("Hello World!", 1, array(
     "media-col" => array(
         "media-source" => "tray-2"
