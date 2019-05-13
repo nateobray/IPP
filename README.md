@@ -7,6 +7,8 @@ The goals of this implementation is to follow the IPP specification as closely a
 
 **PLEASE NOTE: the current version is in development and does not have a stable release.  A stable release is planned soon (see [project status](#project-status) section).**
 
+## Table of Contents
+
  - [Installation](#installation)
  - [Usage](#usage)
  - [Printer Object & Methods](#printer-object-and-methods)
