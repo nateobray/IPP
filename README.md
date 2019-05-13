@@ -33,7 +33,7 @@ The goals of this implementation is to follow the IPP specification as closely a
    - [Method `releaseJob`](#method-releasejob)
    - [Method `restartJob`](#method-restartjob)
  - [Printer URIs](#printer-uris)
- - [Print Job Attributes](#print-job-attributes)
+ - [Project Status](#project-status)
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
@@ -286,7 +286,7 @@ In this case CUPS would be installed on localhost and listening on port 631 (def
 
 ## Project Status
 
-Current this library does not have a stable release but when it does it will fully support IPP/1.1. The other version will be supported in future releases. Currently this is the status of this library compared to the requirements and recommendations of each version.
+Currently this library does not have a stable release but when it does it will fully support IPP/1.1. The other version will be supported in future releases. Currently this is the status of this library compared to the requirements and recommendations of each version.
 
 | IETF or PWG Specification | obray\ipp | IPP/1.1 | IPP/2.0 | IPP/2.1 | IPP/2.2 |
 | ------------------------- | --------- | ------- | ------- | ------- | ------- |
