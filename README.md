@@ -5,7 +5,7 @@ An Internet Printing Protocol (IPP) PHP Client Implementation.  This implements 
 
 The goals of this implementation is to follow the IPP specification as closely as possible and offer a raw interface to that protocol in a form that is as simple as possible to use.
 
-**Please note the current version is in development and does not have a stable release.  A stable release is planned soon.**
+**PLEASE NOTE: the current version is in development and does not have a stable release.  A stable release is planned soon (see [project status](#project-status) section).**
 
 **Current Limitations**
  - Does not support ipps:// (encryption not supported, will be added soon)
