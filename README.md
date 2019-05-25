@@ -5,13 +5,10 @@ An Internet Printing Protocol (IPP) PHP Client Implementation.  This implements 
 
 The goals of this implementation is to follow the IPP specification as closely as possible and offer a raw interface to that protocol in a form that is as simple as possible to use.
 
-**Please note the current version is in development and does not have a stable release.  A stable release is planned soon.**
+**PLEASE NOTE: the current version is in development and does not have a stable release.  A stable release is planned soon (see [project status](#project-status) section).**
 
-**Current Limitations**
- - Does not support ipps:// (encryption not supported, will be added soon)
- - Need to implement better testing with PHPUnit
+## Table of Contents
 
-### Table of Contents
  - [Installation](#installation)
  - [Usage](#usage)
  - [Printer Object & Methods](#printer-object-and-methods)
@@ -33,7 +30,7 @@ The goals of this implementation is to follow the IPP specification as closely a
    - [Method `releaseJob`](#method-releasejob)
    - [Method `restartJob`](#method-restartjob)
  - [Printer URIs](#printer-uris)
- - [Print Job Attributes](#print-job-attributes)
+ - [Project Status](#project-status)
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
@@ -284,4 +281,31 @@ all of your requests to the CUPS server.  An example of that would be something 
   
 In this case CUPS would be installed on localhost and listening on port 631 (default IPP port).
 
-## Print Job Attributes
+## Project Status
+
+Currently this library does not have a stable release but when it does it will fully support IPP/1.1. The other version will be supported in future releases. Currently this is the status of this library compared to the requirements and recommendations of each version.
+
+| IETF or PWG Specification | obray\ipp | IPP/1.1 | IPP/2.0 | IPP/2.1 | IPP/2.2 |
+| ------------------------- | --------- | ------- | ------- | ------- | ------- |
+| PWG5100.1                 |           |         |   REQ   |   REQ   |   REQ   |
+| PWG5100.2                 |           |         |   REQ   |   REQ   |   REQ   |
+| PWG5100.3                 |           |         |         |   REQ   |   REQ   |
+| PWG5100.5                 |           |         |         |         |   REQ   |
+| PWG5100.6                 |           |         |         |   REC   |   REQ   |
+| PWG5100.7                 |           |         |         |   REQ   |   REQ   |
+| PWG5100.8                 |           |         |         |         |   REQ   |
+| PWG5100.9                 |           |         |  RECMD  |   REQ   |   REQ   |
+| PWG5100.11                |           |         |         |  RECMD  |   REQ   |
+| PWG5101.1                 |           |         |   REQ   |   REQ   |   REQ   |
+| PWG5107.2                 |           |         |  RECMD  |  RECMD  |   REQ   |
+| RFC2910                   |  TESTING  |   REQ   |   REQ   |   REQ   |   REQ   |
+| RFC2911                   |  TESTING  |   REQ   |   REQ   |   REQ   |   REQ   |
+| RFC3380                   |           |         |         |   REQ   |   REQ   |
+| RFC3382                   |           |         |         |   REQ   |   REQ   |
+| RFC3510                   |    DEV    |   REQ   |   REQ   |   REQ   |   REQ   |
+| RFC3995                   |           |         |         |   REQ   |   REQ   |
+| RFC3996                   |           |         |         |   REQ   |   REQ   |
+| RFC3998                   |           |         |         |   REQ   |   REQ   |
+| RFC5246                   |           |         |  RECMD  |  RECMD  |   REQ   |
+| RFC7472                   |           |         |  RECMD  |  RECMD  |   REQ   |
+
