@@ -4,6 +4,7 @@ namespace obray\ipp\types;
 class RangeOfInteger implements \obray\ipp\interfaces\TypeInterface, \JsonSerializable
 {
     protected $valueTag = 0x33;
+    private $length = 8;
     private $lowerBound;
     private $upperBound;
 
@@ -27,9 +28,23 @@ class RangeOfInteger implements \obray\ipp\interfaces\TypeInterface, \JsonSerial
         return $this;
     }
 
+    public function getLength()
+    {
+        return $this->length;
+    }
+
     public function getValueTag()
     {
         return $this->valueTag;
+    }
+
+    public function getValue()
+    {
+        $range = $this->lowerBound;
+        if(strlen($this->upperBound)!==0){
+            $range .= '-' . $this->upperBound;
+        }
+        return $range;
     }
 
     public function __toString()

@@ -5,6 +5,7 @@ class DateTime extends \obray\ipp\types\basic\OctetString implements \JsonSerial
 {
     protected $valueTag = 0x31;
     private $datetime;
+    private $length = 11;
 
     public function __construct(string $dateTimeString=NULL)
     {
@@ -38,6 +39,16 @@ class DateTime extends \obray\ipp\types\basic\OctetString implements \JsonSerial
                 pack('c', $utcDiffHours) .
                 pack('c', $utcDiffMins)
                 ;
+    }
+
+    public function getLength(): int
+    {
+        return $this->length;
+    }
+
+    public function getValue()
+    {
+        return $this->datetime->format("Y-m-d H:i:s.vO");
     }
 
     public function decode($binary, $offset=0, $length=NULL)

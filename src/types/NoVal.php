@@ -11,6 +11,16 @@ class NoVal implements \obray\ipp\interfaces\TypeInterface, \JsonSerializable
         return;
     }
 
+    public function getValue()
+    {
+        return $this->value;
+    }
+
+    public function getLength()
+    {
+        return 0;
+    }
+
     public function decode($binary, $offset = 0, $length = NULL){
         return NULL;
     }

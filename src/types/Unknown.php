@@ -16,6 +16,11 @@ class Unknown implements \obray\ipp\interfaces\TypeInterface, \JsonSerializable
         return $this;
     }
 
+    public function getValue()
+    {
+        return $this->value;
+    }
+
     public function __toString()
     {
         return $this->value;

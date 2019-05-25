@@ -31,7 +31,7 @@ class PrinterTest extends TestCase
         $this->assertSame(1234, $IPPPayload->requestId->getValue());
         $this->assertInstanceOf(\obray\ipp\types\StatusCode::class, $IPPPayload->statusCode);
         $this->assertInstanceOf(\obray\ipp\OperationAttributes::class, $IPPPayload->operationAttributes);
-        $this->assertInstanceOf(\obray\ipp\JobDescriptionAttributes::class, $IPPPayload->jobDescriptionAttributes);
+        $this->assertInstanceOf(\obray\ipp\JobAttributes::class, $IPPPayload->jobAttributes);
 
         // test if it was scuccessful
         $this->assertSame('successful-ok', (string)$IPPPayload->statusCode);
@@ -73,8 +73,8 @@ class PrinterTest extends TestCase
         $this->assertSame('1234', (string)$response->requestId);
         $this->assertSame('client-error-not-found', (string)$response->statusCode);
         $this->assertSame('The printer or class does not exist.', (string)$response->operationAttributes->{'status-message'});
-        $this->assertEmpty($response->jobDescriptionAttributes);
-        $this->assertEmpty($response->printerDescriptionAttributes);
+        $this->assertEmpty($response->jobAttributes);
+        $this->assertEmpty($response->printerAttributes);
     }
 
     /**
@@ -93,7 +93,7 @@ class PrinterTest extends TestCase
         $this->assertSame(567, $IPPPayload->requestId->getValue());
         $this->assertInstanceOf(\obray\ipp\types\StatusCode::class, $IPPPayload->statusCode);
         $this->assertInstanceOf(\obray\ipp\OperationAttributes::class, $IPPPayload->operationAttributes);
-        $this->assertInstanceOf(\obray\ipp\PrinterDescriptionAttributes::class, $IPPPayload->printerDescriptionAttributes);
+        $this->assertInstanceOf(\obray\ipp\PrinterAttributes::class, $IPPPayload->printerAttributes);
 
         // test if it was scuccessful
         $this->assertSame('successful-ok', (string)$IPPPayload->statusCode);

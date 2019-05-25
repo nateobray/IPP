@@ -39,6 +39,11 @@ class Attribute implements \JsonSerializable
         return $this->value->getValue();
     }
 
+    public function getAttributeValueClass()
+    {
+        return $this->value;
+    }
+
     public function encode()
     {
         $binary = pack('c',$this->valueTag);

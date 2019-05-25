@@ -31,9 +31,19 @@ class Resolution implements \obray\ipp\interfaces\TypeInterface, \JsonSerializab
         return $this;
     }
 
+    public function getLength()
+    {
+        return 9;
+    }
+
     public function getValueTag()
     {
         return $this->valueTag;
+    }
+
+    public function getValue()
+    {
+        return (string)$this;
     }
 
     public function __toString()

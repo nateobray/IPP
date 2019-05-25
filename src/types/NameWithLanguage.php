@@ -32,9 +32,17 @@ class NameWithLanguage extends \obray\ipp\types\basic\OctetString
         return $this;
     }
 
+    public function getValue()
+    {
+        return (string)$this;
+    }
+
     public function getLength(): int
     {
-        return $this->languageSize->getLength() + $this->language->getLength() + $this->nameSize->getLength() + $this->name->getLength();
+        return ($this->languageSize->getLength() 
+               + $this->language->getLength() 
+               + $this->nameSize->getLength() 
+               + $this->name->getLength());
     }
 
     public function __toString()
