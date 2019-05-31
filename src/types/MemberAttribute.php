@@ -11,8 +11,9 @@ class MemberAttribute implements \JsonSerializable
     private $memberValueLength = 0;
     private $memberValue;
 
-    public function __construct(string $name, $value, \obray\ipp\enums\Types $type=NULL, $natuarlLanguage=NULL, $maxLength=NULL)
+    public function __construct(string $name=NULL, $value=NULL, \obray\ipp\enums\Types $type=NULL, $natuarlLanguage=NULL, $maxLength=NULL)
     {
+        if($name === NULL && $value === NULL) return $this;
         $this->nameLength = new \obray\ipp\types\basic\SignedShort(0);
         // member key
         $this->valueLength = new \obray\ipp\types\basic\SignedShort(strlen($name));
@@ -31,6 +32,21 @@ class MemberAttribute implements \JsonSerializable
         $this->memberValueTag = $type;
         $this->memberValue = \obray\ipp\enums\Types::getType($type, $value, $natuarlLanguage, $maxLength);
         $this->memberValueLength = new \obray\ipp\types\basic\SignedShort($this->memberValue->getLength());
+    }
+
+    public function getKey()
+    {
+        return $this->value->getValue();
+    }
+
+    public function getValue()
+    {
+        return $this->memberValue->getValue();
+    }
+
+    public function getLength()
+    {
+        return 1 + $this->nameLength->getLength() + $this->valueLength->getLength() + $this->value->getLength() + 1 + $this->nameLength->getLength()  + $this->memberValueLength->getLength() + $this->memberValueLength->getValue();
     }
 
     /**
@@ -70,9 +86,40 @@ class MemberAttribute implements \JsonSerializable
         return $binary;
     }
 
-    public function decode()
-    {
+    /**
+     * Decode
+     * 
+     * Decode according to RFC8010 secion 3.1.7
+     */
 
+    public function decode($binary, $offset=0, $length=NULL)
+    {
+        // get value tag
+        $this->valueTag = unpack('cTag', $binary, $offset)['Tag'];
+        $offset += 1;
+        // get name length
+        $this->nameLength = (new \obray\ipp\types\basic\SignedShort())->decode($binary, $offset);
+        $offset += $this->nameLength->getLength();
+        // get value length
+        $this->valueLength = (new \obray\ipp\types\basic\SignedShort())->decode($binary, $offset);
+        $offset += $this->valueLength->getLength();
+        // get value (in this case the value is the key)
+        $this->value = (new \obray\ipp\types\NameWithoutLanguage())->decode($binary, $offset, $this->valueLength->getValue());
+        $offset += $this->value->getLength();
+        // get value tag
+        $this->memberValueTag = unpack('cTag', $binary, $offset)['Tag'];
+        $offset += 1;
+        // get name length
+        $this->nameLength = (new \obray\ipp\types\basic\SignedShort())->decode($binary, $offset);
+        $offset += $this->nameLength->getLength();
+        // member value
+        $this->memberValueLength = (new \obray\ipp\types\basic\SignedShort())->decode($binary, $offset);
+        $offset += $this->memberValueLength->getLength();
+        // get the correct value type and decode
+        $this->memberValue = \obray\ipp\enums\Types::getType($this->memberValueTag);
+        $this->memberValue->decode($binary, $offset, $this->memberValueLength->getValue());
+        $offset += $this->valueLength->getValue();
+        return $this;
     }
 
     public function jsonSerialize()
