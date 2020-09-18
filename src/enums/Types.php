@@ -90,7 +90,7 @@ class Types extends \obray\ipp\types\Enum
                 return new \obray\ipp\types\NameWithLanguage($naturalLanguage, $value);
                 break;
             case \obray\ipp\enums\Types::NATURALLANGUAGE:
-                return new \obray\ipp\types\naturalLanguage($value);
+                return new \obray\ipp\types\NaturalLanguage($value);
                 break;
             case \obray\ipp\enums\Types::OCTETSTRING:
                 return new \obray\ipp\types\OctetString($value);
