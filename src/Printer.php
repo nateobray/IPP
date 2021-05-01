@@ -65,7 +65,7 @@ class Printer
             $jobAttributes
         );
         $encodedPayload = $payload->encode();
-        return $this->send($encodedPayload);
+        return \obray\ipp\Request::send($this->printerURI, $encodedPayload, $this->user, $this->password);
     }
 
     /**
@@ -130,7 +130,7 @@ class Printer
             $operationAttributes
         );
         $encodedPayload = $payload->encode();
-        return $this->send($encodedPayload);
+        return \obray\ipp\Request::send($this->printerURI, $encodedPayload, $this->user, $this->password);
     }
 
     /**
@@ -184,7 +184,7 @@ class Printer
             $operationAttributes
         );
         $encodedPayload = $payload->encode();
-        return $this->send($encodedPayload);
+        return \obray\ipp\Request::send($this->printerURI, $encodedPayload, $this->user, $this->password);
     }
 
     /**
@@ -216,7 +216,7 @@ class Printer
             $operationAttributes
         );
         $encodedPayload = $payload->encode();
-        return $this->send($encodedPayload);
+        return \obray\ipp\Request::send($this->printerURI, $encodedPayload, $this->user, $this->password);
     }
 
     /**
@@ -248,7 +248,7 @@ class Printer
             $operationAttributes
         );
         $encodedPayload = $payload->encode();
-        return $this->send($encodedPayload);
+        return \obray\ipp\Request::send($this->printerURI, $encodedPayload, $this->user, $this->password);
     }
 
     /**
@@ -286,7 +286,7 @@ class Printer
             $operationAttributes
         );
         $encodedPayload = $payload->encode();
-        return $this->send($encodedPayload);
+        return \obray\ipp\Request::send($this->printerURI, $encodedPayload, $this->user, $this->password);
     }
 
     /**
@@ -327,34 +327,8 @@ class Printer
             $operationAttributes
         );
         $encodedPayload = $payload->encode();
-        return $this->send($encodedPayload);
+        return \obray\ipp\Request::send($this->printerURI, $encodedPayload, $this->user, $this->password);
     }
 
-    /**
-     * send
-     * 
-     * This method applies request headers, formulates the request and then
-     * parses the response into a response payload.
-     * 
-     * @param string $encodedPayload This is the actual payload of the request
-     * 
-     * @return \obray\ipp\transport\IPPPayload
-     */
-
-    private function send(string $encodedPayload)
-    {
-        $headers = array("Content-Type" => "application/ipp");
-        if(!empty($this->user) && !empty($this->password)){
-            $headers["Authorization"] = 'Basic ' . base64_encode($this->user.':'.$this->password);
-        }
-
-        $http = new \obray\HTTP();
-        $http->addRequest($this->printerURI, \obray\HTTP::POST, $encodedPayload, $headers);
-        $this->lastRequest = ($http->getRequests())[0];
-        $this->lastResponse = ($http->send())[0];
-        
-        $responsePayload = new \obray\ipp\transport\IPPPayload();
-        $responsePayload->decode($this->lastResponse->getBody());
-        return $responsePayload;
-    }
+    
 }

@@ -3,8 +3,7 @@
     "description": "A PHP implemntation of the Internet Printing Protocol (IPP)",
     "license": "MIT",
     "require": {
-        "php": ">=7.1",
-        "obray/http": "dev-master"
+        "php": ">=7.1"
     },
     "autoload": {
         "psr-4": {
