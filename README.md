@@ -38,8 +38,7 @@ The goals of this implementation is to follow the IPP specification as closely a
 The easiest way is to use composer and add obray/IPP to the require section:
 ```JSON
 "require": {
-    "obray/ipp": "dev-master",
-    "obray/http": "dev-master"
+    "obray/ipp": "dev-master"
 }
 ```
 
