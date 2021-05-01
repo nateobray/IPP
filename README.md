@@ -55,6 +55,19 @@ $printer = new /obray/IPP/Printer(
 );
 $response = $printer->printJob({raw document}, {attributes});
 ```
+Note: you may need to specify the document-format attribute in the job depending on what you are printing (list printer attributes to see what formats it supports).  Do that like so:
+
+```PHP
+$printer = new /obray/IPP/Printer(
+  {printer-uri},
+  {username},
+  {password},
+  [
+     'document-format': 'application/vnd.cups-raw'
+  ]
+);
+```
+
 To see what other methods are available see the below documentation on [Printer Object and Methods](#printer-object-and-methods) and [Job Object and Methods](#job-object-and-methods)
 
 ## Printer Object and Methods
