@@ -1,7 +1,7 @@
 <?php
-namespace obray\enums;
+namespace obray\ipp\enums;
 
-class JobStateReasons extends SplEnum
+class JobStateReasons extends \obray\ipp\types\Enum
 {
     const none = 'none';
     const jobIncoming = 'job-incoming';

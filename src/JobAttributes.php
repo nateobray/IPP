@@ -73,7 +73,7 @@ class JobAttributes extends \obray\ipp\AttributeGroup
                 $this->attributes[$name] = new \obray\ipp\CollectionAttribute('media-col', $value);
                 break;
             default:
-                throw new \Exception("Invalide attribute ".$name.".");
+                throw new \Exception("Invalid attribute ".$name.".");
                 break;
         }
     }

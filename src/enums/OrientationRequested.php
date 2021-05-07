@@ -1,7 +1,7 @@
 <?php
 namespace obray\ipp\enums;
 
-class OrientationRequested  extends \obray\ipp\types\Enum
+class OrientationRequested extends \obray\ipp\types\Enum
 {
     const PORTRAIT = 3;
     const LANDSCAPE = 4;

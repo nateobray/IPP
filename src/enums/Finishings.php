@@ -1,7 +1,7 @@
 <?php
-namespace obray;
+namespace obray\ipp\enums;
 
-class Finishings extends SplEnum
+class Finishings  extends \obray\ipp\types\Enum
 {
     const none = 3;
     const staple = 4;

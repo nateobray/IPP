@@ -12,12 +12,13 @@ class Job
     private $lastRequest;
     private $lastResponse;
 
-    public function __construct($uri, $jobID, $user, $password=NULL)
+    public function __construct($uri, $jobID, $user=null, $password=NULL)
     {
         $this->printerURI = $uri;
         $this->jobID = $jobID;
         $this->user = $user;
         $this->password = $password;
+        $this->request = \obray\ipp\Request::class;
     }
 
     /**
@@ -129,7 +130,7 @@ class Job
             $operationAttributes
         );
         $encodedPayload = $payload->encode();
-        return \obray\ipp\Request::send($this->printerURI, $encodedPayload, $this->user, $this->password);
+        return ($this->request)::send($this->printerURI, $encodedPayload, $this->user, $this->password);
     }
 
     /**
@@ -178,7 +179,9 @@ class Job
         $operationAttributes = new \obray\ipp\OperationAttributes();
         $operationAttributes->{'printer-uri'} = $this->printerURI;
         $operationAttributes->{'job-id'} = $this->jobID;
-        $operationAttributes->{'requesting-user-name'} = $this->user;
+        if(!empty($this->user)){
+            $operationAttributes->{'requesting-user-name'} = $this->user;
+        }
         
         $payload = new \obray\ipp\transport\IPPPayload(
             new \obray\ipp\types\VersionNumber('1.1'),
@@ -188,7 +191,7 @@ class Job
             $operationAttributes
         );
         $encodedPayload = $payload->encode();
-        return \obray\ipp\Request::send($this->printerURI, $encodedPayload, $this->user, $this->password);
+        return ($this->request)::send($this->printerURI, $encodedPayload, $this->user, $this->password);
     }
 
     /**
@@ -222,7 +225,7 @@ class Job
             $operationAttributes
         );
         $encodedPayload = $payload->encode();
-        return \obray\ipp\Request::send($this->printerURI, $encodedPayload, $this->user, $this->password);
+        return ($this->request)::send($this->printerURI, $encodedPayload, $this->user, $this->password);
     }
 
     /**
@@ -261,7 +264,7 @@ class Job
             $operationAttributes
         );
         $encodedPayload = $payload->encode();
-        return \obray\ipp\Request::send($this->printerURI, $encodedPayload, $this->user, $this->password);
+        return ($this->request)::send($this->printerURI, $encodedPayload, $this->user, $this->password);
     }
 
     /**
@@ -304,7 +307,7 @@ class Job
             $operationAttributes
         );
         $encodedPayload = $payload->encode();
-        return \obray\ipp\Request::send($this->printerURI, $encodedPayload, $this->user, $this->password);
+        return ($this->request)::send($this->printerURI, $encodedPayload, $this->user, $this->password);
     }
 
 }

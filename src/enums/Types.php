@@ -85,7 +85,8 @@ class Types extends \obray\ipp\types\Enum
                 break;
             case \obray\ipp\enums\Types::NAMEWITHLANGUAGE:
                 if(empty($naturalLanguage)){
-                    throw new \Exception("Natural language must be specified.");
+                    $natuarlLanguage = "en-us";
+                    //throw new \Exception("Natural language must be specified.");
                 }
                 return new \obray\ipp\types\NameWithLanguage($naturalLanguage, $value);
                 break;
@@ -156,10 +157,12 @@ class Types extends \obray\ipp\types\Enum
                 return new \obray\ipp\types\Unknown($value);
                 break;
             case \obray\ipp\enums\Types::COLLECTION:
-                return new \obray\ipp\types\Collection($value);
+                return new \obray\ipp\types\Unknown($value);
+                //return new \obray\ipp\types\Collection($value);
                 break;
             default:
-                throw new \Exception("The type specified does not exists.");
+                return new \obray\ipp\types\Unknown($value);
+                //throw new \Exception("The type specified does not exists.");
                 break;
         }
     }

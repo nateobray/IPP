@@ -4,8 +4,146 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ee5bf6aae951b8cd5f8290d546ac314c",
-    "packages": [],
+    "content-hash": "7f47a64884fb3de3a3cce4d0d202e32f",
+    "packages": [
+        {
+            "name": "obray/http",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/nateobray/http.git",
+                "reference": "a1c368323995b281825524777e1a5ad297a4a434"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/nateobray/http/zipball/a1c368323995b281825524777e1a5ad297a4a434",
+                "reference": "a1c368323995b281825524777e1a5ad297a4a434",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.1"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^8.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "obray\\http\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "HTTP library",
+            "homepage": "http://www.obray.net",
+            "time": "2021-02-28T00:00:48+00:00"
+        },
+        {
+            "name": "obray/http-client",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/nateobray/HTTPClient.git",
+                "reference": "ac363f074870fcf3d980e25fe3a6f92a4027fdd7"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/nateobray/HTTPClient/zipball/ac363f074870fcf3d980e25fe3a6f92a4027fdd7",
+                "reference": "ac363f074870fcf3d980e25fe3a6f92a4027fdd7",
+                "shasum": ""
+            },
+            "require": {
+                "obray/http": "dev-master",
+                "obray/socket-client": "dev-master"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "obray\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Nate Obray",
+                    "email": "nathanobray@gmail.com"
+                }
+            ],
+            "description": "A pure PHP http client.",
+            "time": "2021-05-02T00:53:07+00:00"
+        },
+        {
+            "name": "obray/socket-client",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/nateobray/SocketClient.git",
+                "reference": "c4af654289437fa38281f52bdb1068a2fa6ef239"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/nateobray/SocketClient/zipball/c4af654289437fa38281f52bdb1068a2fa6ef239",
+                "reference": "c4af654289437fa38281f52bdb1068a2fa6ef239",
+                "shasum": ""
+            },
+            "require": {
+                "obray/socket-server": "dev-master"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "obray\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Nate Obray",
+                    "email": "nathanobray@gmail.com"
+                }
+            ],
+            "description": "A simple socket client to connect to any socket server.",
+            "time": "2021-05-01T22:04:29+00:00"
+        },
+        {
+            "name": "obray/socket-server",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/nateobray/SocketServer.git",
+                "reference": "b53e51ce723cafdc1a99ccdc7f49348e789617c3"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/nateobray/SocketServer/zipball/b53e51ce723cafdc1a99ccdc7f49348e789617c3",
+                "reference": "b53e51ce723cafdc1a99ccdc7f49348e789617c3",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.1"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "obray\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Generic socket server with non-blocking reads and writes.",
+            "time": "2021-05-02T00:01:09+00:00"
+        }
+    ],
     "packages-dev": [
         {
             "name": "doctrine/instantiator",
@@ -1667,9 +1805,11 @@
         }
     ],
     "aliases": [],
-    "minimum-stability": "stable",
-    "stability-flags": [],
-    "prefer-stable": false,
+    "minimum-stability": "dev",
+    "stability-flags": {
+        "obray/http-client": 20
+    },
+    "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
         "php": ">=7.1"

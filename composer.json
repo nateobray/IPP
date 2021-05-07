@@ -2,8 +2,11 @@
     "name": "obray/ipp",
     "description": "A PHP implemntation of the Internet Printing Protocol (IPP)",
     "license": "MIT",
+    "minimum-stability": "dev",
+    "prefer-stable": true,
     "require": {
-        "php": ">=7.1"
+        "php": ">=7.1",
+        "obray/http-client": "dev-master"
     },
     "autoload": {
         "psr-4": {

@@ -2,7 +2,7 @@
 
 namespace obray\ipp;
 
-class Request
+class Request implements \obray\ipp\interfaces\RequestInterface
 {
     /**
      * send
@@ -15,13 +15,13 @@ class Request
      * @return \obray\ipp\transport\IPPPayload
      */
 
-    static public function send(string $printerURI, string $encodedPayload, string $user=null, string $password=null)
+    static public function send(string $printerURI, string $encodedPayload, string $user=null, string $password=null): \obray\ipp\transport\IPPPayload
     {
         // interpret ipp request into http request
         $results = parse_url($printerURI);
         $postURL = $printerURI;
         if($results['scheme'] == 'ipp'){
-            $postURL = 'http://' . $results['host'] . ':631' . $results['path'];
+            $postURL = 'http://' . $results['host'] . ':631' . $results['path']??'';
         }
 
         // setup headers
@@ -30,24 +30,22 @@ class Request
             $headers[] = "Authorization: Basic " . base64_encode($user.':'.$password);
         }
 
-        // create curl request
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $postURL);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLINFO_HEADER_OUT, true);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 30);
-        curl_setopt($ch, CURLOPT_POST, true); 
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $encodedPayload);
-        // execute the curl request and receive response
-        $lastResponse = curl_exec($ch);
-        $info = curl_getinfo($ch);
-        if($info['http_code'] === 401) throw new \obray\ipp\exceptions\AuthenticationError();
-        if($info['http_code'] !== 200) throw new \obray\ipp\exceptions\HTTPError($info['http_code']);
+        // setup headers
+        $headers = array("Content-Type" => "application/ipp");
+        $headers['Content-Length'] = strlen($encodedPayload);
+        $headers['Connection'] = 'close';
+        if(!empty($user) && !empty($password)){
+            $headers["Authorization"] = "Basic " . base64_encode($user.':'.$password);
+        }
+
+        $response = \obray\HTTPClient::post($postURL, $encodedPayload, $headers);
+        if($response->getStatusCode() == 401) throw new \obray\ipp\exceptions\AuthenticationError();
+        if($response->getStatusCode() !== 200) throw new \obray\ipp\exceptions\HTTPError($response->getStatusCode());
         
         // parse the response
         $responsePayload = new \obray\ipp\transport\IPPPayload();
-        $responsePayload->decode($lastResponse);
+        $responsePayload->decode($response->getBody()->encode());
+        
         return $responsePayload;
     }
 }

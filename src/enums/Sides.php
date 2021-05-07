@@ -1,7 +1,7 @@
 <?php
-namespace obray\enums;
+namespace obray\ipp\enums;
 
-class Sides extends SplEnum
+class Sides extends \obray\ipp\types\Enum
 {
     const one_sided = 'one-sided';
     const two_sided_long_edge = 'two-sided-long-edge';

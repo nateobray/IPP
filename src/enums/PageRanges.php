@@ -1,5 +1,5 @@
 <?php
-namespace obray\enums;
+namespace obray\ipp\enums;
 
 class PageRanges
 {

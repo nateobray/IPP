@@ -1,8 +1,8 @@
 <?php
 
-namespace obray\enumbs;
+namespace obray\ipp\enums;
 
-class JobHoldSheets extends SplEnum
+class JobHoldSheets extends \obray\ipp\types\Enum
 {
     const none = "none";
     const standard = "standard";

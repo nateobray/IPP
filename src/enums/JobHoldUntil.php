@@ -1,8 +1,8 @@
 <?php
 
-namespace obray\enumbs;
+namespace obray\ipp\enums;
 
-class JobHoldUntil extends SplEnum
+class JobHoldUntil extends \obray\ipp\types\Enum
 {
     const no_hold = "no-hold";
     const indefinite = "indefinite";

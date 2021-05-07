@@ -76,8 +76,7 @@ class Attribute implements \JsonSerializable
         $offset += $this->valueLength->len();
         
         // get the correct value type and decode
-        //print_r((string)$this->name."\n");
-        $this->value = \obray\ipp\enums\Types::getType($this->valueTag, NULL, NULL, NULL, (string)$this->name);
+        $this->value = \obray\ipp\enums\Types::getType($this->valueTag, NULL, "en-us", NULL, (string)$this->name);
         //$this->getValue($this->valueTag);
 		
         $this->value->decode($binary, $offset, $this->valueLength->getValue());

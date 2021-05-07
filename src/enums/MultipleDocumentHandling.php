@@ -1,8 +1,8 @@
 <?php
 
-namespace obray\enumbs;
+namespace obray\ipp\enums;
 
-class MultipleDocumentHandling extends SplEnum
+class MultipleDocumentHandling extends \obray\ipp\types\Enum
 {
     const single_document = "single-document";
     const separate_documents_uncollated_copies = "separate-documents-uncollated-copies";

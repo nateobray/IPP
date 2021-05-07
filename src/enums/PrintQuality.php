@@ -1,7 +1,7 @@
 <?php
-namespace obray\enums;
+namespace obray\ipp\enums;
 
-class PrintQuality extends SplEnum
+class PrintQuality extends \obray\ipp\types\Enum
 {
     const draft = 3;
     const normal = 4;

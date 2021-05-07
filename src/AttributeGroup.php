@@ -78,12 +78,13 @@ abstract class AttributeGroup implements \JsonSerializable
         $collectionAttributeTag = 0x34;
         $offset += 1; $isCollection = false;
         while(true){
+            
             if($isCollection){
-               // exit();
+               return false;
             } else {
                 $attribute = (new \obray\ipp\Attribute(!empty($attributeName)?$attributeName:NULL))->decode($binary, $offset);
             }
-            
+
             if( $attribute->getNameLength() === 0 && !is_array($this->attributes[$attributeName]) ){
                 $this->attributes[$attributeName] = array( 0 => $this->attributes[$attributeName] );
                 $this->attributes[$attributeName][] = $attribute;
@@ -94,12 +95,14 @@ abstract class AttributeGroup implements \JsonSerializable
                 $this->attributes[$attributeName] = $attribute;
             }
             $offset = $attribute->getOffset();
+            if($offset === strlen($binary)) return false;
+            
             $newTag = (unpack("cAttributeGroupTag", $binary, $offset))['AttributeGroupTag'];
             if($newTag===$endOfAttributesTag){
                 return false;
             }
             if($newTag===$collectionAttributeTag){
-                $isCollection = true;
+                //$isCollection = true;
             }
             if(in_array($newTag,$validAttributeGroupTags)){
                 return $newTag;

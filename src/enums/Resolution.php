@@ -1,8 +1,8 @@
 <?php
 
-namespace obray\enums;
+namespace obray\ipp\enums;
 
-class Resolution
+class Resolution extends \obray\ipp\types\Enum
 {
     public $width;
     public $height;

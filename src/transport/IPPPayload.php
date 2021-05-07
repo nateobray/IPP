@@ -91,12 +91,13 @@ class IPPPayload
             $this->jobAttributes = new \obray\ipp\JobAttributes();
             $newTag = $this->jobAttributes->decode($binary, $offset);
         }
-
+        
         // decode printer attributes
         if($newTag!==false && $newTag === 0x04){
             $this->printerAttributes = new \obray\ipp\PrinterAttributes();
             $newTag = $this->printerAttributes->decode($binary, $offset);
-        }        
+        }  
+        
     }
 
 }

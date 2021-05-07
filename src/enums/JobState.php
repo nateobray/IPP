@@ -1,7 +1,7 @@
 <?php
 namespace obray\ipp\enums;
 
-class JobState  extends \obray\ipp\types\Enum
+class JobState extends \obray\ipp\types\Enum
 {
     const PENDING = 3;
     const PENDINGHELD = 4;
