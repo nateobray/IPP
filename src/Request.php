@@ -20,8 +20,9 @@ class Request implements \obray\ipp\interfaces\RequestInterface
         // interpret ipp request into http request
         $results = parse_url($printerURI);
         $postURL = $printerURI;
+        if(empty($results['path'])) $results['path'] = '';
         if($results['scheme'] == 'ipp'){
-            $postURL = 'http://' . $results['host'] . ':631' . $results['path']??'';
+            $postURL = 'http://' . $results['host'] . ':631' . $results['path'];
         }
 
         // setup headers
