@@ -61,10 +61,7 @@ Depending on the printer and the document you are trying to print the above may 
 $printer = new \obray\IPP\Printer(
   {printer-uri},
   {username}, // optional
-  {password}, // optional
-  [
-     'document-format': 'application/vnd.cups-raw'
-  ]
+  {password}  // optional
 );
 $attributes = $printer->getPrinterAttributes();
 ```
@@ -118,6 +115,18 @@ $attributes = $printer->print(
    ]
 );
 ```
+### Connecting Directly to Printers OR CUPS
+
+This library supports directly connecting to network printers and printing documents or printing to a CUPS server or compouter with CUPS installed.
+
+To connection an print directly to a network printer it usually just a matter of getting it's host name and using it like one of the following:
+```
+ipp://network.hostname.of.printer
+ipp://network.hostname.of.printer/ipp
+```
+To use this library with cups, it works exactly the same except usually the URL is something like: `ipp://hostname.of.cups/ipp/{printer-name-goes-here}`
+
+To use this with a USB printer or other kinds of printers, you'll need to use CUPS.  Install the printer on a computer that has CUPS install and then you can print to the printer using this library through CUPS.
 
 To see what other methods are available see the below documentation on [Printer Object and Methods](#printer-object-and-methods) and [Job Object and Methods](#job-object-and-methods)
 
