@@ -48,25 +48,85 @@ code and use it however you see fit.
 ## Usage
 The most basic way of using this implementation is to create a `Printer` object and call `printJob` method like this:
 ```PHP
-$printer = new /obray/IPP/Printer(
+$printer = new \obray\IPP\Printer(
   {printer-uri},
-  {username},
-  {password}
+  {username}, // optional
+  {password}  // optional
 );
 $response = $printer->printJob({raw document}, {attributes});
 ```
-Note: you may need to specify the document-format attribute in the job depending on what you are printing (list printer attributes to see what formats it supports).  Do that like so:
+Depending on the printer and the document you are trying to print the above may not give you the results you desire (i.e. printing PDF as plain text, or a black page, etc).  Printers often have only specific document formats they will print.  To find out which formats your printer supports list the printer attributes like so:
 
 ```PHP
-$printer = new /obray/IPP/Printer(
+$printer = new \obray\IPP\Printer(
   {printer-uri},
-  {username},
-  {password},
-  [
-     'document-format': 'application/vnd.cups-raw'
-  ]
+  {username}, // optional
+  {password}  // optional
+);
+$attributes = $printer->getPrinterAttributes();
+```
+
+This should give you a structure something like (encoded to JSON):
+
+```JSON
+{
+    "versionNumber": "1.1",
+    "requestId": 1,
+    "statusCode": "successful-ok",
+    "operationAttributes": {
+        "attributes-charset": "utf-8",
+        "attributes-natural-language": "en-us"
+    },
+    "jobAttributes": null,
+    "printerAttributes": {
+    
+        ...
+        
+        "document-format-supported": [
+            "application\/octet-stream",
+            "image\/urf",
+            "image\/pwg-raster",
+            "application\/pdf",
+            "image\/jpeg",
+            "application\/postscript",
+            "application\/vnd.hp-PCL",
+            "text\/plain"
+        ],
+        
+        ...
+        
+    }
+}
+```
+
+To print a PDF to this printer you would do something like this:
+
+```PHP
+$printer = new \obray\IPP\Printer(
+  {printer-uri},
+  {username}, // optional
+  {password}, // optional
+  
+);
+$attributes = $printer->print(
+   123, // optional request ID
+   [
+     'document-format': 'application/pdf'
+   ]
 );
 ```
+### Connecting Directly to Printers OR CUPS
+
+This library supports directly connecting to network printers and printing documents or printing to a CUPS server or compouter with CUPS installed.
+
+To connection an print directly to a network printer it usually just a matter of getting it's host name and using it like one of the following:
+```
+ipp://network.hostname.of.printer
+ipp://network.hostname.of.printer/ipp
+```
+To use this library with cups, it works exactly the same except usually the URL is something like: `ipp://hostname.of.cups/ipp/{printer-name-goes-here}`
+
+To use this with a USB printer or other kinds of printers, you'll need to use CUPS.  Install the printer on a computer that has CUPS install and then you can print to the printer using this library through CUPS.
 
 To see what other methods are available see the below documentation on [Printer Object and Methods](#printer-object-and-methods) and [Job Object and Methods](#job-object-and-methods)
 
@@ -77,7 +137,7 @@ The printer object defines a printer based on a specified URI.  When a method is
 Create a printer object by specifing the URI for the printer the credentials if needed.  Once you have a printer you can call it's methods.
 ###### Usage:
 ```PHP
-$printer = new /obray/IPP/Printer(
+$printer = new \obray\IPP\Printer(
   {printer-uri},
   {username},   // optional
   {password}    // optional
