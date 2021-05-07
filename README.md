@@ -48,23 +48,74 @@ code and use it however you see fit.
 ## Usage
 The most basic way of using this implementation is to create a `Printer` object and call `printJob` method like this:
 ```PHP
-$printer = new /obray/IPP/Printer(
+$printer = new \obray\IPP\Printer(
   {printer-uri},
-  {username},
-  {password}
+  {username}, // optional
+  {password}  // optional
 );
 $response = $printer->printJob({raw document}, {attributes});
 ```
-Note: you may need to specify the document-format attribute in the job depending on what you are printing (list printer attributes to see what formats it supports).  Do that like so:
+Depending on the printer and the document you are trying to print the above may not give you the results you desire (i.e. printing PDF as plain text, or a black page, etc).  Printers often have only specific document formats they will print.  To find out which formats your printer supports list the printer attributes like so:
 
 ```PHP
 $printer = new /obray/IPP/Printer(
   {printer-uri},
-  {username},
-  {password},
+  {username}, // optional
+  {password}, // optional
   [
      'document-format': 'application/vnd.cups-raw'
   ]
+);
+$attributes = $printer->getPrinterAttributes();
+```
+
+This should give you a structure something like (encoded to JSON):
+
+```JSON
+{
+    "versionNumber": "1.1",
+    "requestId": 1,
+    "statusCode": "successful-ok",
+    "operationAttributes": {
+        "attributes-charset": "utf-8",
+        "attributes-natural-language": "en-us"
+    },
+    "jobAttributes": null,
+    "printerAttributes": {
+    
+        ...
+        
+        "document-format-supported": [
+            "application\/octet-stream",
+            "image\/urf",
+            "image\/pwg-raster",
+            "application\/pdf",
+            "image\/jpeg",
+            "application\/postscript",
+            "application\/vnd.hp-PCL",
+            "text\/plain"
+        ],
+        
+        ...
+        
+    }
+}
+```
+
+To print a PDF to this printer you would do something like this:
+
+```PHP
+$printer = new /obray/IPP/Printer(
+  {printer-uri},
+  {username}, // optional
+  {password}, // optional
+  
+);
+$attributes = $printer->print(
+   123, // optional request ID
+   [
+     'document-format': 'application/pdf'
+   ]
 );
 ```
 
