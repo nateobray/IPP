@@ -58,7 +58,7 @@ $response = $printer->printJob({raw document}, {attributes});
 Depending on the printer and the document you are trying to print the above may not give you the results you desire (i.e. printing PDF as plain text, or a black page, etc).  Printers often have only specific document formats they will print.  To find out which formats your printer supports list the printer attributes like so:
 
 ```PHP
-$printer = new /obray/IPP/Printer(
+$printer = new \obray\IPP\Printer(
   {printer-uri},
   {username}, // optional
   {password}, // optional
@@ -105,7 +105,7 @@ This should give you a structure something like (encoded to JSON):
 To print a PDF to this printer you would do something like this:
 
 ```PHP
-$printer = new /obray/IPP/Printer(
+$printer = new \obray\IPP\Printer(
   {printer-uri},
   {username}, // optional
   {password}, // optional
@@ -128,7 +128,7 @@ The printer object defines a printer based on a specified URI.  When a method is
 Create a printer object by specifing the URI for the printer the credentials if needed.  Once you have a printer you can call it's methods.
 ###### Usage:
 ```PHP
-$printer = new /obray/IPP/Printer(
+$printer = new \obray\IPP\Printer(
   {printer-uri},
   {username},   // optional
   {password}    // optional
