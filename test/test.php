@@ -1,7 +1,7 @@
 <?php
 
 $loader = require_once 'vendor/autoload.php';
-/****
+
 try{
     $printer = new \obray\ipp\Printer("ipp://et0021b7b5dfc7.malouf.internal");
     $response = $printer->getPrinterAttributes();
@@ -13,7 +13,7 @@ try{
 print_r(json_encode($response, JSON_PRETTY_PRINT));
 
 sleep(2);
- */
+ 
 try {
     
     $printer = new \obray\ipp\Printer("ipp://et0021b7b5dfc7.malouf.internal");
