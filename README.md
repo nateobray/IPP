@@ -360,25 +360,25 @@ Currently this library does not have a stable release but when it does it will f
 
 | IETF or PWG Specification | obray\ipp | IPP/1.1 | IPP/2.0 | IPP/2.1 | IPP/2.2 |
 | ------------------------- | --------- | ------- | ------- | ------- | ------- |
-| PWG5100.1                 |           |         |   REQ   |   REQ   |   REQ   |
-| PWG5100.2                 |           |         |   REQ   |   REQ   |   REQ   |
-| PWG5100.3                 |           |         |         |   REQ   |   REQ   |
-| PWG5100.5                 |           |         |         |         |   REQ   |
-| PWG5100.6                 |           |         |         |   REC   |   REQ   |
-| PWG5100.7                 |           |         |         |   REQ   |   REQ   |
-| PWG5100.8                 |           |         |         |         |   REQ   |
-| PWG5100.9                 |           |         |  RECMD  |   REQ   |   REQ   |
-| PWG5100.11                |           |         |         |  RECMD  |   REQ   |
-| PWG5101.1                 |           |         |   REQ   |   REQ   |   REQ   |
-| PWG5107.2                 |           |         |  RECMD  |  RECMD  |   REQ   |
-| RFC2910                   |  TESTING  |   REQ   |   REQ   |   REQ   |   REQ   |
-| RFC2911                   |  TESTING  |   REQ   |   REQ   |   REQ   |   REQ   |
-| RFC3380                   |           |         |         |   REQ   |   REQ   |
-| RFC3382                   |           |         |         |   REQ   |   REQ   |
-| RFC3510                   |    DEV    |   REQ   |   REQ   |   REQ   |   REQ   |
-| RFC3995                   |           |         |         |   REQ   |   REQ   |
-| RFC3996                   |           |         |         |   REQ   |   REQ   |
-| RFC3998                   |           |         |         |   REQ   |   REQ   |
-| RFC5246                   |           |         |  RECMD  |  RECMD  |   REQ   |
-| RFC7472                   |           |         |  RECMD  |  RECMD  |   REQ   |
+| [PWG5100.1](http://ftp.pwg.org/pub/pwg/candidates/cs-ippfinishings21-20170217-5100.1.pdf)                 |           |         |   REQ   |   REQ   |   REQ   |
+| [PWG5100.2](https://ftp.pwg.org/pub/pwg/candidates/cs-ippoutputbin10-20010207-5100.2.pdf)                 |           |         |   REQ   |   REQ   |   REQ   |
+| [PWG5100.3](https://ftp.pwg.org/pub/pwg/candidates/cs-ippprodprint10-20010212-5100.3.pdf)                 |           |         |         |   REQ   |   REQ   |
+| [PWG5100.5](https://ftp.pwg.org/pub/pwg/candidates/cs-ippdocobject10-20031031-5100.5.pdf)                 |           |         |         |         |   REQ   |
+| [PWG5100.6](https://ftp.pwg.org/pub/pwg/candidates/cs-ipppageoverride10-20031031-5100.6.pdf)                 |           |         |         |   REC   |   REQ   |
+| [PWG5100.7](https://ftp.pwg.org/pub/pwg/candidates/cs-ippjobext20-20190816-5100.7.pdf)                 |           |         |         |   REQ   |   REQ   |
+| [PWG5100.8](https://ftp.pwg.org/pub/pwg/candidates/cs-ippactuals10-20030313-5100.8.pdf)                 |           |         |         |         |   REQ   |
+| [PWG5100.9](https://ftp.pwg.org/pub/pwg/candidates/cs-ippstate10-20090731-5100.9.pdf)                 |           |         |  RECMD  |   REQ   |   REQ   |
+| [PWG5100.11](https://ftp.pwg.org/pub/pwg/candidates/cs-ippjobprinterext10-20101030-5100.11.pdf)                |           |         |         |  RECMD  |   REQ   |
+| [PWG5101.1](https://ftp.pwg.org/pub/pwg/candidates/cs-pwgmsn20-20130328-5101.1.pdf)                 |           |         |   REQ   |   REQ   |   REQ   |
+| [PWG5107.2](https://ftp.pwg.org/pub/pwg/candidates/cs-pmp1284cmdset10-20100531-5107.2.pdf)                 |           |         |  RECMD  |  RECMD  |   REQ   |
+| [RFC2910](https://datatracker.ietf.org/doc/html/rfc2910)                   |  TESTING  |   REQ   |   REQ   |   REQ   |   REQ   |
+| [RFC2911](https://datatracker.ietf.org/doc/html/rfc3380)                   |  TESTING  |   REQ   |   REQ   |   REQ   |   REQ   |
+| [RFC3380](https://datatracker.ietf.org/doc/html/rfc3380)                   |           |         |         |   REQ   |   REQ   |
+| [RFC3382](https://datatracker.ietf.org/doc/html/rfc3382)                   |           |         |         |   REQ   |   REQ   |
+| [RFC3510](https://datatracker.ietf.org/doc/html/rfc3510)                   |    DEV    |   REQ   |   REQ   |   REQ   |   REQ   |
+| [RFC3995](https://datatracker.ietf.org/doc/html/rfc3995)                   |           |         |         |   REQ   |   REQ   |
+| [RFC3996](https://datatracker.ietf.org/doc/html/rfc3996)                   |           |         |         |   REQ   |   REQ   |
+| [RFC3998](https://datatracker.ietf.org/doc/html/rfc3998)                   |           |         |         |   REQ   |   REQ   |
+| [RFC5246](https://datatracker.ietf.org/doc/html/rfc5246)                   |           |         |  RECMD  |  RECMD  |   REQ   |
+| [RFC7472](https://datatracker.ietf.org/doc/html/rfc7472)                   |           |         |  RECMD  |  RECMD  |   REQ   |
 
