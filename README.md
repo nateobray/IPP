@@ -375,7 +375,7 @@ Currently this library does not have a stable release but when it does it will f
 | [RFC2911 - Job and Printer Set Operations](https://datatracker.ietf.org/doc/html/rfc2911)                   |  TESTING  |   REQ   |   REQ   |   REQ   |   REQ   |
 | [RFC3380 - Model and Semantics](https://datatracker.ietf.org/doc/html/rfc3380)                   |           |         |         |   REQ   |   REQ   |
 | [RFC3382 - The 'collection' attribute syntax](https://datatracker.ietf.org/doc/html/rfc3382)                   |           |         |         |   REQ   |   REQ   |
-| [RFC3510 - IPP URL Scheme](https://datatracker.ietf.org/doc/html/rfc3510)                   |    DEV    |   REQ   |   REQ   |   REQ   |   REQ   |
+| [RFC3510 - IPP URL Scheme](https://datatracker.ietf.org/doc/html/rfc3510)                   |    DONE    |   REQ   |   REQ   |   REQ   |   REQ   |
 | [RFC3995 - Event Notifications and Subscriptions](https://datatracker.ietf.org/doc/html/rfc3995)                   |           |         |         |   REQ   |   REQ   |
 | [RFC3996 - The 'ippget' Delivery Method for Event Notifications](https://datatracker.ietf.org/doc/html/rfc3996)                   |           |         |         |   REQ   |   REQ   |
 | [RFC3998 - Job and Printer Administrative Operations](https://datatracker.ietf.org/doc/html/rfc3998)                   |           |         |         |   REQ   |   REQ   |
