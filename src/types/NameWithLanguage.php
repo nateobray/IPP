@@ -26,7 +26,7 @@ class NameWithLanguage extends \obray\ipp\types\basic\OctetString
     public function decode($binary, $offset=0, $length=NULL)
     {
         $this->languageSize = (new \obray\ipp\types\basic\SignedShort())->decode($binary, $offset);
-        $this->language = (new \obray\ipp\types\basic\Octetstring())->decode($binary, $offset + $this->languageSize->getLength(), $this->languageSize->getLength());
+        $this->language = (new \obray\ipp\types\basic\Octetstring())->decode($binary, $offset + $this->languageSize->getLength(), $this->languageSize->getValue());
         $this->nameSize = (new \obray\ipp\types\basic\SignedShort())->decode($binary, $offset + $this->languageSize->getLength() + $this->language->getLength());
         $this->name = (new \obray\ipp\types\basic\Octetstring())->decode($binary, $offset + $this->languageSize->getLength() + $this->language->getLength() + $this->nameSize->getLength() , $this->nameSize->getValue());
         return $this;
