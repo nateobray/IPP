@@ -108,7 +108,7 @@ $printer = new \obray\IPP\Printer(
   {password}, // optional
   
 );
-$attributes = $printer->print(
+$attributes = $printer->printJob(
    123, // optional request ID
    [
      'document-format': 'application/pdf'
