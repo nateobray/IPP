@@ -2,21 +2,21 @@
 
 $loader = require_once 'vendor/autoload.php';
 
+$printerURI = "ipp://127.0.0.1:631/printers/pdf";
+
 try{
-    $printer = new \obray\ipp\Printer("ipp://et0021b7b5dfc7.malouf.internal");
+    $printer = new \obray\ipp\Printer($printerURI);
     $response = $printer->getPrinterAttributes();
 } catch(\Exception $e){
     print_r($e->getMessage() . "\n");
     exit();
 }
 
-print_r(json_encode($response, JSON_PRETTY_PRINT));
-
 sleep(2);
  
 try {
     
-    $printer = new \obray\ipp\Printer("ipp://et0021b7b5dfc7.malouf.internal");
+    $printer = new \obray\ipp\Printer($printerURI);
     $response = $printer->printJob("Hello World!", 1, array(
         "document-format" => 'text/plain'
     ));
@@ -31,7 +31,7 @@ sleep(5);
 try {
     print_r("Attempting to get job\n");
     $job = new \obray\ipp\Job(
-        "ipp://et0021b7b5dfc7.malouf.internal",
+        $printerURI,
         $response->jobAttributes->{'job-id'}->getAttributeValue(),
         null,
         null

@@ -26,27 +26,39 @@ class Request implements \obray\ipp\interfaces\RequestInterface
         }
 
         // setup headers
-        $headers = array(0 => "Content-Type: application/ipp");
+        $headers = array(
+            0 => "Content-Type: application/ipp",
+            1 => "Content-Length: " . strlen($encodedPayload),
+            2 => "Connection: close"
+        );
         if(!empty($user) && !empty($password)){
             $headers[] = "Authorization: Basic " . base64_encode($user.':'.$password);
         }
 
-        // setup headers
-        $headers = array("Content-Type" => "application/ipp");
-        $headers['Content-Length'] = strlen($encodedPayload);
-        $headers['Connection'] = 'close';
-        if(!empty($user) && !empty($password)){
-            $headers["Authorization"] = "Basic " . base64_encode($user.':'.$password);
-        }
+        $ch = curl_init();
 
-        $response = \obray\HTTPClient::post($postURL, $encodedPayload, $headers);
-        if($response->getStatusCode() == 401) throw new \obray\ipp\exceptions\AuthenticationError();
-        if($response->getStatusCode() !== 200) throw new \obray\ipp\exceptions\HTTPError($response->getStatusCode());
-        
-        // parse the response
+        curl_setopt($ch, CURLOPT_URL,$postURL);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $encodedPayload);
+
+        // Receive server response ...
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+        $server_output = curl_exec($ch);
+
+        curl_close ($ch);
+
+        if(curl_errno($ch)) throw new \Exception(curl_error($ch));
+        $info = curl_getinfo($ch);
+
+        if($info['http_code'] == 401) throw new \obray\ipp\exceptions\AuthenticationError();
+        if($info['http_code'] != 200) throw new \obray\ipp\exceptions\HTTPError('http_code');
+
+        // Further processing ...
         $responsePayload = new \obray\ipp\transport\IPPPayload();
-        $responsePayload->decode($response->getBody()->encode());
-        
+        $responsePayload->decode($server_output);
         return $responsePayload;
+        
     }
 }

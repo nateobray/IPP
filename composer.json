@@ -5,8 +5,7 @@
     "minimum-stability": "dev",
     "prefer-stable": true,
     "require": {
-        "php": ">=7.1",
-        "obray/http-client": "dev-master"
+        "php": ">=7.1"
     },
     "autoload": {
         "psr-4": {
