@@ -109,6 +109,7 @@ $printer = new \obray\IPP\Printer(
   
 );
 $attributes = $printer->printJob(
+   {raw document},
    123, // optional request ID
    [
      'document-format': 'application/pdf'
