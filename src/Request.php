@@ -47,13 +47,13 @@ class Request implements \obray\ipp\interfaces\RequestInterface
 
         $server_output = curl_exec($ch);
 
-        curl_close ($ch);
-
         if(curl_errno($ch)) throw new \Exception(curl_error($ch));
         $info = curl_getinfo($ch);
+        
+        curl_close($ch);
 
         if($info['http_code'] == 401) throw new \obray\ipp\exceptions\AuthenticationError();
-        if($info['http_code'] != 200) throw new \obray\ipp\exceptions\HTTPError('http_code');
+        if($info['http_code'] != 200) throw new \obray\ipp\exceptions\HTTPError($info['http_code']);
 
         // Further processing ...
         $responsePayload = new \obray\ipp\transport\IPPPayload();
