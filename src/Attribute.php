@@ -103,6 +103,7 @@ class Attribute implements \JsonSerializable
         return $this->offset;
     }
 
+    #[\ReturnTypeWillChange]
     public function jsonSerialize()
     {
         return $this->value;

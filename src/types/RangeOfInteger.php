@@ -56,6 +56,7 @@ class RangeOfInteger implements \obray\ipp\interfaces\TypeInterface, \JsonSerial
         return $range;
     }
 
+    #[\ReturnTypeWillChange]
     public function jsonSerialize()
     {
         $range = $this->lowerBound;

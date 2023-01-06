@@ -50,6 +50,7 @@ class SignedByte implements \obray\ipp\interfaces\TypeInterface, \JsonSerializab
         return (string)$this->value;
     }
 
+    #[\ReturnTypeWillChange]
     public function jsonSerialize()
     {
         return $this->value;

@@ -47,6 +47,7 @@ class OctetString implements \obray\ipp\interfaces\TypeInterface, \JsonSerializa
         return (string)$this->value;
     }
 
+    #[\ReturnTypeWillChange]
     public function jsonSerialize()
     {
         return (string)$this->value;

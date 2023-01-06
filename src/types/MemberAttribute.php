@@ -122,6 +122,7 @@ class MemberAttribute implements \JsonSerializable
         return $this;
     }
 
+    #[\ReturnTypeWillChange]
     public function jsonSerialize()
     {
         return $this->memberValue;

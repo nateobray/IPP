@@ -43,6 +43,7 @@ class Enum extends \obray\ipp\types\basic\SignedShort implements \JsonSerializab
         return $this->valueTag;
     }
 
+    #[\ReturnTypeWillChange]
     public function jsonSerialize()
     {
         return str_replace('_','-',strtolower($this->key));

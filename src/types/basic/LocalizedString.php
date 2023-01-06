@@ -57,6 +57,7 @@ class LocalizedString implements \obray\ipp\interfaces\TypeInterface, \JsonSeria
         return (string)$this->value;
     }
 
+    #[\ReturnTypeWillChange]
     public function jsonSerialize()
     {
         return $this->value;

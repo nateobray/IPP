@@ -25,6 +25,7 @@ class NoVal implements \obray\ipp\interfaces\TypeInterface, \JsonSerializable
         return NULL;
     }
 
+    #[\ReturnTypeWillChange]
     public function jsonSerialize()
     {
         return NULL;
