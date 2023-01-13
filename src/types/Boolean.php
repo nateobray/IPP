@@ -15,6 +15,7 @@ class Boolean extends \obray\ipp\types\basic\SignedByte
         return ($this->value==0)?'false':'true';
     }
 
+    #[\ReturnTypeWillChange]
     public function jsonSerialize()
     {
         return ($this->value==0)?false:true;

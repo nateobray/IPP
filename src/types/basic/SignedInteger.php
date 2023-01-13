@@ -50,6 +50,7 @@ class SignedInteger implements \obray\ipp\interfaces\TypeInterface, \JsonSeriali
         return (string)$this->value;
     }
 
+    #[\ReturnTypeWillChange]
     public function jsonSerialize()
     {
         return $this->value;

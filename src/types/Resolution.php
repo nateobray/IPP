@@ -54,6 +54,7 @@ class Resolution implements \obray\ipp\interfaces\TypeInterface, \JsonSerializab
         return $this->crossFeedDirectionResolution . 'x' . $this->feedDirectionResolution . ' ' . $units;
     }
 
+    #[\ReturnTypeWillChange]
     public function jsonSerialize()
     {
         return (string)$this;

@@ -110,6 +110,7 @@ abstract class AttributeGroup implements \JsonSerializable
         }
     }
 
+    #[\ReturnTypeWillChange]
     public function jsonSerialize()
     {
         return $this->attributes;

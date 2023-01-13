@@ -50,6 +50,7 @@ class NameWithLanguage extends \obray\ipp\types\basic\OctetString
         return (string)$this->name;
     }
 
+    #[\ReturnTypeWillChange]
     public function jsonSerialize()
     {
         return (string)$this->name->getValue();

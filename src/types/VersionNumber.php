@@ -36,6 +36,7 @@ class VersionNumber implements \obray\ipp\interfaces\TypeInterface, \JsonSeriali
 
     }
 
+    #[\ReturnTypeWillChange]
     public function jsonSerialize()
     {
         return $this->majorVersionNumber . '.' . $this->minorVersionNumber;

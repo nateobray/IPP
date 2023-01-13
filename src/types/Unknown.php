@@ -26,6 +26,7 @@ class Unknown implements \obray\ipp\interfaces\TypeInterface, \JsonSerializable
         return $this->value;
     }
 
+    #[\ReturnTypeWillChange]
     public function jsonSerialize()
     {
         return (string)$this;

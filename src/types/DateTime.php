@@ -65,6 +65,7 @@ class DateTime extends \obray\ipp\types\basic\OctetString implements \JsonSerial
         return $this->datetime->format("Y-m-d H:i:s.vO");
     }
 
+    #[\ReturnTypeWillChange]
     public function jsonSerialize()
     {
         return $this->datetime->format("Y-m-d H:i:s.vO");;
