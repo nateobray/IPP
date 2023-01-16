@@ -22,7 +22,7 @@ class Request implements \obray\ipp\interfaces\RequestInterface
         $postURL = $printerURI;
         if(empty($results['path'])) $results['path'] = '';
         if($results['scheme'] == 'ipp'){
-            $postURL = 'http://' . $results['host'] . ':631' . $results['path'];
+            $postURL = 'http://' . $results['host'] . ':' . ($results['port'] ?? '631'). $results['path'];
         }
 
         // setup headers
