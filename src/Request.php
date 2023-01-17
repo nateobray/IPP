@@ -15,14 +15,14 @@ class Request implements \obray\ipp\interfaces\RequestInterface
      * @return \obray\ipp\transport\IPPPayload
      */
 
-    static public function send(string $printerURI, string $encodedPayload, string $user=null, string $password=null): \obray\ipp\transport\IPPPayload
+    static public function send(string $printerURI, string $encodedPayload, string $user=null, string $password=null, int $port=631): \obray\ipp\transport\IPPPayload
     {
         // interpret ipp request into http request
         $results = parse_url($printerURI);
         $postURL = $printerURI;
         if(empty($results['path'])) $results['path'] = '';
         if($results['scheme'] == 'ipp'){
-            $postURL = 'http://' . $results['host'] . ':631' . $results['path'];
+            $postURL = 'http://' . $results['host'] . ':' . $port . $results['path'];
         }
 
         // setup headers
