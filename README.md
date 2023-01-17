@@ -343,8 +343,10 @@ $response = $job->restartJob({request-id});
 Each printer object is identified by a unique URI that must be supplied to the Printer constructor.  Here are a few examples of 
 possible printer URIs:
 
-If you specify IPP as the protocol then it assumes port 631 in most cases
+If you specify IPP as the protocol then it assumes port 631. Or you can specify port number
   >ipp://hostname/ipp/
+ 
+  >ipp://hostname:port/ipp/
   
   >ipp://hostname/ipp/port1
 
