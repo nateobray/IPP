@@ -15,7 +15,7 @@ class Request implements \obray\ipp\interfaces\RequestInterface
      * @return \obray\ipp\transport\IPPPayload
      */
 
-    static public function send(string $printerURI, string $encodedPayload, string $user=null, string $password=null, int $port=631): \obray\ipp\transport\IPPPayload
+    static public function send(string $printerURI, string $encodedPayload, string $user=null, string $password=null, array $curlOptions=[]): \obray\ipp\transport\IPPPayload
     {
         // interpret ipp request into http request
         $results = parse_url($printerURI);
@@ -41,6 +41,11 @@ class Request implements \obray\ipp\interfaces\RequestInterface
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
         curl_setopt($ch, CURLOPT_POST, 1);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $encodedPayload);
+
+        forEach($curlOptions as $curlOption){
+            if(empty($curlOption['key']) || empty($curlOption['value'])) continue;
+            curl_setopt($ch, $curlOption['key'], $curlOption['value']);
+        }
 
         // Receive server response ...
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
