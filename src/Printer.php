@@ -8,15 +8,17 @@ class Printer
     private $printerURI;
     private $user;
     private $password;
+    private $curlOptions = [];
     
     private $lastRequest;
     private $lastResponse;
 
-    public function __construct(string $uri, string $user='', string $password='')
+    public function __construct(string $uri, string $user='', string $password='', array $curlOptions = [])
     {
         $this->printerURI = $uri;
         $this->user = $user;
         $this->password = $password;
+        $this->curlOptions = $curlOptions;
     }
 
     /**
@@ -65,7 +67,7 @@ class Printer
             $jobAttributes
         );
         $encodedPayload = $payload->encode();
-        return \obray\ipp\Request::send($this->printerURI, $encodedPayload, $this->user, $this->password);
+        return \obray\ipp\Request::send($this->printerURI, $encodedPayload, $this->user, $this->password, $this->curlOptions);
     }
 
     /**
@@ -130,7 +132,7 @@ class Printer
             $operationAttributes
         );
         $encodedPayload = $payload->encode();
-        return \obray\ipp\Request::send($this->printerURI, $encodedPayload, $this->user, $this->password);
+        return \obray\ipp\Request::send($this->printerURI, $encodedPayload, $this->user, $this->password, $this->curlOptions);
     }
 
     /**
@@ -184,7 +186,7 @@ class Printer
             $operationAttributes
         );
         $encodedPayload = $payload->encode();
-        return \obray\ipp\Request::send($this->printerURI, $encodedPayload, $this->user, $this->password);
+        return \obray\ipp\Request::send($this->printerURI, $encodedPayload, $this->user, $this->password, $this->curlOptions);
     }
 
     /**
@@ -216,7 +218,7 @@ class Printer
             $operationAttributes
         );
         $encodedPayload = $payload->encode();
-        return \obray\ipp\Request::send($this->printerURI, $encodedPayload, $this->user, $this->password);
+        return \obray\ipp\Request::send($this->printerURI, $encodedPayload, $this->user, $this->password, $this->curlOptions);
     }
 
     /**
@@ -248,7 +250,7 @@ class Printer
             $operationAttributes
         );
         $encodedPayload = $payload->encode();
-        return \obray\ipp\Request::send($this->printerURI, $encodedPayload, $this->user, $this->password);
+        return \obray\ipp\Request::send($this->printerURI, $encodedPayload, $this->user, $this->password, $this->curlOptions);
     }
 
     /**
@@ -286,7 +288,7 @@ class Printer
             $operationAttributes
         );
         $encodedPayload = $payload->encode();
-        return \obray\ipp\Request::send($this->printerURI, $encodedPayload, $this->user, $this->password);
+        return \obray\ipp\Request::send($this->printerURI, $encodedPayload, $this->user, $this->password, $this->curlOptions);
     }
 
     /**
@@ -327,7 +329,7 @@ class Printer
             $operationAttributes
         );
         $encodedPayload = $payload->encode();
-        return \obray\ipp\Request::send($this->printerURI, $encodedPayload, $this->user, $this->password);
+        return \obray\ipp\Request::send($this->printerURI, $encodedPayload, $this->user, $this->password, $this->curlOptions);
     }
 
     

@@ -8,16 +8,19 @@ class Job
     private $jobID;
     private $user;
     private $password;
+    private $curlOptions = [];
+    private $request;
     
     private $lastRequest;
     private $lastResponse;
 
-    public function __construct($uri, $jobID, $user=null, $password=NULL)
+    public function __construct($uri, $jobID, $user=null, $password=NULL, $curlOptions = [])
     {
         $this->printerURI = $uri;
         $this->jobID = $jobID;
         $this->user = $user;
         $this->password = $password;
+        $this->curlOptions = $curlOptions;
         $this->request = \obray\ipp\Request::class;
     }
 
@@ -130,7 +133,7 @@ class Job
             $operationAttributes
         );
         $encodedPayload = $payload->encode();
-        return ($this->request)::send($this->printerURI, $encodedPayload, $this->user, $this->password);
+        return ($this->request)::send($this->printerURI, $encodedPayload, $this->user, $this->password, $this->curlOptions);
     }
 
     /**
@@ -191,7 +194,7 @@ class Job
             $operationAttributes
         );
         $encodedPayload = $payload->encode();
-        return ($this->request)::send($this->printerURI, $encodedPayload, $this->user, $this->password);
+        return ($this->request)::send($this->printerURI, $encodedPayload, $this->user, $this->password, $this->curlOptions);
     }
 
     /**
@@ -225,7 +228,7 @@ class Job
             $operationAttributes
         );
         $encodedPayload = $payload->encode();
-        return ($this->request)::send($this->printerURI, $encodedPayload, $this->user, $this->password);
+        return ($this->request)::send($this->printerURI, $encodedPayload, $this->user, $this->password, $this->curlOptions);
     }
 
     /**
@@ -264,7 +267,7 @@ class Job
             $operationAttributes
         );
         $encodedPayload = $payload->encode();
-        return ($this->request)::send($this->printerURI, $encodedPayload, $this->user, $this->password);
+        return ($this->request)::send($this->printerURI, $encodedPayload, $this->user, $this->password, $this->curlOptions);
     }
 
     /**
@@ -307,7 +310,7 @@ class Job
             $operationAttributes
         );
         $encodedPayload = $payload->encode();
-        return ($this->request)::send($this->printerURI, $encodedPayload, $this->user, $this->password);
+        return ($this->request)::send($this->printerURI, $encodedPayload, $this->user, $this->password, $this->curlOptions);
     }
 
 }
