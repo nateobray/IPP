@@ -51,7 +51,8 @@ The most basic way of using this implementation is to create a `Printer` object 
 $printer = new \obray\IPP\Printer(
   {printer-uri},
   {username}, // optional
-  {password}  // optional
+  {password},    // optional
+  {curlOptions} // optional
 );
 $response = $printer->printJob({raw document}, {attributes});
 ```
@@ -61,7 +62,8 @@ Depending on the printer and the document you are trying to print the above may 
 $printer = new \obray\IPP\Printer(
   {printer-uri},
   {username}, // optional
-  {password}  // optional
+  {password},    // optional
+  {curlOptions} // optional
 );
 $attributes = $printer->getPrinterAttributes();
 ```
@@ -106,7 +108,7 @@ $printer = new \obray\IPP\Printer(
   {printer-uri},
   {username}, // optional
   {password}, // optional
-  
+  {curlOptions}, // optional
 );
 $attributes = $printer->printJob(
    {raw document},
@@ -141,14 +143,16 @@ Create a printer object by specifing the URI for the printer the credentials if 
 $printer = new \obray\IPP\Printer(
   {printer-uri},
   {username},   // optional
-  {password}    // optional
+  {password},    // optional
+  {curlOptions} // optional
 );
 ```
-| Parameter | Required | Description |
-| --------- | -------- | ----------- |
+| Parameter | Required | Description                                                                                                                                                   |
+| --------- | -------- |---------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | printer-uri | yes | The printer uri depends a lot on what printer or print server you are attempting to print to.  For more information see [Printer URIs](#printer-uris) section. |
-| username | no | If your printer or print server needs to authenticate supply the username here |
-| password | no | If your printer or print server needs to authenticate supply the password here |
+| username | no | If your printer or print server needs to authenticate supply the username here                                                                                |
+| password | no | If your printer or print server needs to authenticate supply the password here                                                                                |
+| curlOptions | no | CURL options eg. `[['key' => CURLOPT_SSL_VERIFYPEER, 'value' => false],['key' => CURLOPT_SSL_VERIFYHOST, 'value' => false]]  `                                                                                   |
 
 #  
 ### Method `printJob`
