@@ -69,6 +69,9 @@ class JobAttributes extends \obray\ipp\AttributeGroup
             case 'print-quality':
                 $this->attributes[$name] = new \obray\ipp\Attribute('print-quality', $value, \obray\ipp\enums\Types::ENUM);
                 break;
+            case 'print-scaling':
+                $this->attributes[$name] = new \obray\ipp\Attribute('print-scaling', $value, \obray\ipp\enums\Types::KEYWORD);
+                break;
             case 'media-col':
                 $this->attributes[$name] = new \obray\ipp\CollectionAttribute('media-col', $value);
                 break;
