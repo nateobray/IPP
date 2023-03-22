@@ -97,7 +97,7 @@ class Types extends \obray\ipp\types\Enum
                 return new \obray\ipp\types\OctetString($value);
                 break;
             case \obray\ipp\enums\Types::RANGEOFINTEGER:
-                $value = explode('-', $value?'');
+                $value = explode('-', $value??'');
                 if(count($value)!=2){
                     $value = array(0=>0, 1=>0);
                 }
