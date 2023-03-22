@@ -43,7 +43,7 @@ class Request implements \obray\ipp\interfaces\RequestInterface
         curl_setopt($ch, CURLOPT_POSTFIELDS, $encodedPayload);
 
         forEach($curlOptions as $curlOption){
-            if(empty($curlOption['key']) || empty($curlOption['value'])) continue;
+            if(!isset($curlOption['key']) || !isset($curlOption['value'])) continue;
             curl_setopt($ch, $curlOption['key'], $curlOption['value']);
         }
 
