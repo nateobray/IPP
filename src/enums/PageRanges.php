@@ -10,7 +10,7 @@ class PageRanges
 
     public function parseRanges($ranges)
     {
-        $tmp = explode(",",$ranges);
+        $tmp = explode(",", $ranges??'');
         if(empty($tmp)){
             throw new \Exception("Invalid page range.");
         }
@@ -28,7 +28,7 @@ class PageRanges
 
     public function parseRange($range)
     {
-        $tmp = explode("-",$range);
+        $tmp = explode("-", $range??'');
         if( count($tmp) !== 2 ){
             throw new \Exception("Invalid page range.");
         }

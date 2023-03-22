@@ -12,6 +12,7 @@ try{
     exit();
 }
 
+print_r(json_encode($response, JSON_PRETTY_PRINT));
 sleep(2);
  
 try {

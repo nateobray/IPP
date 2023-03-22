@@ -9,7 +9,7 @@ class Resolution extends \obray\ipp\types\Enum
 
     public function __construct($value)
     {
-        $tmp = explode('x',$value);
+        $tmp = explode('x', $value??'');
         if(count($tmp) !== 2){
             throw new \Exception("Resolution is invalid.");
         }

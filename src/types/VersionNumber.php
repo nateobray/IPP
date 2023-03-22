@@ -8,7 +8,7 @@ class VersionNumber implements \obray\ipp\interfaces\TypeInterface, \JsonSeriali
     private $minorVersionNumber;
 
     public function __construct(string $versionString){
-        $versionParts = explode(".",$versionString);
+        $versionParts = explode(".", $versionString??'');
         if(count($versionParts) !== 2){
             throw new \Exception("Invalid version number.");
         }

@@ -97,14 +97,14 @@ class Types extends \obray\ipp\types\Enum
                 return new \obray\ipp\types\OctetString($value);
                 break;
             case \obray\ipp\enums\Types::RANGEOFINTEGER:
-                $value = explode('-',$value);
+                $value = explode('-', $value?'');
                 if(count($value)!=2){
                     $value = array(0=>0, 1=>0);
                 }
                 return new \obray\ipp\types\RangeOfInteger($value[0], $value[1]);
                 break;
             case \obray\ipp\enums\Types::RESOLUTION:
-                $value = explode('x', $value);
+                $value = explode('x', $value??'');
                 if(count($value)!=2){
                     $value = array(0=>0, 1=>0);
                 }
