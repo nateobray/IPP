@@ -2,8 +2,23 @@
 
 $loader = require_once 'vendor/autoload.php';
 
-$printerURI = "ipp://127.0.0.1:631/printers/pdf";
+$printerURI = "ipp://localhost";
 
+$operationAttributes = new \obray\ipp\OperationAttributes();
+        
+$payload = new \obray\ipp\transport\IPPPayload(
+    new \obray\ipp\types\VersionNumber('1.1'),
+    new \obray\ipp\types\Operation(\obray\ipp\types\Operation::cupsGetPrinters),
+    new \obray\ipp\types\Integer(1),
+    null,
+    $operationAttributes
+);
+//print_r($payload);
+$encodedPayload = $payload->encode();
+$response =  \obray\ipp\Request::send($printerURI, $encodedPayload);
+print_r(json_encode($response, JSON_PRETTY_PRINT));
+
+exit();
 try{
     $printer = new \obray\ipp\Printer($printerURI);
     $response = $printer->getPrinterAttributes();

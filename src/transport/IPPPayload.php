@@ -88,16 +88,23 @@ class IPPPayload
         
         // decode job attributes
         if($newTag!==false && $newTag === 0x02){
-            $this->jobAttributes = new \obray\ipp\JobAttributes();
-            $newTag = $this->jobAttributes->decode($binary, $offset);
+            $this->jobAttributes = [];
+            while($newTag !== false && $newTag === 0x02){
+                $jobAttributes = new \obray\ipp\JobAttributes();
+                $newTag = $jobAttributes->decode($binary, $offset);
+                $this->jobAttributes[] = $jobAttributes;
+            }
         }
         
         // decode printer attributes
         if($newTag!==false && $newTag === 0x04){
-            $this->printerAttributes = new \obray\ipp\PrinterAttributes();
-            $newTag = $this->printerAttributes->decode($binary, $offset);
+            $this->printerAttributes = [];
+            while($newTag !== false && $newTag === 0x04){
+                $printerAttributes = new \obray\ipp\PrinterAttributes();
+                $newTag = $printerAttributes->decode($binary, $offset);
+                $this->printerAttributes[] = $printerAttributes;
+            }
         }  
-        
     }
 
 }

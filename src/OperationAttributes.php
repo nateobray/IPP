@@ -2,6 +2,8 @@
 
 namespace obray\ipp;
 
+use obray\exceptions\ClientErrorCharsetNotSupported;
+
 class OperationAttributes extends \obray\ipp\AttributeGroup
 {
     protected $attribute_group_tag = 0x01;
@@ -87,7 +89,7 @@ class OperationAttributes extends \obray\ipp\AttributeGroup
     public function validate(array $attributeKeys)
     {
         if(empty($charset) || $charset !== 'utf-8'){
-            throw new obray\exceptions\ClientErrorCharsetNotSupported();
+            throw new ClientErrorCharsetNotSupported();
         }
         if(empty($natuarlLanguage) && $naturalLanguage !== 'en'){
             throw new \Exception("Invalid request.");
