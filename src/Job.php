@@ -127,7 +127,7 @@ class Job
         
         $payload = new \obray\ipp\transport\IPPPayload(
             new \obray\ipp\types\VersionNumber('1.1'),
-            new \obray\ipp\types\Operation(\obray\ipp\types\Operation::cancelJob),
+            new \obray\ipp\types\Operation(\obray\ipp\types\Operation::CANCEL_JOB),
             new \obray\ipp\types\Integer($requestId),
             NULL,
             $operationAttributes
@@ -188,7 +188,7 @@ class Job
         
         $payload = new \obray\ipp\transport\IPPPayload(
             new \obray\ipp\types\VersionNumber('1.1'),
-            new \obray\ipp\types\Operation(\obray\ipp\types\Operation::getJobAttributes),
+            new \obray\ipp\types\Operation(\obray\ipp\types\Operation::GET_JOB_ATTRIBUTES),
             new \obray\ipp\types\Integer(123456),
             NULL,
             $operationAttributes
@@ -222,7 +222,7 @@ class Job
         
         $payload = new \obray\ipp\transport\IPPPayload(
             new \obray\ipp\types\VersionNumber('1.1'),
-            new \obray\ipp\types\Operation(\obray\ipp\types\Operation::holdJob),
+            new \obray\ipp\types\Operation(\obray\ipp\types\Operation::HOLD_JOB),
             new \obray\ipp\types\Integer($requestId),
             NULL,
             $operationAttributes
@@ -261,7 +261,7 @@ class Job
         
         $payload = new \obray\ipp\transport\IPPPayload(
             new \obray\ipp\types\VersionNumber('1.1'),
-            new \obray\ipp\types\Operation(\obray\ipp\types\Operation::releaseJob),
+            new \obray\ipp\types\Operation(\obray\ipp\types\Operation::RELEASE_JOB),
             new \obray\ipp\types\Integer($requestId),
             NULL,
             $operationAttributes
@@ -304,7 +304,7 @@ class Job
         
         $payload = new \obray\ipp\transport\IPPPayload(
             new \obray\ipp\types\VersionNumber('1.1'),
-            new \obray\ipp\types\Operation(\obray\ipp\types\Operation::restartJob),
+            new \obray\ipp\types\Operation(\obray\ipp\types\Operation::RESTART_JOB),
             new \obray\ipp\types\Integer($requestId),
             NULL,
             $operationAttributes

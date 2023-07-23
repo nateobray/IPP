@@ -20,7 +20,8 @@ class Enum extends \obray\ipp\types\basic\SignedShort implements \JsonSerializab
         }
     }
 
-    public function decode($binary, $offset=0, $length=NULL){
+    public function decode($binary, $offset=0, $length=NULL)
+    {    
         $this->value = (unpack('N', $binary, $offset))[1];
         $constants = $this->getConstants();
         $this->key = array_search($this->value, $constants);

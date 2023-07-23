@@ -60,7 +60,7 @@ class Printer
 
         $payload = new \obray\ipp\transport\IPPPayload(
             new \obray\ipp\types\VersionNumber('1.1'),
-            new \obray\ipp\types\Operation(\obray\ipp\types\Operation::printJob),
+            new \obray\ipp\types\Operation(\obray\ipp\types\Operation::PRINT_JOB),
             new \obray\ipp\types\Integer($requestId),
             new \obray\ipp\types\OctetString($document),
             $operationAttributes,
@@ -126,7 +126,7 @@ class Printer
         
         $payload = new \obray\ipp\transport\IPPPayload(
             new \obray\ipp\types\VersionNumber('1.1'),
-            new \obray\ipp\types\Operation(\obray\ipp\types\Operation::validateJob),
+            new \obray\ipp\types\Operation(\obray\ipp\types\Operation::VALIDATE_JOB),
             new \obray\ipp\types\Integer($requestId),
             NULL,
             $operationAttributes
@@ -180,7 +180,7 @@ class Printer
         
         $payload = new \obray\ipp\transport\IPPPayload(
             new \obray\ipp\types\VersionNumber('1.1'),
-            new \obray\ipp\types\Operation(\obray\ipp\types\Operation::getPrinterAttributes),
+            new \obray\ipp\types\Operation(\obray\ipp\types\Operation::GET_PRINTER_ATTRIBUTES),
             new \obray\ipp\types\Integer($requestId),
             NULL,
             $operationAttributes
@@ -212,7 +212,7 @@ class Printer
         
         $payload = new \obray\ipp\transport\IPPPayload(
             new \obray\ipp\types\VersionNumber('1.1'),
-            new \obray\ipp\types\Operation(\obray\ipp\types\Operation::getJobs),
+            new \obray\ipp\types\Operation(\obray\ipp\types\Operation::GET_JOBS),
             new \obray\ipp\types\Integer($requestId),
             NULL,
             $operationAttributes
@@ -244,7 +244,7 @@ class Printer
         
         $payload = new \obray\ipp\transport\IPPPayload(
             new \obray\ipp\types\VersionNumber('1.1'),
-            new \obray\ipp\types\Operation(\obray\ipp\types\Operation::pausePrinter),
+            new \obray\ipp\types\Operation(\obray\ipp\types\Operation::PAUSE_PRINTER),
             new \obray\ipp\types\Integer($requestId),
             NULL,
             $operationAttributes
@@ -282,7 +282,7 @@ class Printer
 
         $payload = new \obray\ipp\transport\IPPPayload(
             new \obray\ipp\types\VersionNumber('1.1'),
-            new \obray\ipp\types\Operation(\obray\ipp\types\Operation::resumePrinter),
+            new \obray\ipp\types\Operation(\obray\ipp\types\Operation::RESUME_PRINTER),
             new \obray\ipp\types\Integer($requestId),
             NULL,
             $operationAttributes
@@ -323,14 +323,12 @@ class Printer
 
         $payload = new \obray\ipp\transport\IPPPayload(
             new \obray\ipp\types\VersionNumber('1.1'),
-            new \obray\ipp\types\Operation(\obray\ipp\types\Operation::purgeJobs),
+            new \obray\ipp\types\Operation(\obray\ipp\types\Operation::PURGE_JOBS),
             new \obray\ipp\types\Integer($requestId),
             NULL,
             $operationAttributes
         );
         $encodedPayload = $payload->encode();
         return \obray\ipp\Request::send($this->printerURI, $encodedPayload, $this->user, $this->password, $this->curlOptions);
-    }
-
-    
+    }   
 }

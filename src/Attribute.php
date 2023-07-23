@@ -10,21 +10,21 @@ class Attribute implements \JsonSerializable
     private $value;
     private $offset;
     private $previousNameKey;
-
-   
+    private $isFirstAccess = true;
+    
     public function __construct($name=NULL, $value=NULL, int $type=NULL, int $maxLength=NULL, string $naturalLanguage=NULL)
     {
-        if($name===NULL){
-            return $this;
-        }
+        
+        if($name===NULL) return $this;
         $this->nameLength = new \obray\ipp\types\basic\SignedShort(strlen($name));
         $this->name = new \obray\ipp\types\basic\LocalizedString($name);
 
         if($value===NULL){
             return $this;
         }
-
+        
         $nameToSwitchOn = $this->name->getValue();
+        
         if(empty($nameToSwitchOn)){
             $nameToSwitchOn = $this->previousNameKey;
         }
@@ -59,6 +59,7 @@ class Attribute implements \JsonSerializable
         if(!empty($this->nameLength) && $this->nameLength->getValue()!==0){
             $this->previousNameKey = $this->name->getValue();
         }
+        
         // unpack the attribute value tag
         $this->valueTag = (unpack('cValueTag', $binary, $offset))['ValueTag'];
         $offset += 1;
@@ -74,11 +75,10 @@ class Attribute implements \JsonSerializable
         // decode the value length and adjust offset
         $this->valueLength = (new \obray\ipp\types\basic\SignedShort())->decode($binary, $offset);
         $offset += $this->valueLength->len();
-        
+
         // get the correct value type and decode
-        $this->value = \obray\ipp\enums\Types::getType($this->valueTag, NULL, "en-us", NULL, (string)$this->name);
-        //$this->getValue($this->valueTag);
-		
+        $this->value = \obray\ipp\enums\Types::getType($this->valueTag, NULL, "en-us", NULL, !empty((string)$this->name)?(string)$this->name:(string)$this->previousNameKey);
+        
         $this->value->decode($binary, $offset, $this->valueLength->getValue());
         $offset += $this->valueLength->getValue();
         

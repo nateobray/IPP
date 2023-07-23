@@ -85,15 +85,16 @@ abstract class AttributeGroup implements \JsonSerializable
                 $attribute = (new \obray\ipp\Attribute(!empty($attributeName)?$attributeName:NULL))->decode($binary, $offset);
             }
 
-            if( $attribute->getNameLength() === 0 && !is_array($this->attributes[$attributeName]) ){
+            if( !empty($attributeName) && $attribute->getNameLength() === 0 && !is_array($this->attributes[$attributeName]) ){
                 $this->attributes[$attributeName] = array( 0 => $this->attributes[$attributeName] );
                 $this->attributes[$attributeName][] = $attribute;
-            } else if ($attribute->getNameLength() === 0 && is_array($this->attributes[$attributeName])){
+            } else if ( !empty($attributeName) && $attribute->getNameLength() === 0 && is_array($this->attributes[$attributeName])){
                 $this->attributes[$attributeName][] = $attribute;
             } else {
                 $attributeName = $attribute->getName();
                 $this->attributes[$attributeName] = $attribute;
             }
+            
             $offset = $attribute->getOffset();
             if($offset === strlen($binary)) return false;
             
