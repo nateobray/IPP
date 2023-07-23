@@ -1,6 +1,8 @@
 <?php
 namespace obray\ipp\enums;
 
+use obray\ipp\types\Operation;
+
 class Types extends \obray\ipp\types\Enum
 {
     const UNSUPPORTED = 0x10;
@@ -45,7 +47,7 @@ class Types extends \obray\ipp\types\Enum
                 
                 switch($nameToSwitchOn){
                     case 'orientation-requested': case 'orientation-requested-supported':
-                        return new \obray\ipp\enums\OrientationRequested();
+                        return new \obray\ipp\enums\OrientationRequested($value);
                         break;
                     case 'job-state':
                         return new \obray\ipp\enums\JobState($value);
@@ -53,14 +55,14 @@ class Types extends \obray\ipp\types\Enum
                     case 'finishings':
                         return new \obray\ipp\enums\Finishings($value);
                         break;
-                    case 'orientation-requested':
-                        return new \obray\ipp\enums\OrientationRequested($value);
-                        break;
                     case 'print-quality':
                         return new \obray\ipp\enums\PrintQuality($value);
                         break;
                     case 'printer-state':
                         return new \obray\ipp\enums\PrinterState($value);
+                        break;
+                    case 'operations-supported':
+                        return new Operation($value);
                         break;
                     default:
                         return new \obray\ipp\types\Integer($value);
