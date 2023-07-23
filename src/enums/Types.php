@@ -62,7 +62,7 @@ class Types extends \obray\ipp\types\Enum
                         return new \obray\ipp\enums\PrinterState($value);
                         break;
                     case 'operations-supported':
-                        return new Operation($value);
+                        return new Operations($value);
                         break;
                     default:
                         return new \obray\ipp\types\Integer($value);

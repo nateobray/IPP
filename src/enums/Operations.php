@@ -1,7 +1,7 @@
 <?php
-namespace obray\ipp\types;
+namespace obray\ipp\enums;
 
-class Operation extends \obray\ipp\types\Enum
+class Operations extends \obray\ipp\types\Enum
 {
     // IPP/1.0 (RFC 2566) and IPP/1.1 (RFC 2911) Operation Codes:
     const PRINT_JOB = 0x0002;
@@ -81,20 +81,4 @@ class Operation extends \obray\ipp\types\Enum
     const CUPS_GET_DOCUMENT = 0x4027;
     const CUPS_CREATE_LOCAL_PRINTER = 0x4028;
 
-    public function encode()
-    {
-        // take our signed integer and convert to unsigned equivalent
-        if($this->value < 0){ $this->value += 65536; }
-        // pack into binary string as signed integer big endian byte order
-        return pack('n',$this->value);
-    }
-
-    public function decode($binary, $offset=0, $length=NULL)
-    {
-        // unpack as unsigned short (no way to pull out signed short with correct byte order using unpack)
-        $this->value = (unpack('n', $binary, $offset))[1];
-        // convert unsigned short into a signed short
-        if($this->value >= 32768) { $this->value -= 65536; }
-        return $this;
-    }
 }
