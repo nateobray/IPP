@@ -1,7 +1,7 @@
 <?php
 namespace obray\ipp\types;
 
-class Enum extends \obray\ipp\types\basic\SignedInteger implements \JsonSerializable
+class Enum extends \obray\ipp\types\basic\SignedShort implements \JsonSerializable
 {
     protected $valueTag = 0x23;
     protected $key;
