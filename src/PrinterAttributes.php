@@ -16,7 +16,7 @@ class PrinterAttributes extends \obray\ipp\AttributeGroup
             case 'ppd-name':
                 $this->attributes[$name] = new \obray\ipp\Attribute('ppd-name', $value, \obray\ipp\enums\Types::NAME, 255);
                 break;
-            case 'ppd-name':
+            case 'printer-is-accepting-jobs':
                 $this->attributes[$name] = new \obray\ipp\Attribute('printer-is-accepting-jobs', $value, \obray\ipp\enums\Types::BOOLEAN);
                 break;
             case 'printer-info':
