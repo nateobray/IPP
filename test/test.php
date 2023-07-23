@@ -8,7 +8,7 @@ $operationAttributes = new \obray\ipp\OperationAttributes();
         
 $payload = new \obray\ipp\transport\IPPPayload(
     new \obray\ipp\types\VersionNumber('1.1'),
-    new \obray\ipp\types\Operation(\obray\ipp\types\Operation::cupsGetPrinters),
+    new \obray\ipp\types\Operation(\obray\ipp\types\Operation::cupsGetPPDs),
     new \obray\ipp\types\Integer(1),
     null,
     $operationAttributes

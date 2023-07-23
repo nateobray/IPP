@@ -37,7 +37,7 @@ class OperationAttributes extends \obray\ipp\AttributeGroup
                 $this->attributes[$name] = new \obray\ipp\Attribute('detailed-status-message', $value, \obray\ipp\enums\Types::TEXT, 1024, $this->naturalLanguageOverride);
                 break;
             case 'document-access-error':
-                $this->attributes[$name] = new \obray\ipp\Attribute('document-access-error', $value, \obray\ipp\enums\Types::TEXT, $this->naturalLanguageOverride,\obray\ipp\attributes\Text::MaxLength);
+                $this->attributes[$name] = new \obray\ipp\Attribute('document-access-error', $value, \obray\ipp\enums\Types::TEXT);
                 break;
             case 'printer-uri':
                 $this->attributes[$name] = new \obray\ipp\Attribute('printer-uri', $value, \obray\ipp\enums\Types::URI, 1023);
@@ -90,9 +90,6 @@ class OperationAttributes extends \obray\ipp\AttributeGroup
     {
         if(empty($charset) || $charset !== 'utf-8'){
             throw new ClientErrorCharsetNotSupported();
-        }
-        if(empty($natuarlLanguage) && $naturalLanguage !== 'en'){
-            throw new \Exception("Invalid request.");
         }
     }
 }
