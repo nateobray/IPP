@@ -59,6 +59,9 @@ class Types extends \obray\ipp\types\Enum
                     case 'print-quality':
                         return new \obray\ipp\enums\PrintQuality($value);
                         break;
+                    case 'printer-state':
+                        return new \obray\ipp\enums\PrinterState($value);
+                        break;
                     default:
                         return new \obray\ipp\types\Integer($value);
                         break;
