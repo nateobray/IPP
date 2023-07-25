@@ -118,7 +118,7 @@ class Job
      * @return \obray\ipp\transport\IPPPayload
      */
 
-    public function cancelJob(int $requestId=0)
+    public function cancelJob(int $requestId=1)
     {
         $operationAttributes = new \obray\ipp\OperationAttributes();
         $operationAttributes->{'printer-uri'} = $this->printerURI;
