@@ -133,7 +133,7 @@ class Job
             $operationAttributes
         );
         $encodedPayload = $payload->encode();
-        return ($this->request)::send($this->printerURI, $encodedPayload, $this->user, $this->password, $this->curlOptions);
+        return \obray\ipp\Request::send($this->printerURI, $encodedPayload, $this->user, $this->password, $this->curlOptions);s
     }
 
     /**
@@ -194,7 +194,7 @@ class Job
             $operationAttributes
         );
         $encodedPayload = $payload->encode();
-        return ($this->request)::send($this->printerURI, $encodedPayload, $this->user, $this->password, $this->curlOptions);
+        return \obray\ipp\Request::send($this->printerURI, $encodedPayload, $this->user, $this->password, $this->curlOptions);
     }
 
     /**
@@ -228,7 +228,7 @@ class Job
             $operationAttributes
         );
         $encodedPayload = $payload->encode();
-        return ($this->request)::send($this->printerURI, $encodedPayload, $this->user, $this->password, $this->curlOptions);
+        return \obray\ipp\Request::send($this->printerURI, $encodedPayload, $this->user, $this->password, $this->curlOptions);
     }
 
     /**
@@ -267,7 +267,7 @@ class Job
             $operationAttributes
         );
         $encodedPayload = $payload->encode();
-        return ($this->request)::send($this->printerURI, $encodedPayload, $this->user, $this->password, $this->curlOptions);
+        return \obray\ipp\Request::send($this->printerURI, $encodedPayload, $this->user, $this->password, $this->curlOptions);
     }
 
     /**
@@ -310,7 +310,7 @@ class Job
             $operationAttributes
         );
         $encodedPayload = $payload->encode();
-        return ($this->request)::send($this->printerURI, $encodedPayload, $this->user, $this->password, $this->curlOptions);
+        return \obray\ipp\Request::send($this->printerURI, $encodedPayload, $this->user, $this->password, $this->curlOptions);
     }
 
 }

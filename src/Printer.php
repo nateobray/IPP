@@ -199,12 +199,15 @@ class Printer
      * group of Job object attributes will be returned for each Job object
      * that is returned.
      * 
-     * @param int $requestId    Client request id
+     * @param int $requestId        Client request id
+     * @param string $whichJobs     one of 'not-completed' or 'completed'
+     * @param int $limit            max number of jobs to return
+     * @param bool $myJobs          if true, only return jobs from the authenticated user
      * 
      * @return \obray\ipp\transport\IPPPayload
      */
 
-    public function getJobs(int $requestId = 1, $whichJobs = null, $limit = null, $myJobs = null)
+    public function getJobs(int $requestId = 1, string $whichJobs = null, int $limit = null, bool $myJobs = null)
     {
         $operationAttributes = new \obray\ipp\OperationAttributes();
         $operationAttributes->{'printer-uri'} = (string)$this->printerURI;
@@ -213,7 +216,6 @@ class Printer
         if(!empty($limit)) $operationAttributes->{'limit'} = (int)$limit;
         if(!empty($myJobs)) $operationAttributes->{'my-jobs'} = (bool)$myJobs;
         
-        
         $payload = new \obray\ipp\transport\IPPPayload(
             new \obray\ipp\types\VersionNumber('2.1'),
             new \obray\ipp\types\Operation(\obray\ipp\types\Operation::GET_JOBS),
@@ -221,6 +223,7 @@ class Printer
             NULL,
             $operationAttributes
         );
+
         $encodedPayload = $payload->encode();
         return \obray\ipp\Request::send($this->printerURI, $encodedPayload, $this->user, $this->password, $this->curlOptions);
     }
