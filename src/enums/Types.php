@@ -162,8 +162,8 @@ class Types extends \obray\ipp\types\Enum
                 return new \obray\ipp\types\Unknown($value);
                 break;
             case \obray\ipp\enums\Types::COLLECTION:
-                return new \obray\ipp\types\Unknown($value);
-                //return new \obray\ipp\types\Collection($value);
+                //return new \obray\ipp\types\Unknown($value);
+                return new \obray\ipp\types\Collection($value);
                 break;
             default:
                 return new \obray\ipp\types\Unknown($value);

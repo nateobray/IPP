@@ -81,6 +81,15 @@ class OperationAttributes extends \obray\ipp\AttributeGroup
             case 'job-media-sheets':
                 $this->attributes[$name] = new \obray\ipp\Attribute('job-media-sheets', $value, \obray\ipp\enums\Types::INTEGER);
                 break;
+            case 'which-jobs':
+                $this->attributes[$name] = new \obray\ipp\Attribute('which-jobs', $value, \obray\ipp\enums\Types::KEYWORD);
+                break;
+            case 'limit':
+                $this->attributes[$name] = new \obray\ipp\Attribute('limit', $value, \obray\ipp\enums\Types::INTEGER);
+                break;
+            case 'my-jobs':
+                $this->attributes[$name] = new \obray\ipp\Attribute('my-jobs', $value, \obray\ipp\enums\Types::BOOLEAN);
+                break;
             default:
                 throw new \Exception("Invalid operational parameter.");
         }

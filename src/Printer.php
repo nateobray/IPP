@@ -179,7 +179,7 @@ class Printer
         $operationAttributes->{'requesting-user-name'} = $this->user;
         
         $payload = new \obray\ipp\transport\IPPPayload(
-            new \obray\ipp\types\VersionNumber('1.1'),
+            new \obray\ipp\types\VersionNumber('2.1'),
             new \obray\ipp\types\Operation(\obray\ipp\types\Operation::GET_PRINTER_ATTRIBUTES),
             new \obray\ipp\types\Integer($requestId),
             NULL,
@@ -204,14 +204,16 @@ class Printer
      * @return \obray\ipp\transport\IPPPayload
      */
 
-    public function getJobs(int $requestId=1)
+    public function getJobs(int $requestId = 1, $whichJobs = null, )
     {
         $operationAttributes = new \obray\ipp\OperationAttributes();
         $operationAttributes->{'printer-uri'} = $this->printerURI;
         $operationAttributes->{'requesting-user-name'} = $this->user;
+        $operationAttributes->{'which-jobs'} = $whichJobs;
+        
         
         $payload = new \obray\ipp\transport\IPPPayload(
-            new \obray\ipp\types\VersionNumber('1.1'),
+            new \obray\ipp\types\VersionNumber('2.1'),
             new \obray\ipp\types\Operation(\obray\ipp\types\Operation::GET_JOBS),
             new \obray\ipp\types\Integer($requestId),
             NULL,

@@ -75,24 +75,24 @@ abstract class AttributeGroup implements \JsonSerializable
         if( $AttributeGroupTag !== $this->attribute_group_tag ){ return false; }
         $validAttributeGroupTags = [0x01,0x02,0x03,0x04,0x05,0x06,0x07,0x08,0x09,0x0a,0x0b,0x0c,0x0d,0x0e,0x0f];
         $endOfAttributesTag = 0x03;
-        $collectionAttributeTag = 0x34;
-        $offset += 1; $isCollection = false;
+        $offset += 1;
+        return $this->decodeAttributes($binary, $offset, $validAttributeGroupTags, $endOfAttributesTag, $this->attributes);
+    }
+
+    protected function decodeAttributes($binary, &$offset=8, $validAttributeGroupTags, $endOfAttributesTag, &$attributes)
+    {
         while(true){
             
-            if($isCollection){
-               return false;
-            } else {
-                $attribute = (new \obray\ipp\Attribute(!empty($attributeName)?$attributeName:NULL))->decode($binary, $offset);
-            }
-
-            if( !empty($attributeName) && $attribute->getNameLength() === 0 && !is_array($this->attributes[$attributeName]) ){
-                $this->attributes[$attributeName] = array( 0 => $this->attributes[$attributeName] );
-                $this->attributes[$attributeName][] = $attribute;
-            } else if ( !empty($attributeName) && $attribute->getNameLength() === 0 && is_array($this->attributes[$attributeName])){
-                $this->attributes[$attributeName][] = $attribute;
+            $attribute = (new \obray\ipp\Attribute(!empty($attributeName)?$attributeName:NULL))->decode($binary, $offset);
+            
+            if( !empty($attributeName) && $attribute->getNameLength() === 0 && !is_array($attributes[$attributeName]) ){
+                $attributes[$attributeName] = array( 0 => $attributes[$attributeName] );
+                $attributes[$attributeName][] = $attribute;
+            } else if ( !empty($attributeName) && $attribute->getNameLength() === 0 && is_array($attributes[$attributeName])){
+                $attributes[$attributeName][] = $attribute;
             } else {
                 $attributeName = $attribute->getName();
-                $this->attributes[$attributeName] = $attribute;
+                $attributes[$attributeName] = $attribute;
             }
             
             $offset = $attribute->getOffset();
@@ -102,17 +102,14 @@ abstract class AttributeGroup implements \JsonSerializable
             if($newTag===$endOfAttributesTag){
                 return false;
             }
-            if($newTag===$collectionAttributeTag){
-                //$isCollection = true;
-            }
-            if(in_array($newTag,$validAttributeGroupTags)){
+
+            if(in_array($newTag, $validAttributeGroupTags)){
                 return $newTag;
             }       
         }
     }
 
-    #[\ReturnTypeWillChange]
-    public function jsonSerialize()
+    public function jsonSerialize(): mixed
     {
         return $this->attributes;
     }

@@ -10,11 +10,10 @@ class Attribute implements \JsonSerializable
     private $value;
     private $offset;
     private $previousNameKey;
-    private $isFirstAccess = true;
+    public $attributes = [];
     
     public function __construct($name=NULL, $value=NULL, int $type=NULL, int $maxLength=NULL, string $naturalLanguage=NULL)
     {
-        
         if($name===NULL) return $this;
         $this->nameLength = new \obray\ipp\types\basic\SignedShort(strlen($name));
         $this->name = new \obray\ipp\types\basic\LocalizedString($name);
@@ -33,7 +32,7 @@ class Attribute implements \JsonSerializable
         $this->valueTag = $this->value->getValueTag();
         $this->valueLength = new \obray\ipp\types\basic\SignedShort($this->value->getLength());
     }
-
+    
     public function getAttributeValue()
     {
         return $this->value->getValue();
@@ -63,25 +62,29 @@ class Attribute implements \JsonSerializable
         // unpack the attribute value tag
         $this->valueTag = (unpack('cValueTag', $binary, $offset))['ValueTag'];
         $offset += 1;
-                
+        //print_r("Value Tag: " . dechex($this->valueTag) . "\n");
+        
         // decode the name length and adjust offset
         $this->nameLength = (new \obray\ipp\types\basic\SignedShort())->decode($binary, $offset);
         $offset += $this->nameLength->len();
+        //print_r("Name Length: " . $this->nameLength . "\n");
         
         // decode the attribute name and adjust offset
         $this->name = (new \obray\ipp\types\basic\LocalizedString(NULL))->decode($binary, $offset, $this->nameLength->getValue());
         $offset += $this->name->len();        
+        //print_r($this->name . "\n");
         
         // decode the value length and adjust offset
         $this->valueLength = (new \obray\ipp\types\basic\SignedShort())->decode($binary, $offset);
         $offset += $this->valueLength->len();
+        //print_r("Value Length: " . $this->valueLength->getValue() . "\n");
 
-        // get the correct value type and decode
         $this->value = \obray\ipp\enums\Types::getType($this->valueTag, NULL, "en-us", NULL, !empty((string)$this->name)?(string)$this->name:(string)$this->previousNameKey);
-        
         $this->value->decode($binary, $offset, $this->valueLength->getValue());
+        //print_r($this->value);
+        //print_r("\n");
         $offset += $this->valueLength->getValue();
-        
+
         // set offset for retreival of next attribute
         $this->offset = $offset;
 

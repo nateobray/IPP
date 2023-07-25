@@ -2,21 +2,8 @@
 
 $loader = require_once 'vendor/autoload.php';
 
-$printerURI = "ipp://localhost:631/printers/label-01";
+$printerURI = "ipp://localhost:631/printers/pdf";
 
-$operationAttributes = new \obray\ipp\OperationAttributes();
-        
-$payload = new \obray\ipp\transport\IPPPayload(
-    new \obray\ipp\types\VersionNumber('1.1'),
-    new \obray\ipp\types\Operation(\obray\ipp\types\Operation::CUPS_GET_PPD),
-    new \obray\ipp\types\Integer(1),
-    null,
-    $operationAttributes
-);
-//print_r($payload);
-$encodedPayload = $payload->encode();
-$response =  \obray\ipp\Request::send($printerURI, $encodedPayload);
-print_r(json_encode($response, JSON_PRETTY_PRINT));
 
 try{
     $printer = new \obray\ipp\Printer($printerURI);
@@ -26,7 +13,9 @@ try{
     exit();
 }
 
+
 print_r(json_encode($response, JSON_PRETTY_PRINT));
+exit();
 sleep(2);
  
 try {
