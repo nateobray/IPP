@@ -204,12 +204,14 @@ class Printer
      * @return \obray\ipp\transport\IPPPayload
      */
 
-    public function getJobs(int $requestId = 1, $whichJobs = null, )
+    public function getJobs(int $requestId = 1, $whichJobs = null, $limit = null, $myJobs = null)
     {
         $operationAttributes = new \obray\ipp\OperationAttributes();
-        $operationAttributes->{'printer-uri'} = $this->printerURI;
+        $operationAttributes->{'printer-uri'} = (string)$this->printerURI;
         $operationAttributes->{'requesting-user-name'} = $this->user;
-        $operationAttributes->{'which-jobs'} = $whichJobs;
+        if(!empty($whichJobs)) $operationAttributes->{'which-jobs'} = (string)$whichJobs;
+        if(!empty($limit)) $operationAttributes->{'limit'} = (int)$limit;
+        if(!empty($myJobs)) $operationAttributes->{'my-jobs'} = (bool)$myJobs;
         
         
         $payload = new \obray\ipp\transport\IPPPayload(
