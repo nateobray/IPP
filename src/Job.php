@@ -133,7 +133,7 @@ class Job
             $operationAttributes
         );
         $encodedPayload = $payload->encode();
-        return \obray\ipp\Request::send($this->printerURI, $encodedPayload, $this->user, $this->password, $this->curlOptions);s
+        return \obray\ipp\Request::send($this->printerURI, $encodedPayload, $this->user, $this->password, $this->curlOptions);
     }
 
     /**
