@@ -2,9 +2,45 @@
 
 namespace obray\ipp;
 
+use obray\ipp\types\RangeOfInteger;
+
 class JobAttributes extends \obray\ipp\AttributeGroup
 {
     protected $attribute_group_tag = 0x02;
+
+    /**
+     * __construct
+     *
+     * Allows pre-setting the JobAttributes from an associative array of attributes in the form name => value.
+     *
+     * For example to preset page-ranges to the first 2 pages only:
+     *
+     * $attributeArray = [
+     *  'page-ranges' => '1-2'
+     * ]
+     *
+     * @param array|null $attributeArray
+     */
+    public function __construct(?array $attributeArray = null)
+    {
+
+        if (is_array($attributeArray)) {
+
+            foreach ($attributeArray as $name => $value) {
+
+                try {
+                    $this->set($name,$value);
+                } catch (\Exception) {
+                    continue;
+                }
+
+            }
+
+        }
+
+    }
+
+
     /**
      * Set
      * Defines the attributes that can be set on the Job Attribute Group.
