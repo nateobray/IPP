@@ -30,7 +30,8 @@ class JobAttributes extends \obray\ipp\AttributeGroup
 
                 try {
                     $this->set($name,$value);
-                } catch (\Exception) {
+                } catch (\Exception $e) {
+                    // Skip any invalid attributes when instantiating from an array
                     continue;
                 }
 
