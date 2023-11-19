@@ -21,7 +21,7 @@ class JobAttributes extends \obray\ipp\AttributeGroup
             case 'job-state':
                 $this->attributes[$name] = new \obray\ipp\Attribute('job-state', $value, \obray\ipp\enums\Types::ENUM);
                 break;
-            case 'job-state':
+            case 'job-state-reasons':
                 $this->attributes[$name] = new \obray\ipp\Attribute('job-state-reasons', $value, \obray\ipp\enums\Types::KEYWORD);
                 break;
             case 'job-state-message':
