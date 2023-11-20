@@ -9,6 +9,7 @@ class JobAttributeTest extends TestCase
         $this->assertSame(1, 1);
     }
 
+
     public function testInstantiationWithoutArrayOfAttributes() {
 
         $jobAttributes = new \obray\ipp\JobAttributes();
@@ -31,4 +32,15 @@ class JobAttributeTest extends TestCase
         $this->assertEquals(new \obray\ipp\types\RangeOfInteger(3,4),$jobAttributes->{'page-ranges'}->getAttributeValueClass());
 
     }
+
+    public function testJobStateReasonsCanBeSet() {
+
+        $jobAttributes = new \obray\ipp\JobAttributes();
+        $jobAttributes->set('job-state-reasons',new \obray\ipp\enums\JobStateReasons(\obray\ipp\enums\JobStateReasons::jobIncoming));
+
+        $this->assertEquals('jobincoming',(string) $jobAttributes->{'job-state-reasons'});
+
+    }
+
+
 }

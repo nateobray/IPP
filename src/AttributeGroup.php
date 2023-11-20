@@ -49,6 +49,19 @@ abstract class AttributeGroup implements \JsonSerializable
     }
 
     /**
+     * Has
+     *
+     * Returns true if the attribute exists and is non-empty, false otherwise
+     *
+     * @param string $name - the name of the attribute to check for
+     */
+
+    public function has(string $name)
+    {
+        return (array_key_exists($name,$this->attributes) && !empty($this->attributes[$name]));
+    }
+
+    /**
      * Encode
      * 
      * Encodes the attribute group according to RFC8010 secion 3.1.2
