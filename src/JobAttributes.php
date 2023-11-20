@@ -2,8 +2,6 @@
 
 namespace obray\ipp;
 
-use obray\ipp\types\RangeOfInteger;
-
 class JobAttributes extends \obray\ipp\AttributeGroup
 {
     protected $attribute_group_tag = 0x02;
