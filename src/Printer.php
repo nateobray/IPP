@@ -49,13 +49,7 @@ class Printer
 
         $jobAttributes = NULL;
         if(!empty($attributes)){
-            $jobAttributes = new \obray\ipp\JobAttributes();
-        }
-        if(!empty($attributes['media'])){
-        	$jobAttributes->{'media'} = $attributes['media'];
-        }
-        if(!empty($attributes['media-col'])){
-            $jobAttributes->{'media-col'} = $attributes['media-col'];
+            $jobAttributes = new \obray\ipp\JobAttributes($attributes);
         }
 
         $payload = new \obray\ipp\transport\IPPPayload(
