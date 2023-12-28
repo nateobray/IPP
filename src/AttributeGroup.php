@@ -92,8 +92,11 @@ abstract class AttributeGroup implements \JsonSerializable
         return $this->decodeAttributes($binary, $offset, $validAttributeGroupTags, $endOfAttributesTag, $this->attributes);
     }
 
-    protected function decodeAttributes($binary, &$offset=8, $validAttributeGroupTags, $endOfAttributesTag, &$attributes)
+    protected function decodeAttributes($binary, &$offset, $validAttributeGroupTags, $endOfAttributesTag, &$attributes)
     {
+        if (!isset($offset)) {
+            $offset = 8;
+        }
         while(true){
             
             $attribute = (new \obray\ipp\Attribute(!empty($attributeName)?$attributeName:NULL))->decode($binary, $offset);
