@@ -125,7 +125,7 @@ abstract class AttributeGroup implements \JsonSerializable
         }
     }
 
-    public function jsonSerialize(): mixed
+    public function jsonSerialize()
     {
         return $this->attributes;
     }
