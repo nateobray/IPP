@@ -109,7 +109,7 @@ class Printer
      * @return \obray\ipp\transport\IPPPayload
      */
 
-    public function validateJob(int $requestId=1, array $attributes=NULL)
+    public function validateJob(int $requestId=1, ?array $attributes=NULL)
     {
         $operationAttributes = new \obray\ipp\OperationAttributes();
         $operationAttributes->{'printer-uri'} = $this->printerURI;
@@ -201,7 +201,7 @@ class Printer
      * @return \obray\ipp\transport\IPPPayload
      */
 
-    public function getJobs(int $requestId = 1, string $whichJobs = null, int $limit = null, bool $myJobs = null)
+    public function getJobs(int $requestId = 1, ?string $whichJobs = null, ?int $limit = null, ?bool $myJobs = null)
     {
         $operationAttributes = new \obray\ipp\OperationAttributes();
         $operationAttributes->{'printer-uri'} = (string)$this->printerURI;
