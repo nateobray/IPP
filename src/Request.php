@@ -15,7 +15,7 @@ class Request implements \obray\ipp\interfaces\RequestInterface
      * @return \obray\ipp\transport\IPPPayload
      */
 
-    static public function send(string $printerURI, string $encodedPayload, string $user=null, string $password=null, array $curlOptions=[]): \obray\ipp\transport\IPPPayload
+    static public function send(string $printerURI, string $encodedPayload, ?string $user=null, ?string $password=null, array $curlOptions=[]): \obray\ipp\transport\IPPPayload
     {
         // interpret ipp request into http request
         $results = parse_url($printerURI);
