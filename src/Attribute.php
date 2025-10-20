@@ -12,7 +12,7 @@ class Attribute implements \JsonSerializable
     private $previousNameKey;
     public $attributes = [];
     
-    public function __construct($name=NULL, $value=NULL, int $type=NULL, int $maxLength=NULL, string $naturalLanguage=NULL)
+    public function __construct($name=NULL, $value=NULL, ?int $type=NULL, ?int $maxLength=NULL, ?string $naturalLanguage=NULL)
     {
         if($name===NULL) return $this;
         $this->nameLength = new \obray\ipp\types\basic\SignedShort(strlen($name));
