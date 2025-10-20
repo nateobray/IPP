@@ -22,14 +22,14 @@ class IPPPayload
     private $document;
 
     public function __construct(
-        \obray\ipp\types\VersionNumber $versionNumber = NULL,
-        \obray\ipp\types\Operation $operation = NULL,
-        \obray\ipp\types\Integer $requestId = NULL,
-        \obray\ipp\types\OctetString $document = NULL,
-        \obray\ipp\OperationAttributes $operationAttributes = NULL,
-        \obray\ipp\JobAttributes $jobAttributes = NULL,
-        \obray\ipp\PrinterAttributes $printerAttributes = NULL,
-        \obray\ipp\UnsupportedAttributes $unsupportedAttributes = NULL)
+        ?\obray\ipp\types\VersionNumber $versionNumber = NULL,
+        ?\obray\ipp\types\Operation $operation = NULL,
+        ?\obray\ipp\types\Integer $requestId = NULL,
+        ?\obray\ipp\types\OctetString $document = NULL,
+        ?\obray\ipp\OperationAttributes $operationAttributes = NULL,
+        ?\obray\ipp\JobAttributes $jobAttributes = NULL,
+        ?\obray\ipp\PrinterAttributes $printerAttributes = NULL,
+        ?\obray\ipp\UnsupportedAttributes $unsupportedAttributes = NULL)
     {
         $this->versionNumber = $versionNumber;
         $this->operation = $operation;
