@@ -40,6 +40,8 @@ Install the stable release with Composer:
 composer require obray/ipp:^1.0
 ```
 
+This library currently supports PHP `8.1+` and is tested locally on PHP `8.1`, `8.2`, `8.3`, and `8.4`.
+
 If you need unreleased changes from the main branch, require the development version explicitly instead.
 
 ## Usage
