@@ -22,14 +22,14 @@ class IPPPayload
     private $document;
 
     public function __construct(
-        \obray\ipp\types\VersionNumber $versionNumber = NULL,
-        \obray\ipp\types\Operation $operation = NULL,
-        \obray\ipp\types\Integer $requestId = NULL,
-        \obray\ipp\types\OctetString $document = NULL,
-        \obray\ipp\OperationAttributes $operationAttributes = NULL,
-        \obray\ipp\JobAttributes $jobAttributes = NULL,
-        \obray\ipp\PrinterAttributes $printerAttributes = NULL,
-        \obray\ipp\UnsupportedAttributes $unsupportedAttributes = NULL)
+        ?\obray\ipp\types\VersionNumber $versionNumber = null,
+        ?\obray\ipp\types\Operation $operation = null,
+        ?\obray\ipp\types\Integer $requestId = null,
+        ?\obray\ipp\types\OctetString $document = null,
+        ?\obray\ipp\OperationAttributes $operationAttributes = null,
+        ?\obray\ipp\JobAttributes $jobAttributes = null,
+        ?\obray\ipp\PrinterAttributes $printerAttributes = null,
+        ?\obray\ipp\UnsupportedAttributes $unsupportedAttributes = null)
     {
         $this->versionNumber = $versionNumber;
         $this->operation = $operation;
@@ -74,19 +74,26 @@ class IPPPayload
 
     public function decode($binary)
     {
-        $unpacked = unpack("cMajor/cMinor/nStatusCode/NRequestID", $binary);
+        $unpacked = \obray\ipp\transport\DecodeGuard::unpack(
+            "cMajor/cMinor/nStatusCode/NRequestID",
+            $binary,
+            0,
+            8,
+            'IPP header'
+        );
         
         $this->versionNumber = new \obray\ipp\types\VersionNumber($unpacked['Major'] . '.' . $unpacked['Minor']);
         $this->statusCode = new \obray\ipp\types\StatusCode($unpacked['StatusCode']);
         $this->requestId = new \obray\ipp\types\Integer($unpacked['RequestID']);
         
         $offset = 8;
+        if (\obray\ipp\transport\DecodeGuard::readByte($binary, $offset, 'operation-attributes-tag') !== 0x01) {
+            throw new \UnexpectedValueException('Expected operation-attributes-tag at offset 8.');
+        }
         
-        // decode operation attributes
         $this->operationAttributes = new \obray\ipp\OperationAttributes();
         $newTag = $this->operationAttributes->decode($binary, $offset);
         
-        // decode job attributes
         if($newTag!==false && $newTag === 0x02){
             $this->jobAttributes = [];
             while($newTag !== false && $newTag === 0x02){
@@ -96,7 +103,6 @@ class IPPPayload
             }
         }
         
-        // decode printer attributes
         if($newTag!==false && $newTag === 0x04){
             $this->printerAttributes = [];
             while($newTag !== false && $newTag === 0x04){
@@ -106,7 +112,6 @@ class IPPPayload
             }
         }
 
-        // decode unsupported attributes
         if($newTag!==false && $newTag === 0x05){
             $this->unsupportedAttributes = [];
             while($newTag !== false && $newTag === 0x05){
@@ -114,6 +119,30 @@ class IPPPayload
                 $newTag = $unsupportedAttributes->decode($binary, $offset);
                 $this->unsupportedAttributes[] = $unsupportedAttributes;
             }
+        }
+
+        if ($newTag !== false) {
+            throw new \UnexpectedValueException(sprintf(
+                'Unexpected attribute group tag 0x%02x at offset %d.',
+                $newTag,
+                $offset
+            ));
+        }
+
+        if ($offset === strlen($binary)) {
+            throw new \UnexpectedValueException('Missing end-of-attributes tag.');
+        }
+
+        if (\obray\ipp\transport\DecodeGuard::readByte($binary, $offset, 'end-of-attributes tag') !== 0x03) {
+            throw new \UnexpectedValueException(sprintf(
+                'Expected end-of-attributes tag at offset %d.',
+                $offset
+            ));
+        }
+
+        $offset += 1;
+        if ($offset < strlen($binary)) {
+            $this->document = new \obray\ipp\types\OctetString(substr($binary, $offset));
         }
     }
 

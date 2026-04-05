@@ -1,0 +1,40 @@
+{
+    "recorded_at": "2026-04-05T03:29:15+00:00",
+    "kind": "ipp-response",
+    "source": "cups",
+    "label": "ZEBRA",
+    "printer_uri": "ipp://localhost/printers/ZEBRA",
+    "operation": "validate-job-unsupported-format",
+    "request": {
+        "document_format": "application/x-obray-ipp-compliance-probe"
+    },
+    "request_file": "validate-job-unsupported-format.request.bin",
+    "response_file": "validate-job-unsupported-format.response.bin",
+    "http": {
+        "post_url": "http://localhost:631/printers/ZEBRA",
+        "status": 200
+    },
+    "summary": {
+        "version": "1.1",
+        "request_id": 2004,
+        "status": "client-error-document-format-not-supported",
+        "operation_attribute_names": [
+            "attributes-charset",
+            "attributes-natural-language",
+            "status-message"
+        ],
+        "job_attribute_group_count": 0,
+        "printer_attribute_group_count": 0,
+        "unsupported_attribute_group_count": 1,
+        "printer_names": [],
+        "job_ids": [],
+        "job_states": [],
+        "document_formats_supported": [],
+        "operations_supported": [],
+        "unsupported_attribute_names": [
+            [
+                "document-format"
+            ]
+        ]
+    }
+}

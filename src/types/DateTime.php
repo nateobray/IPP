@@ -7,7 +7,7 @@ class DateTime extends \obray\ipp\types\basic\OctetString implements \JsonSerial
     private $datetime;
     private $length = 11;
 
-    public function __construct(string $dateTimeString=NULL)
+    public function __construct(?string $dateTimeString = null)
     {
         if(!empty($dateTimeString)){
             $this->datetime = new \DateTime($dateTimeString);
@@ -53,7 +53,13 @@ class DateTime extends \obray\ipp\types\basic\OctetString implements \JsonSerial
 
     public function decode($binary, $offset=0, $length=NULL)
     {
-        $datetime = unpack("nYear/cMonth/cDay/cHour/cMinute/cSecond/cSecFrac/cUtcDiffDirection/cUtcDiffHours/cUtcDiffMins", $binary, $offset);
+        $datetime = \obray\ipp\transport\DecodeGuard::unpack(
+            "nYear/cMonth/cDay/cHour/cMinute/cSecond/cSecFrac/cUtcDiffDirection/cUtcDiffHours/cUtcDiffMins",
+            $binary,
+            $offset,
+            11,
+            'date-time value'
+        );
         $datetime['UtcDiffDirection'] = chr($datetime['UtcDiffDirection']);
         $this->value = $datetime['Year'].'-'.str_pad($datetime['Month'],2,'0',STR_PAD_LEFT).'-'.str_pad($datetime['Day'],2,'0',STR_PAD_LEFT).' '.str_pad($datetime['Hour'],2,'0',STR_PAD_LEFT).':'.str_pad($datetime['Minute'],2,'0',STR_PAD_LEFT).':'.str_pad($datetime['Second'],2,'0',STR_PAD_LEFT).'.'.$datetime['SecFrac'].$datetime['UtcDiffDirection'].str_pad($datetime['UtcDiffHours'],2,'0',STR_PAD_LEFT).str_pad($datetime['UtcDiffMins'],2,'0',STR_PAD_LEFT);
         $this->datetime = new \DateTime($this->value);

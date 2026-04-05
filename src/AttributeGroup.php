@@ -119,7 +119,7 @@ abstract class AttributeGroup implements \JsonSerializable
 
     public function decode($binary, &$offset=8)
     {	
-        $AttributeGroupTag = (unpack("cAttributeGroupTag", $binary, $offset))['AttributeGroupTag'];
+        $AttributeGroupTag = \obray\ipp\transport\DecodeGuard::readByte($binary, $offset, 'attribute group tag');
         if( $AttributeGroupTag !== $this->attribute_group_tag ){ return false; }
         $validAttributeGroupTags = [0x01,0x02,0x03,0x04,0x05,0x06,0x07,0x08,0x09,0x0a,0x0b,0x0c,0x0d,0x0e,0x0f];
         $endOfAttributesTag = 0x03;
@@ -132,8 +132,9 @@ abstract class AttributeGroup implements \JsonSerializable
         if (!isset($offset)) {
             $offset = 8;
         }
+        $attributeName = null;
         while(true){
-            $nextTag = (unpack("cAttributeGroupTag", $binary, $offset))['AttributeGroupTag'];
+            $nextTag = \obray\ipp\transport\DecodeGuard::readByte($binary, $offset, 'attribute or group tag');
             if($nextTag === $endOfAttributesTag){
                 return false;
             }
@@ -157,7 +158,7 @@ abstract class AttributeGroup implements \JsonSerializable
             $offset = $attribute->getOffset();
             if($offset === strlen($binary)) return false;
             
-            $newTag = (unpack("cAttributeGroupTag", $binary, $offset))['AttributeGroupTag'];
+            $newTag = \obray\ipp\transport\DecodeGuard::readByte($binary, $offset, 'next attribute or group tag');
             if($newTag===$endOfAttributesTag){
                 return false;
             }

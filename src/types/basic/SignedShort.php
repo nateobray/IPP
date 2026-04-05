@@ -23,8 +23,7 @@ class SignedShort implements \obray\ipp\interfaces\TypeInterface, \JsonSerializa
 
     public function decode($binary, $offset=0, $length=NULL)
     {
-        // unpack as unsigned short (no way to pull out signed short with correct byte order using unpack)
-        $this->value = (unpack('n', $binary, $offset))[1];
+        $this->value = \obray\ipp\transport\DecodeGuard::unpack('nvalue', $binary, $offset, 2, 'signed short')['value'];
         // convert unsigned short into a signed short
         if($this->value >= 32768) { $this->value -= 65536; }
         return $this;

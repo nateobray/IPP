@@ -72,13 +72,24 @@ class PrinterTest extends TestCase
         $this->printer->createJob(77, [
             'job-name' => 'Batch print',
             'sides' => 'one-sided',
-            'document-format' => 'application/pdf',
         ]);
 
         $this->assertSame(\obray\ipp\types\Operation::CREATE_JOB, FakeRequest::$lastCall['operation']);
         $this->assertSame('Batch print', (string) FakeRequest::$lastCall['operationAttributes']->{'job-name'});
-        $this->assertFalse(FakeRequest::$lastCall['operationAttributes']->has('document-format'));
         $this->assertSame('one-sided', (string) FakeRequest::$lastCall['jobAttributes']->{'sides'});
+    }
+
+    public function testCreateJobRejectsDocumentOperationAttributes(): void
+    {
+        try {
+            $this->printer->createJob(78, [
+                'document-format' => 'application/pdf',
+            ]);
+            $this->fail('Expected Create-Job validation to reject document-format.');
+        } catch (\obray\ipp\exceptions\InvalidRequest $exception) {
+            $this->assertSame([], FakeRequest::$lastCall);
+            $this->assertStringContainsString('Create-Job forbids operation attribute "document-format"', $exception->getMessage());
+        }
     }
 
     public function testGetPrinterAttributesBuildsExpectedPayload(): void
@@ -148,5 +159,28 @@ class PrinterTest extends TestCase
 
         $this->assertSame(\obray\ipp\types\Operation::PURGE_JOBS, FakeRequest::$lastCall['operation']);
         $this->assertSame(13, FakeRequest::$lastCall['requestId']);
+    }
+
+    public function testValidateJobRejectsUnsupportedCharsetBeforeSend(): void
+    {
+        try {
+            $this->printer->validateJob(14, [
+                'attributes-charset' => 'us-ascii',
+            ]);
+            $this->fail('Expected Validate-Job validation to reject non-utf-8 charsets.');
+        } catch (\obray\ipp\exceptions\ClientErrorCharsetNotSupported $exception) {
+            $this->assertSame([], FakeRequest::$lastCall);
+        }
+    }
+
+    public function testPrintUriRejectsEmptyDocumentUri(): void
+    {
+        try {
+            $this->printer->printURI('', 15);
+            $this->fail('Expected Print-URI validation to reject an empty document-uri.');
+        } catch (\obray\ipp\exceptions\InvalidRequest $exception) {
+            $this->assertSame([], FakeRequest::$lastCall);
+            $this->assertStringContainsString('Print-URI requires operation attribute "document-uri"', $exception->getMessage());
+        }
     }
 }

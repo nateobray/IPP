@@ -8,7 +8,7 @@ class RangeOfInteger implements \obray\ipp\interfaces\TypeInterface, \JsonSerial
     private $lowerBound;
     private $upperBound;
 
-    public function __construct(int $lowerBound=NULL, int $upperBound=NULL)
+    public function __construct(?int $lowerBound = null, ?int $upperBound = null)
     {
         if($lowerBound===NULL || $upperBound===NULL) return $this;
         $this->lowerBound = new \obray\ipp\types\basic\SignedInteger($lowerBound);

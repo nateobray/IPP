@@ -17,6 +17,13 @@
             "obray\\ipp\\test\\": "test" 
         }
     },
+    "scripts": {
+        "test": "vendor/bin/phpunit --testsuite unit",
+        "test:unit": "vendor/bin/phpunit --testsuite unit",
+        "test:integration": "vendor/bin/phpunit --testsuite integration",
+        "test:fixtures": "vendor/bin/phpunit --testsuite unit --filter Recorded",
+        "record:fixtures": "php scripts/record_real_fixtures.php"
+    },
     "require-dev": {
         "phpunit/phpunit": "^9.6"
     }

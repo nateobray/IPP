@@ -405,7 +405,7 @@ In this case CUPS would be installed on localhost and listening on port 631 (def
 
 ## Project Status
 
-Currently this library does not have a stable release but when it does it will fully support IPP/1.1. The other version will be supported in future releases. Currently this is the status of this library compared to the requirements and recommendations of each version.
+Core IPP/1.1 support defined by RFC 2910 and RFC 2911 is complete in this library. Stable release/versioning remains a separate project concern, and newer IPP/PWG extensions are tracked independently in the matrix below.
 
 | IETF or PWG Specification | obray\ipp | IPP/1.1 | IPP/2.0 | IPP/2.1 | IPP/2.2 |
 | ------------------------- | --------- | ------- | ------- | ------- | ------- |
@@ -420,8 +420,8 @@ Currently this library does not have a stable release but when it does it will f
 | [PWG5100.11 - Job and Printer Extensions – Set 2](https://ftp.pwg.org/pub/pwg/candidates/cs-ippjobprinterext10-20101030-5100.11.pdf)                |           |         |         |  RECMD  |   REQ   |
 | [PWG5101.1 - PWG Media Standardized Names 2.0](https://ftp.pwg.org/pub/pwg/candidates/cs-pwgmsn20-20130328-5101.1.pdf)                 |           |         |   REQ   |   REQ   |   REQ   |
 | [PWG5107.2 - PWG Command Set Format for IEEE 1284 Device ID v1.0](https://ftp.pwg.org/pub/pwg/candidates/cs-pmp1284cmdset10-20100531-5107.2.pdf)                 |           |         |  RECMD  |  RECMD  |   REQ   |
-| [RFC2910 - Encoding and Transport](https://datatracker.ietf.org/doc/html/rfc2910)                   |  TESTING  |   REQ   |   REQ   |   REQ   |   REQ   |
-| [RFC2911 - Job and Printer Set Operations](https://datatracker.ietf.org/doc/html/rfc2911)                   |  TESTING  |   REQ   |   REQ   |   REQ   |   REQ   |
+| [RFC2910 - Encoding and Transport](https://datatracker.ietf.org/doc/html/rfc2910)                   |   DONE    |   REQ   |   REQ   |   REQ   |   REQ   |
+| [RFC2911 - Job and Printer Set Operations](https://datatracker.ietf.org/doc/html/rfc2911)                   |   DONE    |   REQ   |   REQ   |   REQ   |   REQ   |
 | [RFC3380 - Model and Semantics](https://datatracker.ietf.org/doc/html/rfc3380)                   |           |         |         |   REQ   |   REQ   |
 | [RFC3382 - The 'collection' attribute syntax](https://datatracker.ietf.org/doc/html/rfc3382)                   |           |         |         |   REQ   |   REQ   |
 | [RFC3510 - IPP URL Scheme](https://datatracker.ietf.org/doc/html/rfc3510)                   |    DONE    |   REQ   |   REQ   |   REQ   |   REQ   |

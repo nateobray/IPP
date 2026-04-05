@@ -10,14 +10,14 @@ class Job
     private $curlOptions = [];
     private $requestClass;
 
-    public function __construct(string $uri, int $jobID, ?string $user=null, ?string $password=null, array $curlOptions = [])
+    public function __construct(string $uri, int|string $jobID, ?string $user = null, ?string $password = null, array $curlOptions = [], ?string $requestClass = null)
     {
         $this->printerURI = $uri;
         $this->jobID = $jobID;
         $this->user = $user;
         $this->password = $password;
         $this->curlOptions = $curlOptions;
-        $this->requestClass = \obray\ipp\Request::class;
+        $this->requestClass = $requestClass ?? \obray\ipp\Request::class;
     }
 
     public function setRequestClass(string $requestClass): self
@@ -30,8 +30,12 @@ class Job
     private function createOperationAttributes(?array &$attributes = null): \obray\ipp\OperationAttributes
     {
         $operationAttributes = new \obray\ipp\OperationAttributes();
-        $operationAttributes->{'printer-uri'} = $this->printerURI;
-        $operationAttributes->{'job-id'} = $this->jobID;
+        if (is_string($this->jobID)) {
+            $operationAttributes->{'job-uri'} = $this->jobID;
+        } else {
+            $operationAttributes->{'printer-uri'} = $this->printerURI;
+            $operationAttributes->{'job-id'} = $this->jobID;
+        }
         if (!empty($this->user)) {
             $operationAttributes->{'requesting-user-name'} = $this->user;
         }
@@ -74,9 +78,10 @@ class Job
     private function sendPayload(\obray\ipp\transport\IPPPayload $payload): \obray\ipp\transport\IPPPayload
     {
         $requestClass = $this->requestClass;
+        $targetURI = is_string($this->jobID) ? $this->jobID : $this->printerURI;
 
         return $requestClass::send(
-            $this->printerURI,
+            $targetURI,
             $payload->encode(),
             $this->user,
             $this->password,
@@ -88,10 +93,18 @@ class Job
         int $operationCode,
         int $requestId,
         ?\obray\ipp\OperationAttributes $operationAttributes,
-        ?\obray\ipp\types\OctetString $document = null
+        ?\obray\ipp\types\OctetString $document = null,
+        string $versionNumber = '1.1'
     ): \obray\ipp\transport\IPPPayload {
+        \obray\ipp\spec\OperationRequestValidator::validate(
+            $operationCode,
+            $operationAttributes,
+            null,
+            $document
+        );
+
         return new \obray\ipp\transport\IPPPayload(
-            new \obray\ipp\types\VersionNumber('1.1'),
+            new \obray\ipp\types\VersionNumber($versionNumber),
             new \obray\ipp\types\Operation($operationCode),
             new \obray\ipp\types\Integer($requestId),
             $document,
@@ -138,8 +151,12 @@ class Job
      * @return \obray\ipp\transport\IPPPayload
      */
 
-    public function sendDocument(string $document='', bool $lastDocument=true, int $requestId=1, ?array $attributes=null)
+    public function sendDocument(string $document = '', bool|int $lastDocument = true, int|bool $requestId = 1, ?array $attributes = null)
     {
+        if (is_int($lastDocument) && is_bool($requestId)) {
+            [$lastDocument, $requestId] = [$requestId, $lastDocument];
+        }
+
         $attributes = $attributes ?? [];
         $attributes['last-document'] = $lastDocument;
 
@@ -186,8 +203,18 @@ class Job
      * @return \obray\ipp\transport\IPPPayload
      */
 
-    public function sendURI(string $documentURI, bool $lastDocument=true, int $requestId=1, ?array $attributes=null)
+    public function sendURI(string $documentURI, bool|int $lastDocument = true, int|bool|array $requestId = 1, ?array $attributes = null)
     {
+        if (is_array($requestId)) {
+            $attributes = $requestId;
+            $requestId = is_int($lastDocument) ? $lastDocument : 1;
+            $lastDocument = true;
+        }
+
+        if (is_int($lastDocument) && is_bool($requestId)) {
+            [$lastDocument, $requestId] = [$requestId, $lastDocument];
+        }
+
         $attributes = $attributes ?? [];
         $attributes['document-uri'] = $documentURI;
         $attributes['last-document'] = $lastDocument;
@@ -397,6 +424,21 @@ class Job
                 \obray\ipp\types\Operation::RESTART_JOB,
                 $requestId,
                 $operationAttributes
+            )
+        );
+    }
+
+    public function closeJob(int $requestId = 1)
+    {
+        $operationAttributes = $this->createOperationAttributes();
+
+        return $this->sendPayload(
+            $this->buildPayload(
+                \obray\ipp\types\Operation::CLOSE_JOB,
+                $requestId,
+                $operationAttributes,
+                null,
+                '2.0'
             )
         );
     }

@@ -28,6 +28,9 @@ class PrinterAttributes extends \obray\ipp\AttributeGroup
             case 'document-format-supported':
                 $this->attributes[$name] = $this->createAttributeInstances('document-format-supported', $value, \obray\ipp\enums\Types::MIMEMEDIATYPE);
                 break;
+            case 'media-supported':
+                $this->attributes[$name] = $this->createAttributeInstances('media-supported', $value, \obray\ipp\enums\Types::KEYWORD);
+                break;
             case 'generated-natural-language-supported':
                 $this->attributes[$name] = $this->createAttributeInstances('generated-natural-language-supported', $value, \obray\ipp\enums\Types::NATURALLANGUAGE);
                 break;
@@ -63,6 +66,9 @@ class PrinterAttributes extends \obray\ipp\AttributeGroup
                 break;
             case 'printer-message-from-operator':
                 $this->attributes[$name] = new \obray\ipp\Attribute('printer-message-from-operator', $value, \obray\ipp\enums\Types::TEXT, 127);
+                break;
+            case 'printer-resolution-supported':
+                $this->attributes[$name] = $this->createAttributeInstances('printer-resolution-supported', $value, \obray\ipp\enums\Types::RESOLUTION);
                 break;
             case 'printer-make-and-model':
                 $this->attributes[$name] = new \obray\ipp\Attribute('printer-make-and-model', $value, \obray\ipp\enums\Types::TEXT, 127);

@@ -10,13 +10,13 @@ class Printer
     private $curlOptions = [];
     private $requestClass;
 
-    public function __construct(string $uri, string $user='', string $password='', array $curlOptions = [])
+    public function __construct(string $uri, string $user = '', string $password = '', array $curlOptions = [], ?string $requestClass = null)
     {
         $this->printerURI = $uri;
         $this->user = $user;
         $this->password = $password;
         $this->curlOptions = $curlOptions;
-        $this->requestClass = \obray\ipp\Request::class;
+        $this->requestClass = $requestClass ?? \obray\ipp\Request::class;
     }
 
     public function setRequestClass(string $requestClass): self
@@ -56,6 +56,9 @@ class Printer
             'limit',
             'my-jobs',
             'requested-attributes',
+            'resource-format',
+            'resource-name',
+            'resource-type',
             'which-jobs',
         ];
 
@@ -101,6 +104,13 @@ class Printer
         ?\obray\ipp\types\OctetString $document = null,
         string $versionNumber = '1.1'
     ): \obray\ipp\transport\IPPPayload {
+        \obray\ipp\spec\OperationRequestValidator::validate(
+            $operationCode,
+            $operationAttributes,
+            $jobAttributes,
+            $document
+        );
+
         return new \obray\ipp\transport\IPPPayload(
             new \obray\ipp\types\VersionNumber($versionNumber),
             new \obray\ipp\types\Operation($operationCode),
@@ -109,6 +119,34 @@ class Printer
             $operationAttributes,
             $jobAttributes
         );
+    }
+
+    private function getFirstAttributeGroup($attributeGroups): ?\obray\ipp\AttributeGroup
+    {
+        if ($attributeGroups instanceof \obray\ipp\AttributeGroup) {
+            return $attributeGroups;
+        }
+
+        if (!is_array($attributeGroups) || $attributeGroups === []) {
+            return null;
+        }
+
+        $first = reset($attributeGroups);
+
+        return $first instanceof \obray\ipp\AttributeGroup ? $first : null;
+    }
+
+    private function extractAttributeValues($attribute): array
+    {
+        if ($attribute === null) {
+            return [];
+        }
+
+        if (!is_array($attribute)) {
+            return [(string) $attribute];
+        }
+
+        return array_map(static fn ($value) => (string) $value, $attribute);
     }
 
     /**
@@ -234,16 +272,6 @@ class Printer
 
     public function createJob(int $requestId=1, ?array $attributes=null)
     {
-        if (is_array($attributes)) {
-            unset(
-                $attributes['document-name'],
-                $attributes['document-format'],
-                $attributes['compression'],
-                $attributes['document-natural-language'],
-                $attributes['document-uri'],
-            );
-        }
-
         $operationAttributes = $this->createOperationAttributes($attributes);
         $jobAttributes = $this->createJobAttributes($attributes);
 
@@ -255,6 +283,30 @@ class Printer
                 $jobAttributes
             )
         );
+    }
+
+    public function getSupportedMedia(): array
+    {
+        $response = $this->getPrinterAttributes(1, ['media-supported']);
+        $printerAttributes = $this->getFirstAttributeGroup($response->printerAttributes);
+
+        if ($printerAttributes === null || !$printerAttributes->has('media-supported')) {
+            return [];
+        }
+
+        return $this->extractAttributeValues($printerAttributes->{'media-supported'});
+    }
+
+    public function getSupportedResolutions(): array
+    {
+        $response = $this->getPrinterAttributes(1, ['printer-resolution-supported']);
+        $printerAttributes = $this->getFirstAttributeGroup($response->printerAttributes);
+
+        if ($printerAttributes === null || !$printerAttributes->has('printer-resolution-supported')) {
+            return [];
+        }
+
+        return $this->extractAttributeValues($printerAttributes->{'printer-resolution-supported'});
     }
 
     /**
@@ -314,7 +366,7 @@ class Printer
      * @return \obray\ipp\transport\IPPPayload
      */
 
-    public function getJobs(int $requestId = 1, string $whichJobs = null, int $limit = null, bool $myJobs = null, ?array $requestedAttributes = null)
+    public function getJobs(int $requestId = 1, ?string $whichJobs = null, ?int $limit = null, ?bool $myJobs = null, ?array $requestedAttributes = null)
     {
         $attributes = [];
         if ($whichJobs !== null) {
@@ -440,5 +492,101 @@ class Printer
                 $operationAttributes
             )
         );
-    }   
+    }
+
+    public function getPrinterSupportedValues(int $requestId = 1, ?array $attributes = null)
+    {
+        $operationAttributes = $this->createOperationAttributes($attributes);
+
+        return $this->sendPayload(
+            $this->buildPayload(
+                \obray\ipp\types\Operation::GET_PRINTER_SUPPORTED_VALUES,
+                $requestId,
+                $operationAttributes,
+                null,
+                null,
+                '2.0'
+            )
+        );
+    }
+
+    public function getResourceAttributes(int $requestId = 1, ?array $attributes = null)
+    {
+        $operationAttributes = $this->createOperationAttributes($attributes);
+
+        return $this->sendPayload(
+            $this->buildPayload(
+                \obray\ipp\types\Operation::GET_RESOURCE_ATTRIBUTES,
+                $requestId,
+                $operationAttributes,
+                null,
+                null,
+                '2.0'
+            )
+        );
+    }
+
+    public function getResourceData(int $requestId = 1, ?array $attributes = null)
+    {
+        $operationAttributes = $this->createOperationAttributes($attributes);
+
+        return $this->sendPayload(
+            $this->buildPayload(
+                \obray\ipp\types\Operation::GET_RESOURCE_DATA,
+                $requestId,
+                $operationAttributes,
+                null,
+                null,
+                '2.0'
+            )
+        );
+    }
+
+    public function getResources(int $requestId = 1, ?array $attributes = null)
+    {
+        $operationAttributes = $this->createOperationAttributes($attributes);
+
+        return $this->sendPayload(
+            $this->buildPayload(
+                \obray\ipp\types\Operation::GET_RESOURCES,
+                $requestId,
+                $operationAttributes,
+                null,
+                null,
+                '2.0'
+            )
+        );
+    }
+
+    public function cancelJobs(int $requestId = 1)
+    {
+        $operationAttributes = $this->createOperationAttributes();
+
+        return $this->sendPayload(
+            $this->buildPayload(
+                \obray\ipp\types\Operation::CANCEL_JOBS,
+                $requestId,
+                $operationAttributes,
+                null,
+                null,
+                '2.0'
+            )
+        );
+    }
+
+    public function cancelMyJobs(int $requestId = 1)
+    {
+        $operationAttributes = $this->createOperationAttributes();
+
+        return $this->sendPayload(
+            $this->buildPayload(
+                \obray\ipp\types\Operation::CANCEL_MY_JOBS,
+                $requestId,
+                $operationAttributes,
+                null,
+                null,
+                '2.0'
+            )
+        );
+    }
 }

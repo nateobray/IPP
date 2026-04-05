@@ -433,4 +433,119 @@ class IPPPayloadTest extends TestCase
         $this->assertSame('utf-8', (string) $job->{'attributes-charset'});
         $this->assertSame('en', (string) $job->{'attributes-natural-language'});
     }
+
+    public function testDecodeRejectsTruncatedHeader(): void
+    {
+        $this->expectException(\UnexpectedValueException::class);
+        $this->expectExceptionMessage('IPP header');
+
+        $payload = new \obray\ipp\transport\IPPPayload();
+        $payload->decode("\x01\x01\x00");
+    }
+
+    public function testDecodeRejectsMissingOperationAttributesTag(): void
+    {
+        $this->expectException(\UnexpectedValueException::class);
+        $this->expectExceptionMessage('Expected operation-attributes-tag');
+
+        $payload = new \obray\ipp\transport\IPPPayload();
+        $payload->decode(pack('C2nN', 1, 1, \obray\ipp\types\StatusCode::successful_ok, 6001) . pack('c', 0x04) . pack('c', 0x03));
+    }
+
+    public function testDecodeRejectsTruncatedAttributeValue(): void
+    {
+        $this->expectException(\UnexpectedValueException::class);
+        $this->expectExceptionMessage('Truncated IPP payload while decoding US-ASCII string');
+
+        $binary = pack('C2nN', 1, 1, \obray\ipp\types\StatusCode::successful_ok, 6002);
+        $binary .= pack('c', 0x01);
+        $binary .= pack('c', \obray\ipp\enums\Types::KEYWORD);
+        $binary .= pack('n', 4) . 'note';
+        $binary .= pack('n', 4) . 'ok';
+
+        $payload = new \obray\ipp\transport\IPPPayload();
+        $payload->decode($binary);
+    }
+
+    public function testDecodeRejectsMissingEndOfAttributesTag(): void
+    {
+        $this->expectException(\UnexpectedValueException::class);
+        $this->expectExceptionMessage('Missing end-of-attributes tag');
+
+        $payload = new \obray\ipp\transport\IPPPayload();
+        $payload->decode(pack('C2nN', 1, 1, \obray\ipp\types\StatusCode::successful_ok, 6003) . (new \obray\ipp\OperationAttributes())->encode());
+    }
+
+    public function testDecodeRejectsUnexpectedAttributeGroupTag(): void
+    {
+        $this->expectException(\UnexpectedValueException::class);
+        $this->expectExceptionMessage('Unexpected attribute group tag');
+
+        $binary = pack('C2nN', 1, 1, \obray\ipp\types\StatusCode::successful_ok, 6004);
+        $binary .= (new \obray\ipp\OperationAttributes())->encode();
+        $binary .= pack('c', 0x06);
+        $binary .= pack('c', 0x03);
+
+        $payload = new \obray\ipp\transport\IPPPayload();
+        $payload->decode($binary);
+    }
+
+    public function testDecodePreservesUnknownValueTagsAsUnknownTypes(): void
+    {
+        $binary = pack('C2nN', 1, 1, \obray\ipp\types\StatusCode::successful_ok, 6005);
+        $binary .= pack('c', 0x01);
+        $binary .= pack('c', 0x7f);
+        $binary .= pack('n', 6) . 'x-test';
+        $binary .= pack('n', 0);
+        $binary .= pack('c', 0x03);
+
+        $payload = new \obray\ipp\transport\IPPPayload();
+        $payload->decode($binary);
+
+        $this->assertTrue($payload->operationAttributes->has('x-test'));
+        $this->assertInstanceOf(
+            \obray\ipp\types\Unknown::class,
+            $payload->operationAttributes->{'x-test'}->getAttributeValueClass()
+        );
+    }
+
+    public function testDecodePreservesNoValueOutOfBandAttributes(): void
+    {
+        $attributeName = 'printer-state-message';
+
+        $binary = pack('C2nN', 1, 1, \obray\ipp\types\StatusCode::successful_ok, 6006);
+        $binary .= (new \obray\ipp\OperationAttributes())->encode();
+        $binary .= pack('c', 0x04);
+        $binary .= pack('c', \obray\ipp\enums\Types::NOVAL);
+        $binary .= pack('n', strlen($attributeName)) . $attributeName;
+        $binary .= pack('n', 0);
+        $binary .= pack('c', 0x03);
+
+        $payload = new \obray\ipp\transport\IPPPayload();
+        $payload->decode($binary);
+
+        $this->assertIsArray($payload->printerAttributes);
+        $this->assertCount(1, $payload->printerAttributes);
+        $this->assertTrue($payload->printerAttributes[0]->has('printer-state-message'));
+        $this->assertInstanceOf(
+            \obray\ipp\types\NoVal::class,
+            $payload->printerAttributes[0]->{'printer-state-message'}->getAttributeValueClass()
+        );
+    }
+
+    public function testDecodeRejectsOmittedNameBeforeAnyAttributeNameWasSeen(): void
+    {
+        $this->expectException(\UnexpectedValueException::class);
+        $this->expectExceptionMessage('omitted name before any attribute name was decoded');
+
+        $binary = pack('C2nN', 1, 1, \obray\ipp\types\StatusCode::successful_ok, 6007);
+        $binary .= pack('c', 0x01);
+        $binary .= pack('c', \obray\ipp\enums\Types::KEYWORD);
+        $binary .= pack('n', 0);
+        $binary .= pack('n', 4) . 'test';
+        $binary .= pack('c', 0x03);
+
+        $payload = new \obray\ipp\transport\IPPPayload();
+        $payload->decode($binary);
+    }
 }

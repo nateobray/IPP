@@ -5,6 +5,7 @@ use PHPUnit\Framework\TestCase;
 class MemberAttributeTest extends TestCase
 {
     private $collection;
+    private \obray\ipp\types\MemberAttribute $memberAttribute;
 
     public function testMemberattribute()
     {

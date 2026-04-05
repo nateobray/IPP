@@ -112,4 +112,32 @@ class JobTest extends TestCase
         $this->assertSame(\obray\ipp\types\Operation::RESTART_JOB, FakeRequest::$lastCall['operation']);
         $this->assertSame('indefinite', (string) FakeRequest::$lastCall['operationAttributes']->{'job-hold-until'});
     }
+
+    public function testSendDocumentRejectsEmptyNonFinalPayload(): void
+    {
+        try {
+            $this->job->sendDocument('', false, 112);
+            $this->fail('Expected Send-Document validation to reject an empty non-final payload.');
+        } catch (\obray\ipp\exceptions\InvalidRequest $exception) {
+            $this->assertSame([], FakeRequest::$lastCall);
+            $this->assertStringContainsString('Send-Document without document data requires "last-document" to be true', $exception->getMessage());
+        }
+    }
+
+    public function testJobUriTargetFormUsesOnlyJobUriOperationAttribute(): void
+    {
+        $job = (new \obray\ipp\Job(
+            'ipp://localhost/printers/CUPS_PDF',
+            'ipp://localhost/jobs/42',
+            'demo-user',
+            'secret'
+        ))->setRequestClass(FakeRequest::class);
+
+        $job->getJobAttributes(113, ['job-id']);
+
+        $this->assertSame('ipp://localhost/jobs/42', FakeRequest::$lastCall['printerURI']);
+        $this->assertTrue(FakeRequest::$lastCall['operationAttributes']->has('job-uri'));
+        $this->assertFalse(FakeRequest::$lastCall['operationAttributes']->has('printer-uri'));
+        $this->assertSame('ipp://localhost/jobs/42', (string) FakeRequest::$lastCall['operationAttributes']->{'job-uri'});
+    }
 }

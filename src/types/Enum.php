@@ -22,7 +22,7 @@ class Enum extends \obray\ipp\types\basic\SignedInteger implements \JsonSerializ
 
     public function decode($binary, $offset=0, $length=NULL)
     {    
-        $this->value = (unpack('N', $binary, $offset))[1];
+        $this->value = \obray\ipp\transport\DecodeGuard::unpack('Nvalue', $binary, $offset, 4, 'enum value')['value'];
         $constants = $this->getConstants();
         $this->key = array_search($this->value, $constants);
         return $this;

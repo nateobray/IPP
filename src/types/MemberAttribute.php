@@ -11,7 +11,7 @@ class MemberAttribute implements \JsonSerializable
     private $memberValueLength = 0;
     private $memberValue;
 
-    public function __construct(string $name=NULL, $value=NULL, \obray\ipp\enums\Types $type=NULL, $natuarlLanguage=NULL, $maxLength=NULL)
+    public function __construct(?string $name = null, $value = null, ?int $type = null, $natuarlLanguage = null, $maxLength = null)
     {
         if($name === NULL && $value === NULL) return $this;
         $this->nameLength = new \obray\ipp\types\basic\SignedShort(0);

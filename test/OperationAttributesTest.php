@@ -57,4 +57,19 @@ class OperationAttributesTest extends TestCase
 
         $operationAttributes->validate([]);
     }
+
+    public function testValidateRejectsMissingNaturalLanguage(): void
+    {
+        $this->expectException(\obray\ipp\exceptions\InvalidRequest::class);
+
+        $operationAttributes = new class extends \obray\ipp\OperationAttributes {
+            public function removeAttribute(string $name): void
+            {
+                unset($this->attributes[$name]);
+            }
+        };
+        $operationAttributes->removeAttribute('attributes-natural-language');
+
+        $operationAttributes->validate([]);
+    }
 }

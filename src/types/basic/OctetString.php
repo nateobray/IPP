@@ -22,7 +22,14 @@ class OctetString implements \obray\ipp\interfaces\TypeInterface, \JsonSerializa
     public function decode($binary, $offset=0, $length=NULL)
     {
         if($length===NULL) throw new \Exception("Decoding octet string requires a length parameter.");
-        $this->value = (unpack('a'.($length), $binary, $offset))[1];
+        \obray\ipp\transport\DecodeGuard::requireBytes($binary, $offset, $length, 'octet string');
+        $this->value = \obray\ipp\transport\DecodeGuard::unpack(
+            'a' . $length . 'value',
+            $binary,
+            $offset,
+            $length,
+            'octet string'
+        )['value'];
         $this->length = strlen($this->value);
         return $this;
     }

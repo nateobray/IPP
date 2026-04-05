@@ -23,8 +23,7 @@ class SignedInteger implements \obray\ipp\interfaces\TypeInterface, \JsonSeriali
 
     public function decode($binary, $offset=0, $length=NULL)
     {
-        // unpack as unsigned 32 bit integer (no way to pull out signed integer with correct byte order in using unpack)
-        $this->value = unpack('N',$binary,$offset)[1];
+        $this->value = \obray\ipp\transport\DecodeGuard::unpack('Nvalue', $binary, $offset, 4, 'signed integer')['value'];
         // convert unsigned 32 bit integer into a signed integer
         if($this->value >= 2147483648) { $this->value -= 4294967296; }
         return $this;

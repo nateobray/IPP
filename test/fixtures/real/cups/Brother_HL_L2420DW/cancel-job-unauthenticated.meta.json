@@ -1,0 +1,22 @@
+{
+    "recorded_at": "2026-04-05T03:29:36+00:00",
+    "kind": "http-error",
+    "source": "cups",
+    "label": "Brother_HL_L2420DW",
+    "printer_uri": "ipp://localhost/printers/Brother_HL_L2420DW",
+    "operation": "cancel-job-unauthenticated",
+    "request": {
+        "job_id": 228,
+        "with_user": false
+    },
+    "request_file": "cancel-job-unauthenticated.request.bin",
+    "response_file": "cancel-job-unauthenticated.response.bin",
+    "http": {
+        "post_url": "http://localhost:631/printers/Brother_HL_L2420DW",
+        "status": 401
+    },
+    "error": {
+        "class": "obray\\ipp\\exceptions\\AuthenticationError",
+        "message": "Authentication error: make sure you are passing the correct credentials."
+    }
+}

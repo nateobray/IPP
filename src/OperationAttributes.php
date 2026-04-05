@@ -3,11 +3,24 @@
 namespace obray\ipp;
 
 use obray\ipp\exceptions\ClientErrorCharsetNotSupported;
+use obray\ipp\exceptions\InvalidRequest;
 
 class OperationAttributes extends \obray\ipp\AttributeGroup
 {
     protected $attribute_group_tag = 0x01;
     private $naturalLanguageOverride;
+
+    private function createKeywordOrNameAttribute(string $name, $value)
+    {
+        if ($value instanceof \obray\ipp\types\Keyword
+            || $value instanceof \obray\ipp\types\NameWithoutLanguage
+            || $value instanceof \obray\ipp\types\NameWithLanguage
+        ) {
+            return new \obray\ipp\Attribute($name, $value);
+        }
+
+        return new \obray\ipp\Attribute($name, $value, \obray\ipp\enums\Types::KEYWORD);
+    }
 
     public function __construct(){
         $this->attributes['attributes-charset'] = new \obray\ipp\Attribute('attributes-charset', 'utf-8', \obray\ipp\enums\Types::CHARSET);
@@ -51,6 +64,15 @@ class OperationAttributes extends \obray\ipp\AttributeGroup
             case 'document-uri':
                 $this->attributes[$name] = new \obray\ipp\Attribute('document-uri', $value, \obray\ipp\enums\Types::URI, 1023);
                 break;
+            case 'resource-name':
+                $this->attributes[$name] = new \obray\ipp\Attribute('resource-name', $value, \obray\ipp\enums\Types::NAME, 255, $this->naturalLanguageOverride);
+                break;
+            case 'resource-format':
+                $this->attributes[$name] = new \obray\ipp\Attribute('resource-format', $value, \obray\ipp\enums\Types::MIMEMEDIATYPE);
+                break;
+            case 'resource-type':
+                $this->attributes[$name] = new \obray\ipp\Attribute('resource-type', $value, \obray\ipp\enums\Types::KEYWORD);
+                break;
             case 'last-document':
                 $this->attributes[$name] = new \obray\ipp\Attribute('last-document', $value, \obray\ipp\enums\Types::BOOLEAN);
                 break;
@@ -61,7 +83,7 @@ class OperationAttributes extends \obray\ipp\AttributeGroup
                 $this->attributes[$name] = new \obray\ipp\Attribute('job-name', $value, \obray\ipp\enums\Types::NAME, 255, $this->naturalLanguageOverride);
                 break;
             case 'job-hold-until':
-                $this->attributes[$name] = new \obray\ipp\Attribute('job-hold-until', $value, \obray\ipp\enums\Types::KEYWORD);
+                $this->attributes[$name] = $this->createKeywordOrNameAttribute('job-hold-until', $value);
                 break;
             case 'ipp-attribute-fidelity':
                 $this->attributes[$name] = new \obray\ipp\Attribute('ipp-attribute-fidelity', $value, \obray\ipp\enums\Types::BOOLEAN);
@@ -111,8 +133,17 @@ class OperationAttributes extends \obray\ipp\AttributeGroup
             $charset = $this->attributes['attributes-charset']->getAttributeValue();
         }
 
-        if(empty($charset) || $charset !== 'utf-8'){
+        if(empty($charset) || strtolower((string) $charset) !== 'utf-8'){
             throw new ClientErrorCharsetNotSupported();
+        }
+
+        $naturalLanguage = null;
+        if (isset($this->attributes['attributes-natural-language'])) {
+            $naturalLanguage = $this->attributes['attributes-natural-language']->getAttributeValue();
+        }
+
+        if (trim((string) $naturalLanguage) === '') {
+            throw new InvalidRequest('"attributes-natural-language" is required.');
         }
     }
 }

@@ -16,7 +16,7 @@ class CollectionAttribute implements \JsonSerializable
     
     private $members = [];
 
-    public function __construct($name=NULL, array $members=NULL)
+    public function __construct($name = null, ?array $members = null)
     {
         // hardcoded values
         $this->valueLength = new \obray\ipp\types\basic\SignedShort(0);

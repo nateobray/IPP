@@ -124,5 +124,69 @@ class JobAttributesTest extends TestCase
         $this->assertSame('timeout', (string) $decoded->{'job-document-access-errors'}[1]);
     }
 
+    public function testCopiesUsesIntegerSyntax(): void
+    {
+        $jobAttributes = new \obray\ipp\JobAttributes();
+        $jobAttributes->set('copies', 2);
+
+        $this->assertInstanceOf(
+            \obray\ipp\types\Integer::class,
+            $jobAttributes->{'copies'}->getAttributeValueClass()
+        );
+        $this->assertSame('2', (string) $jobAttributes->{'copies'});
+    }
+
+    public function testFinishingsSupportsOneSetOfEnumValues(): void
+    {
+        $jobAttributes = new \obray\ipp\JobAttributes();
+        $jobAttributes->set('finishings', [
+            \obray\ipp\enums\Finishings::staple,
+            \obray\ipp\enums\Finishings::staple_top_left,
+        ]);
+
+        $decoded = new \obray\ipp\JobAttributes();
+        $offset = 0;
+        $decoded->decode($jobAttributes->encode(), $offset);
+
+        $this->assertIsArray($decoded->{'finishings'});
+        $this->assertSame('staple', (string) $decoded->{'finishings'}[0]);
+        $this->assertSame('staple-top-left', (string) $decoded->{'finishings'}[1]);
+    }
+
+    public function testPageRangesSupportsOneSetOfRangeOfIntegerValues(): void
+    {
+        $jobAttributes = new \obray\ipp\JobAttributes();
+        $jobAttributes->set('page-ranges', ['1-2', '5-6']);
+
+        $decoded = new \obray\ipp\JobAttributes();
+        $offset = 0;
+        $decoded->decode($jobAttributes->encode(), $offset);
+
+        $this->assertIsArray($decoded->{'page-ranges'});
+        $this->assertSame('1-2', (string) $decoded->{'page-ranges'}[0]);
+        $this->assertSame('5-6', (string) $decoded->{'page-ranges'}[1]);
+    }
+
+    public function testKeywordOrNameTemplateAttributesCanUseExplicitNameSyntax(): void
+    {
+        $jobAttributes = new \obray\ipp\JobAttributes();
+        $jobAttributes->set('job-hold-until', new \obray\ipp\types\NameWithoutLanguage('custom-window'));
+        $jobAttributes->set('job-sheets', new \obray\ipp\types\NameWithoutLanguage('banner-sheet'));
+        $jobAttributes->set('media', new \obray\ipp\types\NameWithoutLanguage('custom-tray'));
+
+        $this->assertInstanceOf(
+            \obray\ipp\types\NameWithoutLanguage::class,
+            $jobAttributes->{'job-hold-until'}->getAttributeValueClass()
+        );
+        $this->assertInstanceOf(
+            \obray\ipp\types\NameWithoutLanguage::class,
+            $jobAttributes->{'job-sheets'}->getAttributeValueClass()
+        );
+        $this->assertInstanceOf(
+            \obray\ipp\types\NameWithoutLanguage::class,
+            $jobAttributes->{'media'}->getAttributeValueClass()
+        );
+    }
+
 
 }

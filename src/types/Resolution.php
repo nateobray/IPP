@@ -8,7 +8,7 @@ class Resolution implements \obray\ipp\interfaces\TypeInterface, \JsonSerializab
     private $feedDirectionResolution;
     private $units;
 
-    public function __construct(int $crossFeedDirectionResolution=NULL, int $feedDirectionResolution=NULL, int $units=NULL)
+    public function __construct(?int $crossFeedDirectionResolution = null, ?int $feedDirectionResolution = null, ?int $units = null)
     {
         if($crossFeedDirectionResolution===NULL || $feedDirectionResolution===NULL || $units===NULL) return $this;
         $this->crossFeedDirectionResolution = new \obray\ipp\types\basic\SignedInteger($crossFeedDirectionResolution);

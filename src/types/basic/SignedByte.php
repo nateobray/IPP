@@ -26,7 +26,7 @@ class SignedByte implements \obray\ipp\interfaces\TypeInterface, \JsonSerializab
 
     public function decode($binary, $offset=0, $length=NULL)
     {
-        $this->value = unpack('c', $binary, $offset)[1];
+        $this->value = \obray\ipp\transport\DecodeGuard::unpack('cvalue', $binary, $offset, 1, 'signed byte')['value'];
         return $this;
     }
 

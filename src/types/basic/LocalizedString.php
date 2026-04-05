@@ -28,7 +28,14 @@ class LocalizedString implements \obray\ipp\interfaces\TypeInterface, \JsonSeria
     {
         $this->length = $length;
         if($length===NULL) throw new \Exception("Decoding localized string requires a length parameter.");
-        $this->value = (unpack('a'.$length, $binary, $offset))[1];
+        \obray\ipp\transport\DecodeGuard::requireBytes($binary, $offset, $length, 'localized string');
+        $this->value = \obray\ipp\transport\DecodeGuard::unpack(
+            'a' . $length . 'value',
+            $binary,
+            $offset,
+            $length,
+            'localized string'
+        )['value'];
         return $this;
     }
 

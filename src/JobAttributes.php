@@ -6,6 +6,18 @@ class JobAttributes extends \obray\ipp\AttributeGroup
 {
     protected $attribute_group_tag = 0x02;
 
+    private function createKeywordOrNameAttribute(string $name, $value)
+    {
+        if ($value instanceof \obray\ipp\types\Keyword
+            || $value instanceof \obray\ipp\types\NameWithoutLanguage
+            || $value instanceof \obray\ipp\types\NameWithLanguage
+        ) {
+            return new \obray\ipp\Attribute($name, $value);
+        }
+
+        return new \obray\ipp\Attribute($name, $value, \obray\ipp\enums\Types::KEYWORD);
+    }
+
     /**
      * __construct
      *
@@ -135,22 +147,22 @@ class JobAttributes extends \obray\ipp\AttributeGroup
                 $this->attributes[$name] = new \obray\ipp\Attribute('job-priority', $value, \obray\ipp\enums\Types::INTEGER);
                 break;
             case 'job-hold-until':
-                $this->attributes[$name] = new \obray\ipp\Attribute('job-hold-until', $value, \obray\ipp\enums\Types::KEYWORD);
+                $this->attributes[$name] = $this->createKeywordOrNameAttribute('job-hold-until', $value);
                 break;
             case 'job-sheets':
-                $this->attributes[$name] = new \obray\ipp\Attribute('job-sheets', $value, \obray\ipp\enums\Types::KEYWORD);
+                $this->attributes[$name] = $this->createKeywordOrNameAttribute('job-sheets', $value);
                 break;
             case 'multiple-document-handling':
                 $this->attributes[$name] = new \obray\ipp\Attribute('multiple-document-handling', $value, \obray\ipp\enums\Types::KEYWORD);
                 break;
             case 'copies':
-                $this->attributes[$name] = new \obray\ipp\Attribute('copies', $value, \obray\ipp\enums\Types::KEYWORD);
+                $this->attributes[$name] = new \obray\ipp\Attribute('copies', $value, \obray\ipp\enums\Types::INTEGER);
                 break;
             case 'finishings':
-                $this->attributes[$name] = new \obray\ipp\Attribute('finishings', $value, \obray\ipp\enums\Types::ENUM);
+                $this->attributes[$name] = $this->createAttributeInstances('finishings', $value, \obray\ipp\enums\Types::ENUM);
                 break;
             case 'page-ranges':
-                $this->attributes[$name] = new \obray\ipp\Attribute('page-ranges', $value, \obray\ipp\enums\Types::RANGEOFINTEGER);
+                $this->attributes[$name] = $this->createAttributeInstances('page-ranges', $value, \obray\ipp\enums\Types::RANGEOFINTEGER);
                 break;
             case 'sides':
                 $this->attributes[$name] = new \obray\ipp\Attribute('sides', $value, \obray\ipp\enums\Types::KEYWORD);
@@ -162,7 +174,7 @@ class JobAttributes extends \obray\ipp\AttributeGroup
                 $this->attributes[$name] = new \obray\ipp\Attribute('orientation-requested', $value, \obray\ipp\enums\Types::ENUM);
                 break;
             case 'media':
-                $this->attributes[$name] = new \obray\ipp\Attribute('media', $value, \obray\ipp\enums\Types::KEYWORD);
+                $this->attributes[$name] = $this->createKeywordOrNameAttribute('media', $value);
                 break;
             case 'printer-resolution':
                 $this->attributes[$name] = new \obray\ipp\Attribute('printer-resolution', $value, \obray\ipp\enums\Types::RESOLUTION);

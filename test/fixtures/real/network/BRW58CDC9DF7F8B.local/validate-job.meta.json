@@ -1,0 +1,40 @@
+{
+    "recorded_at": "2026-04-05T03:29:16+00:00",
+    "kind": "ipp-response",
+    "source": "network",
+    "label": "BRW58CDC9DF7F8B.local",
+    "printer_uri": "ipp://BRW58CDC9DF7F8B.local:631/ipp/print",
+    "operation": "validate-job",
+    "request": {
+        "document_format": "application/octet-stream",
+        "job_hold_until": "indefinite"
+    },
+    "request_file": "validate-job.request.bin",
+    "response_file": "validate-job.response.bin",
+    "http": {
+        "post_url": "http://BRW58CDC9DF7F8B.local:631/ipp/print",
+        "status": 200
+    },
+    "summary": {
+        "version": "1.1",
+        "request_id": 2002,
+        "status": "successful-ok-ignored-or-substituted-attributes",
+        "operation_attribute_names": [
+            "attributes-charset",
+            "attributes-natural-language"
+        ],
+        "job_attribute_group_count": 0,
+        "printer_attribute_group_count": 0,
+        "unsupported_attribute_group_count": 1,
+        "printer_names": [],
+        "job_ids": [],
+        "job_states": [],
+        "document_formats_supported": [],
+        "operations_supported": [],
+        "unsupported_attribute_names": [
+            [
+                "job-hold-until"
+            ]
+        ]
+    }
+}

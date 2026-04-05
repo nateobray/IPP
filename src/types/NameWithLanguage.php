@@ -9,7 +9,7 @@ class NameWithLanguage extends \obray\ipp\types\basic\OctetString
     private $name;
     private $nameSize;
 
-    public function __construct(string $naturalLanguage=NULL, string $string=NULL)
+    public function __construct(?string $naturalLanguage = null, ?string $string = null)
     {
         if($naturalLanguage===NULL || $string===NULL) return $this;
         $this->language = new \obray\ipp\types\basic\OctetString($naturalLanguage);

@@ -21,7 +21,18 @@ class USASCIIString implements \obray\ipp\interfaces\TypeInterface, \JsonSeriali
 
     public function decode($binary, $offset=0, $length=NULL)
     {
-        $this->value = (unpack('a'.$length, $binary, $offset))[1];
+        if ($length === NULL) {
+            throw new \Exception("Decoding US-ASCII string requires a length parameter.");
+        }
+
+        \obray\ipp\transport\DecodeGuard::requireBytes($binary, $offset, $length, 'US-ASCII string');
+        $this->value = \obray\ipp\transport\DecodeGuard::unpack(
+            'a' . $length . 'value',
+            $binary,
+            $offset,
+            $length,
+            'US-ASCII string'
+        )['value'];
         return $this;
     }
 
