@@ -2,7 +2,7 @@
 
 namespace obray\ipp;
 
-use obray\exceptions\ClientErrorCharsetNotSupported;
+use obray\ipp\exceptions\ClientErrorCharsetNotSupported;
 
 class OperationAttributes extends \obray\ipp\AttributeGroup
 {
@@ -51,11 +51,17 @@ class OperationAttributes extends \obray\ipp\AttributeGroup
             case 'document-uri':
                 $this->attributes[$name] = new \obray\ipp\Attribute('document-uri', $value, \obray\ipp\enums\Types::URI, 1023);
                 break;
+            case 'last-document':
+                $this->attributes[$name] = new \obray\ipp\Attribute('last-document', $value, \obray\ipp\enums\Types::BOOLEAN);
+                break;
             case 'requesting-user-name':
                 $this->attributes[$name] = new \obray\ipp\Attribute('requesting-user-name', $value, \obray\ipp\enums\Types::NAME, 255, $this->naturalLanguageOverride);
                 break;
             case 'job-name':
                 $this->attributes[$name] = new \obray\ipp\Attribute('job-name', $value, \obray\ipp\enums\Types::NAME, 255, $this->naturalLanguageOverride);
+                break;
+            case 'job-hold-until':
+                $this->attributes[$name] = new \obray\ipp\Attribute('job-hold-until', $value, \obray\ipp\enums\Types::KEYWORD);
                 break;
             case 'ipp-attribute-fidelity':
                 $this->attributes[$name] = new \obray\ipp\Attribute('ipp-attribute-fidelity', $value, \obray\ipp\enums\Types::BOOLEAN);
@@ -90,6 +96,9 @@ class OperationAttributes extends \obray\ipp\AttributeGroup
             case 'my-jobs':
                 $this->attributes[$name] = new \obray\ipp\Attribute('my-jobs', $value, \obray\ipp\enums\Types::BOOLEAN);
                 break;
+            case 'requested-attributes':
+                $this->attributes[$name] = $this->createAttributeInstances('requested-attributes', $value, \obray\ipp\enums\Types::KEYWORD);
+                break;
             default:
                 throw new \Exception("Invalid operational parameter.");
         }
@@ -97,6 +106,11 @@ class OperationAttributes extends \obray\ipp\AttributeGroup
 
     public function validate(array $attributeKeys)
     {
+        $charset = null;
+        if (isset($this->attributes['attributes-charset'])) {
+            $charset = $this->attributes['attributes-charset']->getAttributeValue();
+        }
+
         if(empty($charset) || $charset !== 'utf-8'){
             throw new ClientErrorCharsetNotSupported();
         }

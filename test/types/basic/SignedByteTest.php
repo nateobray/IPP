@@ -2,7 +2,7 @@
 $loader = require_once 'vendor/autoload.php';
 use PHPUnit\Framework\TestCase;
 
-class SignedByte extends TestCase
+class SignedByteTest extends TestCase
 {
     public function testEncodeAndDecodeCharSignedByte()
     {

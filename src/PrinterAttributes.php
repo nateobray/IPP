@@ -7,14 +7,65 @@ class PrinterAttributes extends \obray\ipp\AttributeGroup
 
     public function set(string $name, $value){
         switch($name){
+            case 'charset-configured':
+                $this->attributes[$name] = new \obray\ipp\Attribute('charset-configured', $value, \obray\ipp\enums\Types::CHARSET);
+                break;
+            case 'charset-supported':
+                $this->attributes[$name] = $this->createAttributeInstances('charset-supported', $value, \obray\ipp\enums\Types::CHARSET);
+                break;
+            case 'color-supported':
+                $this->attributes[$name] = new \obray\ipp\Attribute('color-supported', $value, \obray\ipp\enums\Types::BOOLEAN);
+                break;
+            case 'compression-supported':
+                $this->attributes[$name] = $this->createAttributeInstances('compression-supported', $value, \obray\ipp\enums\Types::KEYWORD);
+                break;
             case 'device-uri':
                 $this->attributes[$name] = new \obray\ipp\Attribute('device-uri', $value, \obray\ipp\enums\Types::URI);
+                break;
+            case 'document-format-default':
+                $this->attributes[$name] = new \obray\ipp\Attribute('document-format-default', $value, \obray\ipp\enums\Types::MIMEMEDIATYPE);
+                break;
+            case 'document-format-supported':
+                $this->attributes[$name] = $this->createAttributeInstances('document-format-supported', $value, \obray\ipp\enums\Types::MIMEMEDIATYPE);
+                break;
+            case 'generated-natural-language-supported':
+                $this->attributes[$name] = $this->createAttributeInstances('generated-natural-language-supported', $value, \obray\ipp\enums\Types::NATURALLANGUAGE);
+                break;
+            case 'job-k-octets-supported':
+                $this->attributes[$name] = new \obray\ipp\Attribute('job-k-octets-supported', $value, \obray\ipp\enums\Types::RANGEOFINTEGER);
+                break;
+            case 'job-impressions-supported':
+                $this->attributes[$name] = new \obray\ipp\Attribute('job-impressions-supported', $value, \obray\ipp\enums\Types::RANGEOFINTEGER);
+                break;
+            case 'job-media-sheets-supported':
+                $this->attributes[$name] = new \obray\ipp\Attribute('job-media-sheets-supported', $value, \obray\ipp\enums\Types::RANGEOFINTEGER);
+                break;
+            case 'ipp-versions-supported':
+                $this->attributes[$name] = $this->createAttributeInstances('ipp-versions-supported', $value, \obray\ipp\enums\Types::KEYWORD);
+                break;
+            case 'multiple-document-jobs-supported':
+                $this->attributes[$name] = new \obray\ipp\Attribute('multiple-document-jobs-supported', $value, \obray\ipp\enums\Types::BOOLEAN);
+                break;
+            case 'natural-language-configured':
+                $this->attributes[$name] = new \obray\ipp\Attribute('natural-language-configured', $value, \obray\ipp\enums\Types::NATURALLANGUAGE);
+                break;
+            case 'operations-supported':
+                $this->attributes[$name] = $this->createAttributeInstances('operations-supported', $value, \obray\ipp\enums\Types::ENUM);
+                break;
+            case 'pdl-override-supported':
+                $this->attributes[$name] = new \obray\ipp\Attribute('pdl-override-supported', $value, \obray\ipp\enums\Types::KEYWORD);
                 break;
             case 'port-monitor':
                 $this->attributes[$name] = new \obray\ipp\Attribute('port-monitor', $value, \obray\ipp\enums\Types::NAME, 127);
                 break;
             case 'ppd-name':
                 $this->attributes[$name] = new \obray\ipp\Attribute('ppd-name', $value, \obray\ipp\enums\Types::NAME, 255);
+                break;
+            case 'printer-message-from-operator':
+                $this->attributes[$name] = new \obray\ipp\Attribute('printer-message-from-operator', $value, \obray\ipp\enums\Types::TEXT, 127);
+                break;
+            case 'printer-make-and-model':
+                $this->attributes[$name] = new \obray\ipp\Attribute('printer-make-and-model', $value, \obray\ipp\enums\Types::TEXT, 127);
                 break;
             case 'printer-is-accepting-jobs':
                 $this->attributes[$name] = new \obray\ipp\Attribute('printer-is-accepting-jobs', $value, \obray\ipp\enums\Types::BOOLEAN);
@@ -28,11 +79,53 @@ class PrinterAttributes extends \obray\ipp\AttributeGroup
             case 'printer-more-info':
                 $this->attributes[$name] = new \obray\ipp\Attribute('printer-more-info', $value, \obray\ipp\enums\Types::URI);
                 break;
+            case 'printer-driver-installer':
+                $this->attributes[$name] = new \obray\ipp\Attribute('printer-driver-installer', $value, \obray\ipp\enums\Types::URI);
+                break;
+            case 'printer-more-info-manufacturer':
+                $this->attributes[$name] = new \obray\ipp\Attribute('printer-more-info-manufacturer', $value, \obray\ipp\enums\Types::URI);
+                break;
+            case 'printer-name':
+                $this->attributes[$name] = new \obray\ipp\Attribute('printer-name', $value, \obray\ipp\enums\Types::NAME, 127);
+                break;
             case 'printer-state':
                 $this->attributes[$name] = new \obray\ipp\Attribute('printer-state', $value, \obray\ipp\enums\Types::ENUM);
                 break;
             case 'printer-state-message':
-                $this->attributes[$name] = new \obray\ipp\Attribute('printer-state', $value, \obray\ipp\enums\Types::TEXT);
+                $this->attributes[$name] = new \obray\ipp\Attribute('printer-state-message', $value, \obray\ipp\enums\Types::TEXT);
+                break;
+            case 'printer-state-reasons':
+                $this->attributes[$name] = $this->createAttributeInstances('printer-state-reasons', $value, \obray\ipp\enums\Types::KEYWORD);
+                break;
+            case 'printer-up-time':
+                $this->attributes[$name] = new \obray\ipp\Attribute('printer-up-time', $value, \obray\ipp\enums\Types::INTEGER);
+                break;
+            case 'printer-current-time':
+                $this->attributes[$name] = new \obray\ipp\Attribute('printer-current-time', $value, \obray\ipp\enums\Types::DATETIME);
+                break;
+            case 'printer-uri-supported':
+                $this->attributes[$name] = $this->createAttributeInstances('printer-uri-supported', $value, \obray\ipp\enums\Types::URI);
+                break;
+            case 'queued-job-count':
+                $this->attributes[$name] = new \obray\ipp\Attribute('queued-job-count', $value, \obray\ipp\enums\Types::INTEGER);
+                break;
+            case 'multiple-operation-time-out':
+                $this->attributes[$name] = new \obray\ipp\Attribute('multiple-operation-time-out', $value, \obray\ipp\enums\Types::INTEGER);
+                break;
+            case 'pages-per-minute':
+                $this->attributes[$name] = new \obray\ipp\Attribute('pages-per-minute', $value, \obray\ipp\enums\Types::INTEGER);
+                break;
+            case 'pages-per-minute-color':
+                $this->attributes[$name] = new \obray\ipp\Attribute('pages-per-minute-color', $value, \obray\ipp\enums\Types::INTEGER);
+                break;
+            case 'reference-uri-schemes-supported':
+                $this->attributes[$name] = $this->createAttributeInstances('reference-uri-schemes-supported', $value, \obray\ipp\enums\Types::URISCHEME);
+                break;
+            case 'uri-authentication-supported':
+                $this->attributes[$name] = $this->createAttributeInstances('uri-authentication-supported', $value, \obray\ipp\enums\Types::KEYWORD);
+                break;
+            case 'uri-security-supported':
+                $this->attributes[$name] = $this->createAttributeInstances('uri-security-supported', $value, \obray\ipp\enums\Types::KEYWORD);
                 break;
             default:
                 throw new \Exception("Invalid operational parameter.");

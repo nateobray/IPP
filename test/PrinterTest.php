@@ -1,154 +1,152 @@
 <?php
 $loader = require_once 'vendor/autoload.php';
+
+use obray\ipp\test\FakeRequest;
 use PHPUnit\Framework\TestCase;
 
 class PrinterTest extends TestCase
 {
-    protected $printer;
-
-    /**
-     * Set Up
-     * PHPUnit setup fixture
-     */
+    protected \obray\ipp\Printer $printer;
 
     protected function setUp(): void
     {
-        $this->printer = new \obray\ipp\Printer('ipp://localhost/printers/CUPS_PDF');
+        FakeRequest::reset();
+
+        $this->printer = (new \obray\ipp\Printer(
+            'ipp://localhost/printers/CUPS_PDF',
+            'demo-user',
+            'secret',
+            [['key' => CURLOPT_TIMEOUT, 'value' => 5]]
+        ))->setRequestClass(FakeRequest::class);
     }
 
-    /**
-     * Test Print Job
-     * Prints to the specified printer and tests if the response is what expected
-     */
-
-    public function testPrintJob()
+    public function testPrintJobBuildsExpectedPayload(): void
     {
-        $IPPPayload = $this->printer->printJob('Hello world', 1234);
-        // test if IPPPayload is properly structured
-        $this->assertInstanceOf(\obray\ipp\transport\IPPPayload::class, $IPPPayload);
-        $this->assertInstanceOf(\obray\ipp\types\VersionNumber::class, $IPPPayload->versionNumber);
-        $this->assertInstanceOf(\obray\ipp\types\Integer::class, $IPPPayload->requestId);
-        $this->assertSame(1234, $IPPPayload->requestId->getValue());
-        $this->assertInstanceOf(\obray\ipp\types\StatusCode::class, $IPPPayload->statusCode);
-        $this->assertInstanceOf(\obray\ipp\OperationAttributes::class, $IPPPayload->operationAttributes);
-        $this->assertInstanceOf(\obray\ipp\JobAttributes::class, $IPPPayload->jobAttributes);
+        $response = $this->printer->printJob('Hello world', 1234, [
+            'document-format' => 'application/pdf',
+            'sides' => 'two-sided-long-edge',
+        ]);
 
-        // test if it was scuccessful
-        $this->assertSame('successful-ok', (string)$IPPPayload->statusCode);
-    }
-
-    /**
-     * Test Validate Print Job
-     */
-
-    public function testValidatePrintJob()
-    {
-        $IPPPayload = $this->printer->validateJob(4987);
-        $this->assertInstanceOf(\obray\ipp\transport\IPPPayload::class, $IPPPayload);
-        $this->assertInstanceOf(\obray\ipp\types\VersionNumber::class, $IPPPayload->versionNumber);
-        $this->assertInstanceOf(\obray\ipp\types\Integer::class, $IPPPayload->requestId);
-        $this->assertSame(4987, $IPPPayload->requestId->getValue());
-        $this->assertInstanceOf(\obray\ipp\types\StatusCode::class, $IPPPayload->statusCode);
-        $this->assertInstanceOf(\obray\ipp\OperationAttributes::class, $IPPPayload->operationAttributes);
-
-        // test if it was scuccessful
-        $this->assertSame('successful-ok', (string)$IPPPayload->statusCode);
-    }
-
-    /**
-     * Test Validate Print Job when printer not found
-     */
-
-    public function testPrintJobPrinterNotFound()
-    {
-        // get bogus printer object
-        $printer = new \obray\ipp\Printer('ipp://localhost/printers/printer-no-exist');
-
-        // do bogus print call
-        $response = $printer->printJob('Hello world',1234);
-
-        // check if response was good
         $this->assertInstanceOf(\obray\ipp\transport\IPPPayload::class, $response);
-        $this->assertSame('1.1', (string)$response->versionNumber);
-        $this->assertSame('1234', (string)$response->requestId);
-        $this->assertSame('client-error-not-found', (string)$response->statusCode);
-        $this->assertSame('The printer or class does not exist.', (string)$response->operationAttributes->{'status-message'});
-        $this->assertEmpty($response->jobAttributes);
-        $this->assertEmpty($response->printerAttributes);
+        $this->assertSame(1234, $response->requestId->getValue());
+        $this->assertSame('successful-ok', (string) $response->statusCode);
+
+        $this->assertSame('ipp://localhost/printers/CUPS_PDF', FakeRequest::$lastCall['printerURI']);
+        $this->assertSame('demo-user', FakeRequest::$lastCall['user']);
+        $this->assertSame('secret', FakeRequest::$lastCall['password']);
+        $this->assertSame([['key' => CURLOPT_TIMEOUT, 'value' => 5]], FakeRequest::$lastCall['curlOptions']);
+        $this->assertSame('1.1', FakeRequest::$lastCall['version']);
+        $this->assertSame(\obray\ipp\types\Operation::PRINT_JOB, FakeRequest::$lastCall['operation']);
+        $this->assertSame('application/pdf', (string) FakeRequest::$lastCall['operationAttributes']->{'document-format'});
+        $this->assertSame('two-sided-long-edge', (string) FakeRequest::$lastCall['jobAttributes']->{'sides'});
+        $this->assertSame('Hello world', FakeRequest::$lastCall['document']);
     }
 
-    /**
-     * Test Get Printer attributes
-     */
-
-    public function testGetPrinterAttributes()
+    public function testPrintURIBuildsExpectedPayload(): void
     {
-        // do test printer call
-        $IPPPayload = $this->printer->getPrinterAttributes(567);
+        $this->printer->printURI('https://example.test/file.pdf', 22, [
+            'job-name' => 'Remote document',
+        ]);
 
-        // test if IPPPayload is properly structured
-        $this->assertInstanceOf(\obray\ipp\transport\IPPPayload::class, $IPPPayload);
-        $this->assertInstanceOf(\obray\ipp\types\VersionNumber::class, $IPPPayload->versionNumber);
-        $this->assertInstanceOf(\obray\ipp\types\Integer::class, $IPPPayload->requestId);
-        $this->assertSame(567, $IPPPayload->requestId->getValue());
-        $this->assertInstanceOf(\obray\ipp\types\StatusCode::class, $IPPPayload->statusCode);
-        $this->assertInstanceOf(\obray\ipp\OperationAttributes::class, $IPPPayload->operationAttributes);
-        $this->assertInstanceOf(\obray\ipp\PrinterAttributes::class, $IPPPayload->printerAttributes);
-
-        // test if it was scuccessful
-        $this->assertSame('successful-ok', (string)$IPPPayload->statusCode);
+        $this->assertSame(\obray\ipp\types\Operation::PRINT_URI, FakeRequest::$lastCall['operation']);
+        $this->assertSame(22, FakeRequest::$lastCall['requestId']);
+        $this->assertSame('https://example.test/file.pdf', (string) FakeRequest::$lastCall['operationAttributes']->{'document-uri'});
+        $this->assertSame('Remote document', (string) FakeRequest::$lastCall['operationAttributes']->{'job-name'});
+        $this->assertSame('', FakeRequest::$lastCall['document']);
     }
 
-    /**
-     * Test Get Jobs
-     */
-
-    public function testGetJobs()
+    public function testValidateJobIncludesJobAttributes(): void
     {
-        // do test printer call
-        $IPPPayload = $this->printer->getJobs(375);
-        
-        // test if IPPPayload is properly structured
-        $this->assertInstanceOf(\obray\ipp\transport\IPPPayload::class, $IPPPayload);
-        $this->assertInstanceOf(\obray\ipp\types\VersionNumber::class, $IPPPayload->versionNumber);
-        $this->assertInstanceOf(\obray\ipp\types\Integer::class, $IPPPayload->requestId);
-        $this->assertSame(375, $IPPPayload->requestId->getValue());
-        $this->assertInstanceOf(\obray\ipp\types\StatusCode::class, $IPPPayload->statusCode);
-        $this->assertInstanceOf(\obray\ipp\OperationAttributes::class, $IPPPayload->operationAttributes);
+        $this->printer->validateJob(4987, [
+            'document-format' => 'application/postscript',
+            'media' => 'iso_a4_210x297mm',
+        ]);
 
-        // test if it was scuccessful
-        $this->assertSame('successful-ok', (string)$IPPPayload->statusCode);
-        //print_r(json_encode($IPPPayload, JSON_PRETTY_PRINT));
+        $this->assertSame(\obray\ipp\types\Operation::VALIDATE_JOB, FakeRequest::$lastCall['operation']);
+        $this->assertSame('application/postscript', (string) FakeRequest::$lastCall['operationAttributes']->{'document-format'});
+        $this->assertSame('iso_a4_210x297mm', (string) FakeRequest::$lastCall['jobAttributes']->{'media'});
     }
 
-    /**
-     * Test Pause Printer
-     */
-
-    public function testPausePrinter()
+    public function testCreateJobBuildsExpectedPayload(): void
     {
-        // todo
-        $this->assertSame('blah', 'blah');
+        $this->printer->createJob(77, [
+            'job-name' => 'Batch print',
+            'sides' => 'one-sided',
+            'document-format' => 'application/pdf',
+        ]);
+
+        $this->assertSame(\obray\ipp\types\Operation::CREATE_JOB, FakeRequest::$lastCall['operation']);
+        $this->assertSame('Batch print', (string) FakeRequest::$lastCall['operationAttributes']->{'job-name'});
+        $this->assertFalse(FakeRequest::$lastCall['operationAttributes']->has('document-format'));
+        $this->assertSame('one-sided', (string) FakeRequest::$lastCall['jobAttributes']->{'sides'});
     }
 
-    /**
-     * Test Resume Printer
-     */
-
-    public function testResumePrinter()
+    public function testGetPrinterAttributesBuildsExpectedPayload(): void
     {
-        // todo
-        $this->assertSame('blah', 'blah');
+        $this->printer->getPrinterAttributes(567);
+
+        $this->assertSame(\obray\ipp\types\Operation::GET_PRINTER_ATTRIBUTES, FakeRequest::$lastCall['operation']);
+        $this->assertSame('1.1', FakeRequest::$lastCall['version']);
+        $this->assertSame(567, FakeRequest::$lastCall['requestId']);
     }
 
-    /**
-     * Test Purge Jobs
-     */
-
-    public function testPurgeJobs()
+    public function testGetPrinterAttributesSupportsRequestedAttributes(): void
     {
-        // todo
-        $this->assertSame('blah', 'blah');
+        $this->printer->getPrinterAttributes(568, ['printer-name', 'printer-state']);
+
+        $this->assertIsArray(FakeRequest::$lastCall['operationAttributes']->{'requested-attributes'});
+        $this->assertSame('printer-name', (string) FakeRequest::$lastCall['operationAttributes']->{'requested-attributes'}[0]);
+        $this->assertSame('printer-state', (string) FakeRequest::$lastCall['operationAttributes']->{'requested-attributes'}[1]);
     }
 
+    public function testGetPrinterAttributesSupportsDocumentFormatFilter(): void
+    {
+        $this->printer->getPrinterAttributes(569, ['document-format-supported'], 'application/pdf');
+
+        $this->assertSame('application/pdf', (string) FakeRequest::$lastCall['operationAttributes']->{'document-format'});
+    }
+
+    public function testGetJobsBuildsExpectedPayload(): void
+    {
+        $this->printer->getJobs(375, 'completed', 10, true);
+
+        $this->assertSame(\obray\ipp\types\Operation::GET_JOBS, FakeRequest::$lastCall['operation']);
+        $this->assertSame('1.1', FakeRequest::$lastCall['version']);
+        $this->assertSame('completed', (string) FakeRequest::$lastCall['operationAttributes']->{'which-jobs'});
+        $this->assertSame('10', (string) FakeRequest::$lastCall['operationAttributes']->{'limit'});
+        $this->assertSame('true', (string) FakeRequest::$lastCall['operationAttributes']->{'my-jobs'});
+    }
+
+    public function testGetJobsSupportsRequestedAttributes(): void
+    {
+        $this->printer->getJobs(376, 'completed', 5, false, ['job-id', 'job-state']);
+
+        $this->assertIsArray(FakeRequest::$lastCall['operationAttributes']->{'requested-attributes'});
+        $this->assertSame('job-id', (string) FakeRequest::$lastCall['operationAttributes']->{'requested-attributes'}[0]);
+        $this->assertSame('job-state', (string) FakeRequest::$lastCall['operationAttributes']->{'requested-attributes'}[1]);
+    }
+
+    public function testPausePrinterBuildsExpectedPayload(): void
+    {
+        $this->printer->pausePrinter(11);
+
+        $this->assertSame(\obray\ipp\types\Operation::PAUSE_PRINTER, FakeRequest::$lastCall['operation']);
+        $this->assertSame(11, FakeRequest::$lastCall['requestId']);
+    }
+
+    public function testResumePrinterBuildsExpectedPayload(): void
+    {
+        $this->printer->resumePrinter(12);
+
+        $this->assertSame(\obray\ipp\types\Operation::RESUME_PRINTER, FakeRequest::$lastCall['operation']);
+        $this->assertSame(12, FakeRequest::$lastCall['requestId']);
+    }
+
+    public function testPurgeJobsBuildsExpectedPayload(): void
+    {
+        $this->printer->purgeJobs(13);
+
+        $this->assertSame(\obray\ipp\types\Operation::PURGE_JOBS, FakeRequest::$lastCall['operation']);
+        $this->assertSame(13, FakeRequest::$lastCall['requestId']);
+    }
 }

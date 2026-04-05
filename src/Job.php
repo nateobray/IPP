@@ -3,25 +3,100 @@ namespace obray\ipp;
 
 class Job
 {
-    private $ipp;
     private $printerURI;
     private $jobID;
     private $user;
     private $password;
     private $curlOptions = [];
-    private $request;
-    
-    private $lastRequest;
-    private $lastResponse;
+    private $requestClass;
 
-    public function __construct($uri, $jobID, $user=null, $password=NULL, $curlOptions = [])
+    public function __construct(string $uri, int $jobID, ?string $user=null, ?string $password=null, array $curlOptions = [])
     {
         $this->printerURI = $uri;
         $this->jobID = $jobID;
         $this->user = $user;
         $this->password = $password;
         $this->curlOptions = $curlOptions;
-        $this->request = \obray\ipp\Request::class;
+        $this->requestClass = \obray\ipp\Request::class;
+    }
+
+    public function setRequestClass(string $requestClass): self
+    {
+        $this->requestClass = $requestClass;
+
+        return $this;
+    }
+
+    private function createOperationAttributes(?array &$attributes = null): \obray\ipp\OperationAttributes
+    {
+        $operationAttributes = new \obray\ipp\OperationAttributes();
+        $operationAttributes->{'printer-uri'} = $this->printerURI;
+        $operationAttributes->{'job-id'} = $this->jobID;
+        if (!empty($this->user)) {
+            $operationAttributes->{'requesting-user-name'} = $this->user;
+        }
+
+        if (!is_array($attributes) || $attributes === []) {
+            return $operationAttributes;
+        }
+
+        if (isset($attributes['attributes-natural-language'])) {
+            $operationAttributes->setNaturalLanguage((string) $attributes['attributes-natural-language']);
+        }
+
+        $operationAttributeNames = [
+            'attributes-charset',
+            'attributes-natural-language',
+            'document-format',
+            'document-name',
+            'document-natural-language',
+            'document-uri',
+            'compression',
+            'ipp-attribute-fidelity',
+            'job-hold-until',
+            'job-name',
+            'last-document',
+            'requested-attributes',
+        ];
+
+        foreach ($operationAttributeNames as $attributeName) {
+            if (!array_key_exists($attributeName, $attributes)) {
+                continue;
+            }
+
+            $operationAttributes->{$attributeName} = $attributes[$attributeName];
+            unset($attributes[$attributeName]);
+        }
+
+        return $operationAttributes;
+    }
+
+    private function sendPayload(\obray\ipp\transport\IPPPayload $payload): \obray\ipp\transport\IPPPayload
+    {
+        $requestClass = $this->requestClass;
+
+        return $requestClass::send(
+            $this->printerURI,
+            $payload->encode(),
+            $this->user,
+            $this->password,
+            $this->curlOptions
+        );
+    }
+
+    private function buildPayload(
+        int $operationCode,
+        int $requestId,
+        ?\obray\ipp\OperationAttributes $operationAttributes,
+        ?\obray\ipp\types\OctetString $document = null
+    ): \obray\ipp\transport\IPPPayload {
+        return new \obray\ipp\transport\IPPPayload(
+            new \obray\ipp\types\VersionNumber('1.1'),
+            new \obray\ipp\types\Operation($operationCode),
+            new \obray\ipp\types\Integer($requestId),
+            $document,
+            $operationAttributes
+        );
     }
 
     /**
@@ -63,9 +138,22 @@ class Job
      * @return \obray\ipp\transport\IPPPayload
      */
 
-    public function sendDocument()
+    public function sendDocument(string $document='', bool $lastDocument=true, int $requestId=1, ?array $attributes=null)
     {
-        throw new \Exception("Send document not implemented.");
+        $attributes = $attributes ?? [];
+        $attributes['last-document'] = $lastDocument;
+
+        $operationAttributes = $this->createOperationAttributes($attributes);
+        $documentPayload = $document === '' ? null : new \obray\ipp\types\OctetString($document);
+
+        return $this->sendPayload(
+            $this->buildPayload(
+                \obray\ipp\types\Operation::SEND_DOCUMENT,
+                $requestId,
+                $operationAttributes,
+                $documentPayload
+            )
+        );
     }
 
     /**
@@ -98,9 +186,21 @@ class Job
      * @return \obray\ipp\transport\IPPPayload
      */
 
-    public function sendURI()
+    public function sendURI(string $documentURI, bool $lastDocument=true, int $requestId=1, ?array $attributes=null)
     {
-        throw new \Exception("Send URI not implemented.");
+        $attributes = $attributes ?? [];
+        $attributes['document-uri'] = $documentURI;
+        $attributes['last-document'] = $lastDocument;
+
+        $operationAttributes = $this->createOperationAttributes($attributes);
+
+        return $this->sendPayload(
+            $this->buildPayload(
+                \obray\ipp\types\Operation::SEND_URI,
+                $requestId,
+                $operationAttributes
+            )
+        );
     }
 
     /**
@@ -120,20 +220,15 @@ class Job
 
     public function cancelJob(int $requestId=1)
     {
-        $operationAttributes = new \obray\ipp\OperationAttributes();
-        $operationAttributes->{'printer-uri'} = $this->printerURI;
-        $operationAttributes->{'job-id'} = $this->jobID;
-        $operationAttributes->{'requesting-user-name'} = $this->user;
-        
-        $payload = new \obray\ipp\transport\IPPPayload(
-            new \obray\ipp\types\VersionNumber('1.1'),
-            new \obray\ipp\types\Operation(\obray\ipp\types\Operation::CANCEL_JOB),
-            new \obray\ipp\types\Integer($requestId),
-            NULL,
-            $operationAttributes
+        $operationAttributes = $this->createOperationAttributes();
+
+        return $this->sendPayload(
+            $this->buildPayload(
+                \obray\ipp\types\Operation::CANCEL_JOB,
+                $requestId,
+                $operationAttributes
+            )
         );
-        $encodedPayload = $payload->encode();
-        return \obray\ipp\Request::send($this->printerURI, $encodedPayload, $this->user, $this->password, $this->curlOptions);
     }
 
     /**
@@ -177,24 +272,22 @@ class Job
      * @return \obray\ipp\transport\IPPPayload
      */
 
-    public function getJobAttributes()
+    public function getJobAttributes(int $requestId=1, ?array $requestedAttributes = null)
     {
-        $operationAttributes = new \obray\ipp\OperationAttributes();
-        $operationAttributes->{'printer-uri'} = $this->printerURI;
-        $operationAttributes->{'job-id'} = $this->jobID;
-        if(!empty($this->user)){
-            $operationAttributes->{'requesting-user-name'} = $this->user;
+        $attributes = [];
+        if ($requestedAttributes !== null) {
+            $attributes['requested-attributes'] = $requestedAttributes;
         }
-        
-        $payload = new \obray\ipp\transport\IPPPayload(
-            new \obray\ipp\types\VersionNumber('1.1'),
-            new \obray\ipp\types\Operation(\obray\ipp\types\Operation::GET_JOB_ATTRIBUTES),
-            new \obray\ipp\types\Integer(123456),
-            NULL,
-            $operationAttributes
+
+        $operationAttributes = $this->createOperationAttributes($attributes);
+
+        return $this->sendPayload(
+            $this->buildPayload(
+                \obray\ipp\types\Operation::GET_JOB_ATTRIBUTES,
+                $requestId,
+                $operationAttributes
+            )
         );
-        $encodedPayload = $payload->encode();
-        return \obray\ipp\Request::send($this->printerURI, $encodedPayload, $this->user, $this->password, $this->curlOptions);
     }
 
     /**
@@ -213,22 +306,22 @@ class Job
      * @return \obray\ipp\transport\IPPPayload
      */
 
-    public function holdJob(int $requestId=0)
+    public function holdJob(int $requestId=1, ?string $jobHoldUntil = null)
     {
-        $operationAttributes = new \obray\ipp\OperationAttributes();
-        $operationAttributes->{'printer-uri'} = $this->printerURI;
-        $operationAttributes->{'job-id'} = $this->jobID;
-        $operationAttributes->{'requesting-user-name'} = $this->user;
-        
-        $payload = new \obray\ipp\transport\IPPPayload(
-            new \obray\ipp\types\VersionNumber('1.1'),
-            new \obray\ipp\types\Operation(\obray\ipp\types\Operation::HOLD_JOB),
-            new \obray\ipp\types\Integer($requestId),
-            NULL,
-            $operationAttributes
+        $attributes = [];
+        if ($jobHoldUntil !== null) {
+            $attributes['job-hold-until'] = $jobHoldUntil;
+        }
+
+        $operationAttributes = $this->createOperationAttributes($attributes);
+
+        return $this->sendPayload(
+            $this->buildPayload(
+                \obray\ipp\types\Operation::HOLD_JOB,
+                $requestId,
+                $operationAttributes
+            )
         );
-        $encodedPayload = $payload->encode();
-        return \obray\ipp\Request::send($this->printerURI, $encodedPayload, $this->user, $this->password, $this->curlOptions);
     }
 
     /**
@@ -252,22 +345,17 @@ class Job
      * @return \obray\ipp\transport\IPPPayload
      */
 
-    public function releaseJob(int $requestId=0)
+    public function releaseJob(int $requestId=1)
     {
-        $operationAttributes = new \obray\ipp\OperationAttributes();
-        $operationAttributes->{'printer-uri'} = $this->printerURI;
-        $operationAttributes->{'job-id'} = $this->jobID;
-        $operationAttributes->{'requesting-user-name'} = $this->user;
-        
-        $payload = new \obray\ipp\transport\IPPPayload(
-            new \obray\ipp\types\VersionNumber('1.1'),
-            new \obray\ipp\types\Operation(\obray\ipp\types\Operation::RELEASE_JOB),
-            new \obray\ipp\types\Integer($requestId),
-            NULL,
-            $operationAttributes
+        $operationAttributes = $this->createOperationAttributes();
+
+        return $this->sendPayload(
+            $this->buildPayload(
+                \obray\ipp\types\Operation::RELEASE_JOB,
+                $requestId,
+                $operationAttributes
+            )
         );
-        $encodedPayload = $payload->encode();
-        return \obray\ipp\Request::send($this->printerURI, $encodedPayload, $this->user, $this->password, $this->curlOptions);
     }
 
     /**
@@ -295,22 +383,22 @@ class Job
      * @return \obray\ipp\transport\IPPPayload
      */
 
-    public function restartJob(int $requestId=0)
+    public function restartJob(int $requestId=1, ?string $jobHoldUntil = null)
     {
-        $operationAttributes = new \obray\ipp\OperationAttributes();
-        $operationAttributes->{'printer-uri'} = $this->printerURI;
-        $operationAttributes->{'job-id'} = $this->jobID;
-        $operationAttributes->{'requesting-user-name'} = $this->user;
-        
-        $payload = new \obray\ipp\transport\IPPPayload(
-            new \obray\ipp\types\VersionNumber('1.1'),
-            new \obray\ipp\types\Operation(\obray\ipp\types\Operation::RESTART_JOB),
-            new \obray\ipp\types\Integer($requestId),
-            NULL,
-            $operationAttributes
+        $attributes = [];
+        if ($jobHoldUntil !== null) {
+            $attributes['job-hold-until'] = $jobHoldUntil;
+        }
+
+        $operationAttributes = $this->createOperationAttributes($attributes);
+
+        return $this->sendPayload(
+            $this->buildPayload(
+                \obray\ipp\types\Operation::RESTART_JOB,
+                $requestId,
+                $operationAttributes
+            )
         );
-        $encodedPayload = $payload->encode();
-        return \obray\ipp\Request::send($this->printerURI, $encodedPayload, $this->user, $this->password, $this->curlOptions);
     }
 
 }

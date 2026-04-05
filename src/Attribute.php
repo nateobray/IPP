@@ -53,6 +53,15 @@ class Attribute implements \JsonSerializable
         return $binary;
     }
 
+    public function withOmittedName(): self
+    {
+        $attribute = clone $this;
+        $attribute->nameLength = new \obray\ipp\types\basic\SignedShort(0);
+        $attribute->name = new \obray\ipp\types\basic\LocalizedString('');
+
+        return $attribute;
+    }
+
     public function decode($binary, $offset=0, $debugExit=0)
     {
         if(!empty($this->nameLength) && $this->nameLength->getValue()!==0){

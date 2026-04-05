@@ -174,9 +174,17 @@ $response = $printer->printJob(
 
 #  
 ### Method `PrintURI`
-**NOT IMPLEMENTED YET**
-
 RFC 2911 3.2.2: This _OPTIONAL_ operation is identical to the [Print-Job](#method-printjob) operation except that a client supplies a URI reference to the document data using the "document-uri" (uri) operation attribute (in Group 1) rather than including the document data itself.  Before returning the response, the Printer MUST validate that the Printer supports the retrieval method (e.g., http, ftp, etc.) implied by the URI, and MUST check for valid URI syntax.  If the client-supplied URI scheme is not supported, i.e. the value is not in the Printer object’s "referenced-uri-scheme-supported" attribute, the Printer object MUST reject the request and return the ’client-error-uri-scheme-not-supported’ status code.
+
+###### Usage:
+```PHP
+$response = $printer->printURI({document-uri}, {request-id}, {[attributes]});
+```
+| Parameter | Required | Description |
+| --------- | -------- | ----------- |
+| document-uri | yes | URI reference to the document data. |
+| request-id | no | A unique identifier for the print request, if not specified it will pass 1 |
+| attributes | no | An array of print job attributes.  For more information see [Print Job Attributes](#print-job-attributes) |
 
 #  
 ### Method `validateJob`
@@ -193,9 +201,16 @@ $response = $printer->validateJob({request-id}, {[attributes]});
 
 #  
 ### Method `createJob`
-**NOT IMPELMENTED YET**
-
 [RFC 2911 3.2.4](https://tools.ietf.org/html/rfc2911#section-3.2.4): This _OPTIONAL_ operation is similar to the [Print-Job](#method-printjob) operation except that in the Create-Job request, a client does not supply document data or any reference to document data.  Also, the client does not supply any of the "document-name", "document-format", "compression", or "document-natural-language" operation attributes.  This operation is followed by one or more Send-Document or Send-URI operations.  In each of those operation requests, the client OPTIONALLY supplies the "document-name", "document-format", and "document-natural-language" attributes for each document in the multi-document Job object.
+
+###### Usage:
+```PHP
+$response = $printer->createJob({request-id}, {[attributes]});
+```
+| Parameter | Required | Description |
+| --------- | -------- | ----------- |
+| request-id | no | A unique identifier for the print request, if not specified it will pass 1 |
+| attributes | no | An array of print job attributes.  For more information see [Print Job Attributes](#print-job-attributes) |
 
 #  
 ### Method `getPrinterAttributes`
@@ -203,11 +218,13 @@ $response = $printer->validateJob({request-id}, {[attributes]});
 
 ###### Usage:
 ```PHP
-$response = $printer->getPrinterAttributes({request-id});
+$response = $printer->getPrinterAttributes({request-id}, {[requested-attributes]}, {document-format});
 ```
 | Parameter | Required | Description |
 | --------- | -------- | ----------- |
-| request-id | no | A unique identifier for the print request, if not specified it will pass 0 |
+| request-id | no | A unique identifier for the print request, if not specified it will pass 1 |
+| requested-attributes | no | An array of printer attribute names or group names to request. |
+| document-format | no | MIME media type used to request format-specific printer attribute values. |
 
 #  
 ### Method `getJobs`
@@ -215,11 +232,15 @@ $response = $printer->getPrinterAttributes({request-id});
 
 ###### Usage:
 ```PHP
-$response = $printer->getJobs({request-id});
+$response = $printer->getJobs({request-id}, {which-jobs}, {limit}, {my-jobs}, {[requested-attributes]});
 ```
 | Parameter | Required | Description |
 | --------- | -------- | ----------- |
-| request-id | no | A unique identifier for the print request, if not specified it will pass 0 |
+| request-id | no | A unique identifier for the print request, if not specified it will pass 1 |
+| which-jobs | no | Filter jobs, typically `completed` or `not-completed`. |
+| limit | no | Maximum number of jobs to return. |
+| my-jobs | no | If `true`, only return jobs for the authenticated user. |
+| requested-attributes | no | An array of job attribute names or group names to request. |
 
 #  
 ### Method `pausePrinter`
@@ -268,17 +289,35 @@ $response = $printer->purgeJobs({request-id});
 
 #  
 ### Method `sendDocument`
-**NOT IMPLEMENTED YET**
-
 [RFC 2911 3.3.1](https://tools.ietf.org/html/rfc2911#section-3.3.1): This _OPTIONAL_ operation allows a client to create a multi-document Job object that is initially "empty" (contains no documents).  In the Create-Job response, the Printer object returns the Job object's URI (the "job-uri" attribute) and the Job object's 32-bit identifier (the "job-id" attribute).  For each new document that the client desires to add, the client uses a Send-Document operation.  Each Send-Document Request contains the entire stream of document data for one document.
+
+###### Usage:
+```PHP
+$response = $job->sendDocument({document}, {last-document}, {request-id}, {[attributes]});
+```
+| Parameter | Required | Description |
+| --------- | -------- | ----------- |
+| document | no | Document data to append to the multi-document job. |
+| last-document | no | Boolean flag indicating whether this is the final document in the job. |
+| request-id | no | Client request id, will be passed back in the response _(default 1)_ |
+| attributes | no | Optional document operation attributes such as `document-format`. |
 
 #  
 ### Method `sendURI`
-**NOT IMPLEMENTED YET**
-
 [RFC 2911 3.3.2](https://tools.ietf.org/html/rfc2911#section-3.3.2): This _OPTIONAL_ operation is identical to the Send-Document operation (see section 3.3.1) except that a client MUST supply a URI reference ("document-uri" operation attribute) rather than the document data itself.  If a Printer object supports this operation, clients can use both Send-URI or Send-Document operations to add new documents to an existing multi-document Job object.  However, if a client needs to indicate that the previous Send-URI or Send-Document was the last document,  the client MUST use the Send-Document operation with no document data and the "last-document" flag set to 'true' (rather than using a Send-URI operation with no "document-uri" operation attribute).
 
 The Printer object MUST validate the syntax and URI scheme of the supplied URI before returning a response, just as in the Print-URI operation.  The IPP Printer MAY validate the accessibility of the document as part of the operation or subsequently (see section 3.2.2).
+
+###### Usage:
+```PHP
+$response = $job->sendURI({document-uri}, {last-document}, {request-id}, {[attributes]});
+```
+| Parameter | Required | Description |
+| --------- | -------- | ----------- |
+| document-uri | yes | URI reference to the document data. |
+| last-document | no | Boolean flag indicating whether this is the final document in the job. |
+| request-id | no | Client request id, will be passed back in the response _(default 1)_ |
+| attributes | no | Optional document operation attributes such as `document-format`. |
 
 #  
 ### Method `cancelJob`
@@ -298,11 +337,12 @@ $response = $job->cancelJob({request-id});
 
 ###### Usage:
 ```PHP
-$response = $job->getJobAttributes({request-id});
+$response = $job->getJobAttributes({request-id}, {[requested-attributes]});
 ```
 | Parameter | Required | Description |
 | --------- | -------- | ----------- |
-| request-id | no | Client request id, will be passed back in the response _(default 0)_ |
+| request-id | no | Client request id, will be passed back in the response _(default 1)_ |
+| requested-attributes | no | An array of job attribute names or group names to request. |
 
 #  
 ### Method `holdJob`
@@ -310,11 +350,12 @@ $response = $job->getJobAttributes({request-id});
 
 ###### Usage:
 ```PHP
-$response = $job->holdJob({request-id});
+$response = $job->holdJob({request-id}, {job-hold-until});
 ```
 | Parameter | Required | Description |
 | --------- | -------- | ----------- |
-| request-id | no | Client request id, will be passed back in the response _(default 0)_ |
+| request-id | no | Client request id, will be passed back in the response _(default 1)_ |
+| job-hold-until | no | Optional hold keyword such as `indefinite` or an implementation-supported time period. |
 
 #  
 ### Method `releaseJob`
@@ -328,7 +369,7 @@ $response = $job->releaseJob({request-id});
 ```
 | Parameter | Required | Description |
 | --------- | -------- | ----------- |
-| request-id | no | Client request id, will be passed back in the response _(default 0)_ |
+| request-id | no | Client request id, will be passed back in the response _(default 1)_ |
 
 #  
 ### Method `restartJob`
@@ -336,11 +377,12 @@ $response = $job->releaseJob({request-id});
 
 ###### Usage:
 ```PHP
-$response = $job->restartJob({request-id});
+$response = $job->restartJob({request-id}, {job-hold-until});
 ```
 | Parameter | Required | Description |
 | --------- | -------- | ----------- |
-| request-id | no | Client request id, will be passed back in the response _(default 0)_ |
+| request-id | no | Client request id, will be passed back in the response _(default 1)_ |
+| job-hold-until | no | Optional hold keyword to apply when restarting the job. |
 
 #   
 ## Printer URIs
@@ -388,4 +430,3 @@ Currently this library does not have a stable release but when it does it will f
 | [RFC3998 - Job and Printer Administrative Operations](https://datatracker.ietf.org/doc/html/rfc3998)                   |           |         |         |   REQ   |   REQ   |
 | [RFC5246- The Transport Layer Security (TLS) Protocol](https://datatracker.ietf.org/doc/html/rfc5246)                   |           |         |  RECMD  |  RECMD  |   REQ   |
 | [RFC7472 - HTTPS Transport Binding and the 'ipps' URI Scheme](https://datatracker.ietf.org/doc/html/rfc7472)                   |           |         |  RECMD  |  RECMD  |   REQ   |
-

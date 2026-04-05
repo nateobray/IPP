@@ -18,7 +18,7 @@ class IPPPayload
     public $operationAttributes;
     public $jobAttributes;
     public $printerAttributes;
-    private $unsupportedAttributes;
+    public $unsupportedAttributes;
     private $document;
 
     public function __construct(
@@ -60,8 +60,8 @@ class IPPPayload
             $binary .= $this->printerAttributes->encode();
         }
         // Unsupported Attribute Group
-        if(!empty($this->UnsupportedAttributes)){
-            $binary .= $this->UnsupportedAttributes->encode();
+        if(!empty($this->unsupportedAttributes)){
+            $binary .= $this->unsupportedAttributes->encode();
         }
         // End of Attributes Tag
         $binary .= pack('c',0x03); // end-of-attributes-tag
@@ -104,7 +104,17 @@ class IPPPayload
                 $newTag = $printerAttributes->decode($binary, $offset);
                 $this->printerAttributes[] = $printerAttributes;
             }
-        }  
+        }
+
+        // decode unsupported attributes
+        if($newTag!==false && $newTag === 0x05){
+            $this->unsupportedAttributes = [];
+            while($newTag !== false && $newTag === 0x05){
+                $unsupportedAttributes = new \obray\ipp\UnsupportedAttributes();
+                $newTag = $unsupportedAttributes->decode($binary, $offset);
+                $this->unsupportedAttributes[] = $unsupportedAttributes;
+            }
+        }
     }
 
 }

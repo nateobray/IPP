@@ -4,8 +4,101 @@ use PHPUnit\Framework\TestCase;
 
 class PrinterAttributesTest extends TestCase
 {
-    public function testAttributeGroup()
+    public function testPrinterAttributesExposeCommonIpp11PrinterFields(): void
     {
-        $this->assertSame(1, 1);
+        $printerAttributes = new \obray\ipp\PrinterAttributes();
+        $printerAttributes->{'charset-configured'} = 'utf-8';
+        $printerAttributes->{'charset-supported'} = ['utf-8', 'us-ascii'];
+        $printerAttributes->{'document-format-default'} = 'application/pdf';
+        $printerAttributes->{'document-format-supported'} = ['application/pdf', 'application/postscript'];
+        $printerAttributes->{'generated-natural-language-supported'} = ['en', 'fr-ca'];
+        $printerAttributes->{'job-k-octets-supported'} = '0-999';
+        $printerAttributes->{'job-impressions-supported'} = '0-500';
+        $printerAttributes->{'job-media-sheets-supported'} = '0-250';
+        $printerAttributes->{'multiple-operation-time-out'} = 60;
+        $printerAttributes->{'operations-supported'} = [
+            \obray\ipp\types\Operation::PRINT_JOB,
+            \obray\ipp\types\Operation::GET_JOBS,
+        ];
+        $printerAttributes->{'pages-per-minute'} = 30;
+        $printerAttributes->{'pages-per-minute-color'} = 20;
+        $printerAttributes->{'printer-current-time'} = '2019-05-18 23:45:32.4-0700';
+        $printerAttributes->{'printer-driver-installer'} = 'https://printer.example/driver';
+        $printerAttributes->{'printer-name'} = 'Main printer';
+        $printerAttributes->{'printer-info'} = 'Front office';
+        $printerAttributes->{'printer-location'} = 'Level 2';
+        $printerAttributes->{'printer-state'} = \obray\ipp\enums\PrinterState::processing;
+        $printerAttributes->{'printer-state-message'} = 'Processing job';
+        $printerAttributes->{'printer-more-info-manufacturer'} = 'https://printer.example/support';
+        $printerAttributes->{'printer-state-reasons'} = ['none', 'moving-to-paused'];
+        $printerAttributes->{'printer-uri-supported'} = ['ipp://printer.example/printers/main'];
+        $printerAttributes->{'uri-authentication-supported'} = ['none', 'requesting-user-name'];
+        $printerAttributes->{'uri-security-supported'} = ['none'];
+        $printerAttributes->{'queued-job-count'} = 3;
+
+        $this->assertSame('utf-8', (string) $printerAttributes->{'charset-configured'});
+        $this->assertIsArray($printerAttributes->{'charset-supported'});
+        $this->assertSame('utf-8', (string) $printerAttributes->{'charset-supported'}[0]);
+        $this->assertSame('us-ascii', (string) $printerAttributes->{'charset-supported'}[1]);
+        $this->assertSame('application/pdf', (string) $printerAttributes->{'document-format-default'});
+        $this->assertIsArray($printerAttributes->{'generated-natural-language-supported'});
+        $this->assertSame('en', (string) $printerAttributes->{'generated-natural-language-supported'}[0]);
+        $this->assertSame('fr-ca', (string) $printerAttributes->{'generated-natural-language-supported'}[1]);
+        $this->assertSame('0-999', (string) $printerAttributes->{'job-k-octets-supported'});
+        $this->assertSame('0-500', (string) $printerAttributes->{'job-impressions-supported'});
+        $this->assertSame('0-250', (string) $printerAttributes->{'job-media-sheets-supported'});
+        $this->assertSame('60', (string) $printerAttributes->{'multiple-operation-time-out'});
+        $this->assertSame('30', (string) $printerAttributes->{'pages-per-minute'});
+        $this->assertSame('20', (string) $printerAttributes->{'pages-per-minute-color'});
+        $this->assertSame('2019-05-18 23:45:32.400-0700', (string) $printerAttributes->{'printer-current-time'});
+        $this->assertSame('https://printer.example/driver', (string) $printerAttributes->{'printer-driver-installer'});
+        $this->assertSame('Main printer', (string) $printerAttributes->{'printer-name'});
+        $this->assertSame('Front office', (string) $printerAttributes->{'printer-info'});
+        $this->assertSame('Level 2', (string) $printerAttributes->{'printer-location'});
+        $this->assertSame('processing', (string) $printerAttributes->{'printer-state'});
+        $this->assertSame('Processing job', (string) $printerAttributes->{'printer-state-message'});
+        $this->assertSame('https://printer.example/support', (string) $printerAttributes->{'printer-more-info-manufacturer'});
+        $this->assertIsArray($printerAttributes->{'operations-supported'});
+        $this->assertSame('print-job', (string) $printerAttributes->{'operations-supported'}[0]);
+        $this->assertSame('get-jobs', (string) $printerAttributes->{'operations-supported'}[1]);
+        $this->assertIsArray($printerAttributes->{'printer-state-reasons'});
+        $this->assertSame('none', (string) $printerAttributes->{'printer-state-reasons'}[0]);
+        $this->assertSame('moving-to-paused', (string) $printerAttributes->{'printer-state-reasons'}[1]);
+        $this->assertSame('3', (string) $printerAttributes->{'queued-job-count'});
+    }
+
+    public function testPrinterStateMessageRetainsItsAttributeNameWhenDecoded(): void
+    {
+        $printerAttributes = new \obray\ipp\PrinterAttributes();
+        $printerAttributes->{'printer-state-message'} = 'Paused for maintenance';
+
+        $decoded = new \obray\ipp\PrinterAttributes();
+        $offset = 0;
+        $decoded->decode($printerAttributes->encode(), $offset);
+
+        $this->assertTrue($decoded->has('printer-state-message'));
+        $this->assertSame('Paused for maintenance', (string) $decoded->{'printer-state-message'});
+    }
+
+    public function testMultiValuePrinterAttributesDecodeToArrays(): void
+    {
+        $printerAttributes = new \obray\ipp\PrinterAttributes();
+        $printerAttributes->{'document-format-supported'} = ['application/pdf', 'image/pwg-raster'];
+        $printerAttributes->{'generated-natural-language-supported'} = ['en', 'de'];
+        $printerAttributes->{'uri-authentication-supported'} = ['none', 'basic'];
+
+        $decoded = new \obray\ipp\PrinterAttributes();
+        $offset = 0;
+        $decoded->decode($printerAttributes->encode(), $offset);
+
+        $this->assertIsArray($decoded->{'document-format-supported'});
+        $this->assertSame('application/pdf', (string) $decoded->{'document-format-supported'}[0]);
+        $this->assertSame('image/pwg-raster', (string) $decoded->{'document-format-supported'}[1]);
+        $this->assertIsArray($decoded->{'generated-natural-language-supported'});
+        $this->assertSame('en', (string) $decoded->{'generated-natural-language-supported'}[0]);
+        $this->assertSame('de', (string) $decoded->{'generated-natural-language-supported'}[1]);
+        $this->assertIsArray($decoded->{'uri-authentication-supported'});
+        $this->assertSame('none', (string) $decoded->{'uri-authentication-supported'}[0]);
+        $this->assertSame('basic', (string) $decoded->{'uri-authentication-supported'}[1]);
     }
 }

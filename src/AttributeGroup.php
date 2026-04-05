@@ -71,9 +71,44 @@ abstract class AttributeGroup implements \JsonSerializable
     {
         $binary = pack('c',$this->attribute_group_tag);
         forEach($this->attributes as $name => $attribute){
+            if (is_array($attribute)) {
+                foreach ($attribute as $attributeValue) {
+                    $binary .= $attributeValue->encode();
+                }
+                continue;
+            }
+
             $binary .= $attribute->encode();
         }
         return $binary;
+    }
+
+    protected function createAttributeInstances(
+        string $name,
+        $value,
+        int $type,
+        ?int $maxLength = null,
+        ?string $naturalLanguage = null
+    ) {
+        if (!is_array($value)) {
+            return new \obray\ipp\Attribute($name, $value, $type, $maxLength, $naturalLanguage);
+        }
+
+        $attributes = [];
+        $isFirstValue = true;
+        foreach ($value as $item) {
+            $attribute = new \obray\ipp\Attribute(
+                $name,
+                $item,
+                $type,
+                $maxLength,
+                $naturalLanguage
+            );
+            $attributes[] = $isFirstValue ? $attribute : $attribute->withOmittedName();
+            $isFirstValue = false;
+        }
+
+        return $attributes;
     }
 
     /**
@@ -98,6 +133,14 @@ abstract class AttributeGroup implements \JsonSerializable
             $offset = 8;
         }
         while(true){
+            $nextTag = (unpack("cAttributeGroupTag", $binary, $offset))['AttributeGroupTag'];
+            if($nextTag === $endOfAttributesTag){
+                return false;
+            }
+
+            if(in_array($nextTag, $validAttributeGroupTags, true)){
+                return $nextTag;
+            }
             
             $attribute = (new \obray\ipp\Attribute(!empty($attributeName)?$attributeName:NULL))->decode($binary, $offset);
             

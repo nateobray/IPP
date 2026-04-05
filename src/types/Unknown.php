@@ -3,7 +3,7 @@ namespace obray\ipp\types;
 
 class Unknown implements \obray\ipp\interfaces\TypeInterface, \JsonSerializable
 {
-    protected $valueTag = 0x13;
+    protected $valueTag = 0x12;
     private $value = 'unknown';
     private $length = 0;
     

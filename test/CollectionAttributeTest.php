@@ -14,6 +14,14 @@ class CollectionAttributeTest extends TestCase
             "testAttribute3" => "Hello World"
         ));
         $this->assertInstanceOf(\obray\ipp\CollectionAttribute::class, $this->collection);
+        $this->assertSame(
+            [
+                'testAttribute1' => 'testAttributeValue',
+                'testAttribute2' => 10,
+                'testAttribute3' => 'Hello World',
+            ],
+            $this->collection->getValue()
+        );
     }
 
     public function testEncode()
@@ -42,5 +50,18 @@ class CollectionAttributeTest extends TestCase
         $collectionArrayOut = $decodedCollection->getValue();
         $diff = array_diff($collectionArrayIn, $collectionArrayOut);
         $this->assertEmpty($diff);
+    }
+
+    public function testJsonSerializationReturnsMemberArray()
+    {
+        $this->collection = new \obray\ipp\CollectionAttribute("testCollection", array(
+            "media-source" => "envelope",
+            "copies" => 2
+        ));
+
+        $this->assertSame(
+            '{"media-source":"envelope","copies":2}',
+            json_encode($this->collection)
+        );
     }
 }
