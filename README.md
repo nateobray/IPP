@@ -5,12 +5,11 @@ An Internet Printing Protocol (IPP) PHP Client Implementation.  This implements 
 
 The goals of this implementation is to follow the IPP specification as closely as possible and offer a raw interface to that protocol in a form that is as simple as possible to use.
 
-**PLEASE NOTE: the current version is in development and does not have a stable release.  A stable release is planned soon (see [project status](#project-status) section).**
-
 ## Table of Contents
 
  - [Installation](#installation)
  - [Usage](#usage)
+ - [Testing](#testing)
  - [Printer Object & Methods](#printer-object-and-methods)
    - [Method `printJob`](#method-printjob)
    - [Method `printURI`](#method-printuri)
@@ -35,20 +34,18 @@ The goals of this implementation is to follow the IPP specification as closely a
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ## Installation
-The easiest way is to use composer and add obray/IPP to the require section:
-```JSON
-"require": {
-    "obray/ipp": "dev-master"
-}
+Install the stable release with Composer:
+
+```bash
+composer require obray/ipp:^1.0
 ```
 
-Then just run `composer install` or `composer update`. Alternatively you can clone the repo or download the source 
-code and use it however you see fit. 
+If you need unreleased changes from the main branch, require the development version explicitly instead.
 
 ## Usage
 The most basic way of using this implementation is to create a `Printer` object and call `printJob` method like this:
 ```PHP
-$printer = new \obray\IPP\Printer(
+$printer = new \obray\ipp\Printer(
   {printer-uri},
   {username}, // optional
   {password},    // optional
@@ -59,7 +56,7 @@ $response = $printer->printJob({raw document}, {attributes});
 Depending on the printer and the document you are trying to print the above may not give you the results you desire (i.e. printing PDF as plain text, or a black page, etc).  Printers often have only specific document formats they will print.  To find out which formats your printer supports list the printer attributes like so:
 
 ```PHP
-$printer = new \obray\IPP\Printer(
+$printer = new \obray\ipp\Printer(
   {printer-uri},
   {username}, // optional
   {password},    // optional
@@ -77,7 +74,7 @@ This should give you a structure something like (encoded to JSON):
     "statusCode": "successful-ok",
     "operationAttributes": {
         "attributes-charset": "utf-8",
-        "attributes-natural-language": "en-us"
+        "attributes-natural-language": "en"
     },
     "jobAttributes": null,
     "printerAttributes": {
@@ -104,7 +101,7 @@ This should give you a structure something like (encoded to JSON):
 To print a PDF to this printer you would do something like this:
 
 ```PHP
-$printer = new \obray\IPP\Printer(
+$printer = new \obray\ipp\Printer(
   {printer-uri},
   {username}, // optional
   {password}, // optional
@@ -118,41 +115,62 @@ $attributes = $printer->printJob(
    ]
 );
 ```
+
+## Testing
+The repository includes unit tests, local printer integration tests, and recorded real-printer fixture replay tests.
+
+```bash
+composer test
+composer test:unit
+composer test:integration
+composer test:fixtures
+composer record:fixtures
+```
+
+See `docs/local_printer_testing.md` for local CUPS and fixture recording details.
+
 ### Connecting Directly to Printers OR CUPS
 
-This library supports directly connecting to network printers and printing documents or printing to a CUPS server or compouter with CUPS installed.
+This library supports direct connections to network printers and printing through a CUPS server.
 
-To connection an print directly to a network printer it usually just a matter of getting it's host name and using it like one of the following:
+To print directly to a network printer, use its IPP URI, for example:
 ```
 ipp://network.hostname.of.printer
 ipp://network.hostname.of.printer/ipp
 ```
-To use this library with cups, it works exactly the same except usually the URL is something like: `ipp://hostname.of.cups/ipp/{printer-name-goes-here}`
+For CUPS queues, the URI is usually one of these forms:
 
-To use this with a USB printer or other kinds of printers, you'll need to use CUPS.  Install the printer on a computer that has CUPS install and then you can print to the printer using this library through CUPS.
+```
+ipp://hostname.of.cups/printers/{queue-name}
+ipp://localhost/printers/{queue-name}
+```
 
-To see what other methods are available see the below documentation on [Printer Object and Methods](#printer-object-and-methods) and [Job Object and Methods](#job-object-and-methods)
+For USB printers and other locally attached devices, install the printer in CUPS and print through the exported queue URI.
+
+For the full API surface, see [Printer Object and Methods](#printer-object-and-methods) and [Job Object and Methods](#job-object-and-methods).
 
 ## Printer Object and Methods
-The printer object defines a printer based on a specified URI.  When a method is called on a printer it will attempt to connect and send the request and interpret the response.
+The printer object defines a printer based on a specified URI. When a method is called on a printer, it connects, sends the request, and interprets the response.
 
 ### Printer Constructor
-Create a printer object by specifing the URI for the printer the credentials if needed.  Once you have a printer you can call it's methods.
+Create a printer object by specifying the URI for the printer and any credentials if needed. Once you have a printer you can call its methods.
 ###### Usage:
 ```PHP
-$printer = new \obray\IPP\Printer(
+$printer = new \obray\ipp\Printer(
   {printer-uri},
-  {username},   // optional
+  {username},    // optional
   {password},    // optional
-  {curlOptions} // optional
+  {curlOptions}, // optional
+  {requestClass} // optional
 );
 ```
 | Parameter | Required | Description                                                                                                                                                   |
 | --------- | -------- |---------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| printer-uri | yes | The printer uri depends a lot on what printer or print server you are attempting to print to.  For more information see [Printer URIs](#printer-uris) section. |
-| username | no | If your printer or print server needs to authenticate supply the username here                                                                                |
-| password | no | If your printer or print server needs to authenticate supply the password here                                                                                |
-| curlOptions | no | CURL options eg. `[['key' => CURLOPT_SSL_VERIFYPEER, 'value' => false],['key' => CURLOPT_SSL_VERIFYHOST, 'value' => false]]  `                                                                                   |
+| printer-uri | yes | The printer URI depends on the printer or print server you are targeting. For more information, see [Printer URIs](#printer-uris). |
+| username | no | Username for printer or print server authentication. |
+| password | no | Password for printer or print server authentication. |
+| curlOptions | no | cURL options, for example `[['key' => CURLOPT_SSL_VERIFYPEER, 'value' => false], ['key' => CURLOPT_SSL_VERIFYHOST, 'value' => false]]` |
+| requestClass | no | Override the request implementation class. This is mainly useful for testing or custom transports. |
 
 #  
 ### Method `printJob`
@@ -170,7 +188,7 @@ $response = $printer->printJob(
 | --------- | -------- | ----------- |
 | document | yes | Document to be sent to the printer. |
 | attributes | no | An array of print job attributes.  For more information see [Print Job Attributes](#print-job-attributes) |
-| request-id | no | A unique identifier for the print request, if not specified it will pass 0 |
+| request-id | no | A unique identifier for the print request. If omitted, the default is `1`. |
 
 #  
 ### Method `PrintURI`
@@ -183,7 +201,7 @@ $response = $printer->printURI({document-uri}, {request-id}, {[attributes]});
 | Parameter | Required | Description |
 | --------- | -------- | ----------- |
 | document-uri | yes | URI reference to the document data. |
-| request-id | no | A unique identifier for the print request, if not specified it will pass 1 |
+| request-id | no | A unique identifier for the print request. If omitted, the default is `1`. |
 | attributes | no | An array of print job attributes.  For more information see [Print Job Attributes](#print-job-attributes) |
 
 #  
@@ -196,7 +214,7 @@ $response = $printer->validateJob({request-id}, {[attributes]});
 ```
 | Parameter | Required | Description |
 | --------- | -------- | ----------- |
-| request-id | no | A unique identifier for the print request, if not specified it will pass 0 |
+| request-id | no | A unique identifier for the print request. If omitted, the default is `1`. |
 | attributes | no | An array of print job attributes.  For more information see [Print Job Attributes](#print-job-attributes) |
 
 #  
@@ -209,7 +227,7 @@ $response = $printer->createJob({request-id}, {[attributes]});
 ```
 | Parameter | Required | Description |
 | --------- | -------- | ----------- |
-| request-id | no | A unique identifier for the print request, if not specified it will pass 1 |
+| request-id | no | A unique identifier for the print request. If omitted, the default is `1`. |
 | attributes | no | An array of print job attributes.  For more information see [Print Job Attributes](#print-job-attributes) |
 
 #  
@@ -222,7 +240,7 @@ $response = $printer->getPrinterAttributes({request-id}, {[requested-attributes]
 ```
 | Parameter | Required | Description |
 | --------- | -------- | ----------- |
-| request-id | no | A unique identifier for the print request, if not specified it will pass 1 |
+| request-id | no | A unique identifier for the print request. If omitted, the default is `1`. |
 | requested-attributes | no | An array of printer attribute names or group names to request. |
 | document-format | no | MIME media type used to request format-specific printer attribute values. |
 
@@ -236,7 +254,7 @@ $response = $printer->getJobs({request-id}, {which-jobs}, {limit}, {my-jobs}, {[
 ```
 | Parameter | Required | Description |
 | --------- | -------- | ----------- |
-| request-id | no | A unique identifier for the print request, if not specified it will pass 1 |
+| request-id | no | A unique identifier for the print request. If omitted, the default is `1`. |
 | which-jobs | no | Filter jobs, typically `completed` or `not-completed`. |
 | limit | no | Maximum number of jobs to return. |
 | my-jobs | no | If `true`, only return jobs for the authenticated user. |
@@ -254,7 +272,7 @@ $response = $printer->pausePrinter({request-id});
 ```
 | Parameter | Required | Description |
 | --------- | -------- | ----------- |
-| request-id | no | A unique identifier for the print request, if not specified it will pass 0 |
+| request-id | no | A unique identifier for the print request. If omitted, the default is `1`. |
 
 #  
 ### Method `resumePrinter`
@@ -268,7 +286,7 @@ $response = $printer->resumePrinter({request-id});
 ```
 | Parameter | Required | Description |
 | --------- | -------- | ----------- |
-| request-id | no | A unique identifier for the print request, if not specified it will pass 0 |
+| request-id | no | A unique identifier for the print request. If omitted, the default is `1`. |
 
 #  
 ### Method `purgeJobs`
@@ -282,10 +300,42 @@ $response = $printer->purgeJobs({request-id});
 ```
 | Parameter | Required | Description |
 | --------- | -------- | ----------- |
-| request-id | no | A unique identifier for the print request, if not specified it will pass 0 |
+| request-id | no | A unique identifier for the print request. If omitted, the default is `1`. |
 
 
 ## Job Object and Methods
+
+### Job Constructor
+Create a job object when you already know the target printer URI and either the numeric `job-id` or the full `job-uri`.
+
+###### Usage:
+```PHP
+$jobById = new \obray\ipp\Job(
+  {printer-uri},
+  {job-id},
+  {username},    // optional
+  {password},    // optional
+  {curlOptions}, // optional
+  {requestClass} // optional
+);
+
+$jobByUri = new \obray\ipp\Job(
+  {printer-uri},
+  {job-uri},
+  {username},    // optional
+  {password},    // optional
+  {curlOptions}, // optional
+  {requestClass} // optional
+);
+```
+| Parameter | Required | Description |
+| --------- | -------- | ----------- |
+| printer-uri | yes | Printer URI associated with the job. |
+| job-id / job-uri | yes | Either the numeric IPP job id or the full IPP job URI. |
+| username | no | Username for printer or print server authentication. |
+| password | no | Password for printer or print server authentication. |
+| curlOptions | no | cURL options to use for requests sent by this job object. |
+| requestClass | no | Override the request implementation class. This is mainly useful for testing or custom transports. |
 
 #  
 ### Method `sendDocument`
@@ -329,7 +379,7 @@ $response = $job->cancelJob({request-id});
 ```
 | Parameter | Required | Description |
 | --------- | -------- | ----------- |
-| request-id | no | Client request id, will be passed back in the response _(default 0)_ |
+| request-id | no | Client request id, will be passed back in the response _(default 1)_ |
 
 #  
 ### Method `getJobAttributes`
@@ -389,15 +439,14 @@ $response = $job->restartJob({request-id}, {job-hold-until});
 Each printer object is identified by a unique URI that must be supplied to the Printer constructor.  Here are a few examples of 
 possible printer URIs:
 
-If you specify IPP as the protocol then it assumes port 631. Or you can specify port number
+If you use the `ipp` scheme, the default port is `631`. You can also specify the port explicitly:
   >ipp://hostname/ipp/
  
   >ipp://hostname:port/ipp/
   
   >ipp://hostname/ipp/port1
 
-If your printer doesn't support IPP directly often you can setup a CUPS server, install the printers there, and then send
-all of your requests to the CUPS server.  An example of that would be something like this:
+If your printer does not support IPP directly, you can usually install it in CUPS and send requests to the CUPS queue instead. For example:
 
   >ipp://localhost/printers/{printer-name-in-cups}
   
