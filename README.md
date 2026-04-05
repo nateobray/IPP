@@ -142,15 +142,19 @@ To print directly to a network printer, use its IPP URI, for example:
 ```
 ipp://network.hostname.of.printer
 ipp://network.hostname.of.printer/ipp
+ipps://network.hostname.of.printer/ipp/print
 ```
 For CUPS queues, the URI is usually one of these forms:
 
 ```
 ipp://hostname.of.cups/printers/{queue-name}
 ipp://localhost/printers/{queue-name}
+ipps://hostname.of.cups/printers/{queue-name}
 ```
 
 For USB printers and other locally attached devices, install the printer in CUPS and print through the exported queue URI.
+
+For secure transport, pass an `ipps://` printer URI. The library maps `ipp://` to HTTP on port `631` and `ipps://` to HTTPS on port `443`, with TLS handled by the underlying PHP cURL/OpenSSL stack. For self-signed or private CA deployments, supply the appropriate cURL SSL options when constructing the `Printer` or `Job` object.
 
 For the full API surface, see [Printer Object and Methods](#printer-object-and-methods) and [Job Object and Methods](#job-object-and-methods).
 
@@ -444,10 +448,14 @@ $response = $job->restartJob({request-id}, {job-hold-until});
 Each printer object is identified by a unique URI that must be supplied to the Printer constructor.  Here are a few examples of 
 possible printer URIs:
 
-If you use the `ipp` scheme, the default port is `631`. You can also specify the port explicitly:
+If you use the `ipp` scheme, the default port is `631`. If you use the `ipps` scheme, the default port is `443`. You can also specify the port explicitly:
   >ipp://hostname/ipp/
  
   >ipp://hostname:port/ipp/
+
+  >ipps://hostname/ipp/print
+
+  >ipps://hostname:port/ipp/print
   
   >ipp://hostname/ipp/port1
 
@@ -482,5 +490,5 @@ Core IPP/1.1 support defined by RFC 2910 and RFC 2911 is complete in this librar
 | [RFC3995 - Event Notifications and Subscriptions](https://datatracker.ietf.org/doc/html/rfc3995)                   |           |         |         |   REQ   |   REQ   |
 | [RFC3996 - The 'ippget' Delivery Method for Event Notifications](https://datatracker.ietf.org/doc/html/rfc3996)                   |           |         |         |   REQ   |   REQ   |
 | [RFC3998 - Job and Printer Administrative Operations](https://datatracker.ietf.org/doc/html/rfc3998)                   |           |         |         |   REQ   |   REQ   |
-| [RFC5246- The Transport Layer Security (TLS) Protocol](https://datatracker.ietf.org/doc/html/rfc5246)                   |           |         |  RECMD  |  RECMD  |   REQ   |
-| [RFC7472 - HTTPS Transport Binding and the 'ipps' URI Scheme](https://datatracker.ietf.org/doc/html/rfc7472)                   |           |         |  RECMD  |  RECMD  |   REQ   |
+| [RFC5246- The Transport Layer Security (TLS) Protocol](https://datatracker.ietf.org/doc/html/rfc5246)                   |  via PHP/cURL/OpenSSL  |         |  RECMD  |  RECMD  |   REQ   |
+| [RFC7472 - HTTPS Transport Binding and the 'ipps' URI Scheme](https://datatracker.ietf.org/doc/html/rfc7472)                   |   DONE    |         |  RECMD  |  RECMD  |   REQ   |
