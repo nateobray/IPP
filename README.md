@@ -1,6 +1,11 @@
 
 
 # IPP
+[![Latest Release](https://img.shields.io/github/v/release/nateobray/IPP)](https://github.com/nateobray/IPP/releases)
+[![PHP](https://img.shields.io/badge/PHP-8.1%2B-777BB4.svg?logo=php&logoColor=white)](https://www.php.net/)
+[![CI](https://img.shields.io/github/actions/workflow/status/nateobray/IPP/ci.yml?branch=master)](https://github.com/nateobray/IPP/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 An Internet Printing Protocol (IPP) PHP Client Implementation.  This implements the raw IPP protocol defined in [RFC2911](https://tools.ietf.org/html/rfc2911) & [RFC2910](https://tools.ietf.org/html/rfc2910) and will work with any IPP printer or IPP print server such as CUPS.
 
 The goals of this implementation is to follow the IPP specification as closely as possible and offer a raw interface to that protocol in a form that is as simple as possible to use.
@@ -30,8 +35,6 @@ The goals of this implementation is to follow the IPP specification as closely a
    - [Method `restartJob`](#method-restartjob)
  - [Printer URIs](#printer-uris)
  - [Project Status](#project-status)
-
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ## Installation
 Install the stable release with Composer:
