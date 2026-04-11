@@ -80,10 +80,15 @@ class Request implements \obray\ipp\interfaces\RequestInterface
         try {
             $responsePayload = new \obray\ipp\transport\IPPPayload();
             $responsePayload->decode($server_output);
-            return $responsePayload;
         } catch (\Throwable $exception) {
             throw new \obray\ipp\exceptions\IPPDecodeError($printerURI, $exception);
         }
+
+        if ($responsePayload->statusCode->getValue() >= 0x0100) {
+            throw new \obray\ipp\exceptions\IppStatusException($printerURI, $responsePayload);
+        }
+
+        return $responsePayload;
         
     }
 

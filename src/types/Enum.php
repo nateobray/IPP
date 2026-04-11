@@ -13,10 +13,13 @@ class Enum extends \obray\ipp\types\basic\SignedInteger implements \JsonSerializ
             $constants = $this->getConstants();
             $key = array_search($code, $constants);
             if($key === false){
-                throw new \Exception("Invalid operation ".$code." specified.");
+                // Unknown/vendor-specific value — store raw and display as hex
+                $this->value = $code;
+                $this->key = null;
+            } else {
+                $this->key = $key;
+                $this->value = $code;
             }
-            $this->key = $key;
-            $this->value = $code;
         }
     }
 
@@ -30,6 +33,9 @@ class Enum extends \obray\ipp\types\basic\SignedInteger implements \JsonSerializ
 
     public function __toString()
     {
+        if (!is_string($this->key)) {
+            return sprintf('0x%04X', (int) $this->value);
+        }
         return str_replace('_','-',strtolower($this->key));
     }
 
@@ -47,6 +53,9 @@ class Enum extends \obray\ipp\types\basic\SignedInteger implements \JsonSerializ
     #[\ReturnTypeWillChange]
     public function jsonSerialize()
     {
+        if (!is_string($this->key)) {
+            return sprintf('0x%04X', (int) $this->value);
+        }
         return str_replace('_','-',strtolower($this->key));
     }
 }

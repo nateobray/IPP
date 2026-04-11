@@ -523,13 +523,24 @@ The library throws typed exceptions so callers can distinguish network failures 
 | Exception | Description |
 | --------- | ----------- |
 | `\obray\ipp\exceptions\NetworkError` | Thrown when the cURL transport layer fails (connection refused, DNS failure, TLS error, timeout, etc.). Carries the printer URI, cURL error code, and cURL error message. |
+| `\obray\ipp\exceptions\IppStatusException` | Thrown when the printer returns a non-successful IPP status code (any code ≥ `0x0100`, i.e. client-error or server-error). Carries the full decoded response so callers can inspect unsupported attributes or other details. |
+| `\obray\ipp\exceptions\AuthenticationError` | Thrown when the HTTP layer returns 401 Unauthorized. |
+| `\obray\ipp\exceptions\HTTPError` | Thrown when the HTTP layer returns any non-200, non-401 status code. |
+| `\obray\ipp\exceptions\IPPDecodeError` | Thrown when the IPP response binary cannot be decoded (malformed response). |
 
 ```PHP
+use obray\ipp\exceptions\IppStatusException;
+use obray\ipp\exceptions\NetworkError;
+
 try {
-    $response = $printer->getPrinterAttributes();
-} catch (\obray\ipp\exceptions\NetworkError $e) {
-    // $e->getMessage() — human-readable description including the URI
-    // $e->getPrinterUri() — the printer URI that was targeted
+    $response = $printer->printJob($document);
+} catch (IppStatusException $e) {
+    // $e->getMessage()      — e.g. "IPP error from ipp://…: client-error-document-format-not-supported"
+    // $e->getStatusCode()   — \obray\ipp\types\StatusCode instance
+    // $e->getResponse()     — full \obray\ipp\transport\IPPPayload for inspection
+    echo (string) $e->getStatusCode(); // "client-error-document-format-not-supported"
+} catch (NetworkError $e) {
+    // $e->getPrinterURI()   — the printer URI that was targeted
     // $e->getCurlErrorCode() — the cURL error code (CURLE_* constant value)
 }
 ```
@@ -576,7 +587,7 @@ Core IPP/1.1 support defined by RFC 2910 and RFC 2911 is complete in this librar
 | [RFC2910 - Encoding and Transport](https://datatracker.ietf.org/doc/html/rfc2910)                   |   DONE    |   REQ   |   REQ   |   REQ   |   REQ   |
 | [RFC2911 - Job and Printer Set Operations](https://datatracker.ietf.org/doc/html/rfc2911)                   |   DONE    |   REQ   |   REQ   |   REQ   |   REQ   |
 | [RFC3380 - Model and Semantics](https://datatracker.ietf.org/doc/html/rfc3380)                   |           |         |         |   REQ   |   REQ   |
-| [RFC3382 - The 'collection' attribute syntax](https://datatracker.ietf.org/doc/html/rfc3382)                   |           |         |         |   REQ   |   REQ   |
+| [RFC3382 - The 'collection' attribute syntax](https://datatracker.ietf.org/doc/html/rfc3382)                   |   DONE    |         |         |   REQ   |   REQ   |
 | [RFC3510 - IPP URL Scheme](https://datatracker.ietf.org/doc/html/rfc3510)                   |    DONE    |   REQ   |   REQ   |   REQ   |   REQ   |
 | [RFC3995 - Event Notifications and Subscriptions](https://datatracker.ietf.org/doc/html/rfc3995)                   |           |         |         |   REQ   |   REQ   |
 | [RFC3996 - The 'ippget' Delivery Method for Event Notifications](https://datatracker.ietf.org/doc/html/rfc3996)                   |           |         |         |   REQ   |   REQ   |

@@ -52,8 +52,8 @@ class Collection implements JsonSerializable
 
     public function __get(string $name)
     {
-        if(!empty($this->attributes->$name)){
-            return $this->attributes->$name;
+        if(!empty($this->attributes[$name])){
+            return $this->attributes[$name];
         }
         throw new \Exception("Invalid attribute ".$name.".");
     }
@@ -97,7 +97,7 @@ class Collection implements JsonSerializable
     
     public function decode($binary, &$offset=8)
     {	
-        $this->attributes = new \stdClass();
+        $this->attributes = [];
         //print_r("\n\n********* COLLECTION START **********\n\n");
 
         $valueTag = (unpack('cValueTag', $binary, $offset))['ValueTag'];
@@ -134,7 +134,7 @@ class Collection implements JsonSerializable
                 $value->decode($binary, $offset, $valueLength->getValue());
 
                 if(!empty($nameLength) && $nameLength->getValue() !== 0){
-                    $previousNameKey = $this->name->getValue();
+                    $previousNameKey = $name->getValue();
                 }
             }
             
@@ -145,7 +145,7 @@ class Collection implements JsonSerializable
                 continue;
             } 
 
-            if($valueTag !== 0x4A) $this->attributes->{$this->currentKey} = $value;
+            if($valueTag !== 0x4A) $this->attributes[$this->currentKey] = $value;
         }
 
     }

@@ -150,7 +150,57 @@ class StatusCodeTest extends TestCase
         $statusCode = new \obray\ipp\types\StatusCode(0x0002);
         $this->assertSame('successful-ok-conflicting-attributes', (string)$statusCode);
         $this->assertSame('successful', $statusCode->getClass());
-        
-        
+        $statusCode = new \obray\ipp\types\StatusCode(0x0003);
+        $this->assertSame('successful-ok-ignored-subscriptions', (string)$statusCode);
+        $this->assertSame('successful', $statusCode->getClass());
+        $statusCode = new \obray\ipp\types\StatusCode(0x0007);
+        $this->assertSame('successful-ok-events-complete', (string)$statusCode);
+        $this->assertSame('successful', $statusCode->getClass());
+    }
+
+    public function testAdditionalClientErrorCodes(): void
+    {
+        $statusCode = new \obray\ipp\types\StatusCode(0x0413);
+        $this->assertSame('client-error-ignored-all-subscriptions', (string)$statusCode);
+        $this->assertSame('client-error', $statusCode->getClass());
+        $statusCode = new \obray\ipp\types\StatusCode(0x0414);
+        $this->assertSame('client-error-too-many-subscriptions', (string)$statusCode);
+        $this->assertSame('client-error', $statusCode->getClass());
+    }
+
+    public function testAdditionalServerErrorCodes(): void
+    {
+        $statusCode = new \obray\ipp\types\StatusCode(0x050A);
+        $this->assertSame('server-error-printer-is-deactivated', (string)$statusCode);
+        $this->assertSame('server-error', $statusCode->getClass());
+        $statusCode = new \obray\ipp\types\StatusCode(0x050B);
+        $this->assertSame('server-error-too-many-jobs', (string)$statusCode);
+        $this->assertSame('server-error', $statusCode->getClass());
+        $statusCode = new \obray\ipp\types\StatusCode(0x050C);
+        $this->assertSame('server-error-too-many-documents', (string)$statusCode);
+        $this->assertSame('server-error', $statusCode->getClass());
+    }
+
+    public function testUnknownStatusCodeDoesNotThrow(): void
+    {
+        // Previously threw "Invalid operation X specified." — now renders as hex
+        $statusCode = new \obray\ipp\types\StatusCode(0x9999);
+        $this->assertSame('0x9999', (string)$statusCode);
+        $this->assertSame(0x9999, $statusCode->getValue());
+        $this->assertNull($statusCode->getClass());
+    }
+
+    public function testUnknownStatusCodeJsonSerializesToHex(): void
+    {
+        $statusCode = new \obray\ipp\types\StatusCode(0x0280);
+        $this->assertSame('"0x0280"', json_encode($statusCode));
+    }
+
+    public function testUnknownClientRangeCodeGetsCorrectClass(): void
+    {
+        // 0x04FF is in the client-error range but not a named constant
+        $statusCode = new \obray\ipp\types\StatusCode(0x04FF);
+        $this->assertSame('0x04FF', (string)$statusCode);
+        $this->assertSame('client-error', $statusCode->getClass());
     }
 }

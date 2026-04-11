@@ -3,11 +3,16 @@ namespace obray\ipp\types;
 
 class StatusCode extends \obray\ipp\types\Enum 
 {    
-    // success codes
-    const successful_ok = 0;
-    const successful_ok_ignored_or_substituted_attributes = 1;
-    const successful_ok_conflicting_attributes = 2;
-    // error codes
+    // Successful status codes (RFC 2911 + RFC 3380 / RFC 8011)
+    const successful_ok = 0x0000;
+    const successful_ok_ignored_or_substituted_attributes = 0x0001;
+    const successful_ok_conflicting_attributes = 0x0002;
+    const successful_ok_ignored_subscriptions = 0x0003;
+    const successful_ok_ignored_notifications = 0x0004;
+    const successful_ok_too_many_events = 0x0005;
+    const successful_ok_but_cancel_subscription = 0x0006;
+    const successful_ok_events_complete = 0x0007;
+    // Client error status codes (RFC 2911 + RFC 3380 / RFC 8011)
     const client_error_bad_request = 0x0400;
     const client_error_forbidden = 0x0401;
     const client_error_not_authenticated = 0x0402;
@@ -27,7 +32,11 @@ class StatusCode extends \obray\ipp\types\Enum
     const client_error_compression_error = 0x0410;
     const client_error_document_format_error = 0x0411;
     const client_error_document_access_error = 0x0412;
-    // Server Error Status Codes
+    const client_error_ignored_all_subscriptions = 0x0413;
+    const client_error_too_many_subscriptions = 0x0414;
+    const client_error_ignored_all_notifications = 0x0415;
+    const client_error_print_support_file_not_found = 0x0416;
+    // Server error status codes (RFC 2911 + RFC 3380 / RFC 8011)
     const server_error_internal_error = 0x0500;
     const server_error_operation_not_supported = 0x0501;
     const server_error_service_unavailable = 0x0502;
@@ -38,6 +47,9 @@ class StatusCode extends \obray\ipp\types\Enum
     const server_error_busy = 0x0507;
     const server_error_job_canceled = 0x0508;
     const server_error_multiple_document_jobs_not_supported = 0x0509;
+    const server_error_printer_is_deactivated = 0x050A;
+    const server_error_too_many_jobs = 0x050B;
+    const server_error_too_many_documents = 0x050C;
 
     private $class;
 
