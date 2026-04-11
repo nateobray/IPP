@@ -28,6 +28,7 @@ The goals of this implementation is to follow the IPP specification as closely a
    - [Method `getDefault` (CUPS)](#method-getdefault-cups)
    - [Method `getPrinters` (CUPS)](#method-getprinters-cups)
    - [Method `getClasses` (CUPS)](#method-getclasses-cups)
+   - [Method `setPrinterAttributes`](#method-setprinterattributes)
  - [Job Object & Methods](#job-object-and-methods)
    - [Method `sendDocument`](#method-senddocument)
    - [Method `sendURI`](#method-senduri)
@@ -38,6 +39,7 @@ The goals of this implementation is to follow the IPP specification as closely a
    - [Method `restartJob`](#method-restartjob)
    - [Method `moveJob` (CUPS)](#method-movejob-cups)
    - [Method `authenticateJob` (CUPS)](#method-authenticatejob-cups)
+   - [Method `setJobAttributes`](#method-setjobattributes)
  - [Exceptions](#exceptions)
  - [Printer URIs](#printer-uris)
  - [Project Status](#project-status)
@@ -46,7 +48,7 @@ The goals of this implementation is to follow the IPP specification as closely a
 Install the stable release with Composer:
 
 ```bash
-composer require obray/ipp:^1.0
+composer require obray/ipp:^1.1
 ```
 
 This library currently supports PHP `8.1+` and is tested locally on PHP `8.1`, `8.2`, `8.3`, and `8.4`.
@@ -359,6 +361,18 @@ $response = $printer->getClasses({request-id}, {[requested-attributes]}, {limit}
 | requested-attributes | no | An array of printer attribute names to return. |
 | limit | no | Maximum number of classes to return. |
 
+### Method `setPrinterAttributes`
+[RFC 8011 4.2.19](https://tools.ietf.org/html/rfc8011#section-4.2.19): Modifies one or more printer object attributes. Pass an associative array of attribute names to values; standard attributes are type-checked automatically and unknown attributes fall back to type inference.
+
+###### Usage:
+```PHP
+$response = $printer->setPrinterAttributes({attributes}, {request-id});
+```
+| Parameter | Required | Description |
+| --------- | -------- | ----------- |
+| attributes | yes | Associative array of printer attribute names to set (`['printer-info' => 'My printer', ...]`). |
+| request-id | no | Client request id, will be passed back in the response _(default 1)_ |
+
 ## Job Object and Methods
 
 ### Job Constructor
@@ -513,6 +527,18 @@ $response = $job->authenticateJob({request-id});
 ```
 | Parameter | Required | Description |
 | --------- | -------- | ----------- |
+| request-id | no | Client request id, will be passed back in the response _(default 1)_ |
+
+### Method `setJobAttributes`
+[RFC 8011 4.2.20](https://tools.ietf.org/html/rfc8011#section-4.2.20): Modifies one or more attributes of an existing job. Pass an associative array of attribute names to values; standard job template attributes are type-checked and unknown attributes fall back to type inference.
+
+###### Usage:
+```PHP
+$response = $job->setJobAttributes({attributes}, {request-id});
+```
+| Parameter | Required | Description |
+| --------- | -------- | ----------- |
+| attributes | yes | Associative array of job attribute names to set (`['job-priority' => 50, ...]`). |
 | request-id | no | Client request id, will be passed back in the response _(default 1)_ |
 
 #  

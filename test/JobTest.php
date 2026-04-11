@@ -140,4 +140,15 @@ class JobTest extends TestCase
         $this->assertFalse(FakeRequest::$lastCall['operationAttributes']->has('printer-uri'));
         $this->assertSame('ipp://localhost/jobs/42', (string) FakeRequest::$lastCall['operationAttributes']->{'job-uri'});
     }
+
+    public function testSetJobAttributesBuildsExpectedPayload(): void
+    {
+        $this->job->setJobAttributes(['job-priority' => 50], 114);
+
+        $this->assertSame(\obray\ipp\types\Operation::SET_JOB_ATTRIBUTES, FakeRequest::$lastCall['operation']);
+        $this->assertSame(114, FakeRequest::$lastCall['requestId']);
+        $this->assertSame('1.1', FakeRequest::$lastCall['version']);
+        $this->assertNotNull(FakeRequest::$lastCall['jobAttributes']);
+        $this->assertSame('50', (string) FakeRequest::$lastCall['jobAttributes']->{'job-priority'});
+    }
 }

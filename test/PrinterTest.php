@@ -183,4 +183,15 @@ class PrinterTest extends TestCase
             $this->assertStringContainsString('Print-URI requires operation attribute "document-uri"', $exception->getMessage());
         }
     }
+
+    public function testSetPrinterAttributesBuildsExpectedPayload(): void
+    {
+        $this->printer->setPrinterAttributes(['printer-info' => 'My Printer'], 16);
+
+        $this->assertSame(\obray\ipp\types\Operation::SET_PRINTER_ATTRIBUTES, FakeRequest::$lastCall['operation']);
+        $this->assertSame(16, FakeRequest::$lastCall['requestId']);
+        $this->assertSame('1.1', FakeRequest::$lastCall['version']);
+        $this->assertNotNull(FakeRequest::$lastCall['printerAttributes']);
+        $this->assertSame('My Printer', (string) FakeRequest::$lastCall['printerAttributes']->{'printer-info'});
+    }
 }

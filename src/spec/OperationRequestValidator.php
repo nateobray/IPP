@@ -294,6 +294,25 @@ final class OperationRequestValidator
                 'document_requirement' => 'forbidden',
                 'requires_last_document_true_without_document' => false,
             ],
+            Operation::SET_PRINTER_ATTRIBUTES => [
+                'target_prefixes' => [['printer-uri']],
+                'required_operation_attributes' => [],
+                'forbidden_operation_attributes' => ['document-uri', 'last-document'],
+                'forbidden_job_attributes' => [],
+                'document_requirement' => 'forbidden',
+                'requires_last_document_true_without_document' => false,
+            ],
+            Operation::SET_JOB_ATTRIBUTES => [
+                'target_prefixes' => [
+                    ['printer-uri', 'job-id'],
+                    ['job-uri'],
+                ],
+                'required_operation_attributes' => [],
+                'forbidden_operation_attributes' => ['document-uri', 'last-document'],
+                'forbidden_job_attributes' => [],
+                'document_requirement' => 'forbidden',
+                'requires_last_document_true_without_document' => false,
+            ],
         ];
     }
 
@@ -463,6 +482,8 @@ final class OperationRequestValidator
             Operation::CANCEL_JOBS => 'Cancel-Jobs',
             Operation::CANCEL_MY_JOBS => 'Cancel-My-Jobs',
             Operation::CLOSE_JOB => 'Close-Job',
+            Operation::SET_PRINTER_ATTRIBUTES => 'Set-Printer-Attributes',
+            Operation::SET_JOB_ATTRIBUTES => 'Set-Job-Attributes',
             default => sprintf('IPP operation 0x%04x', $operationCode),
         };
     }

@@ -165,7 +165,7 @@ class Printer
      * @return \obray\ipp\transport\IPPPayload
      */
 
-    public function printJob(string $document, int $requestId=1, ?array $attributes=null)
+    public function printJob(string $document, int $requestId=1, ?array $attributes=null): \obray\ipp\transport\IPPPayload
     {
         $operationAttributes = $this->createOperationAttributes($attributes);
         $jobAttributes = $this->createJobAttributes($attributes);
@@ -198,7 +198,7 @@ class Printer
      * scheme-not-supported’ status code.
      */
 
-    public function printURI(string $documentURI, int $requestId=1, ?array $attributes=null)
+    public function printURI(string $documentURI, int $requestId=1, ?array $attributes=null): \obray\ipp\transport\IPPPayload
     {
         $attributes = $attributes ?? [];
         $attributes['document-uri'] = $documentURI;
@@ -239,7 +239,7 @@ class Printer
      * @return \obray\ipp\transport\IPPPayload
      */
 
-    public function validateJob(int $requestId=1, ?array $attributes=null)
+    public function validateJob(int $requestId=1, ?array $attributes=null): \obray\ipp\transport\IPPPayload
     {
         $operationAttributes = $this->createOperationAttributes($attributes);
         $jobAttributes = $this->createJobAttributes($attributes);
@@ -270,7 +270,7 @@ class Printer
      * multi-document Job object.
      */
 
-    public function createJob(int $requestId=1, ?array $attributes=null)
+    public function createJob(int $requestId=1, ?array $attributes=null): \obray\ipp\transport\IPPPayload
     {
         $operationAttributes = $this->createOperationAttributes($attributes);
         $jobAttributes = $this->createJobAttributes($attributes);
@@ -325,7 +325,7 @@ class Printer
      * @return \obray\ipp\transport\IPPPayload
      */
 
-    public function getPrinterAttributes(int $requestId=1, ?array $requestedAttributes = null, ?string $documentFormat = null)
+    public function getPrinterAttributes(int $requestId=1, ?array $requestedAttributes = null, ?string $documentFormat = null): \obray\ipp\transport\IPPPayload
     {
         $attributes = [];
         if ($requestedAttributes !== null) {
@@ -366,7 +366,7 @@ class Printer
      * @return \obray\ipp\transport\IPPPayload
      */
 
-    public function getJobs(int $requestId = 1, ?string $whichJobs = null, ?int $limit = null, ?bool $myJobs = null, ?array $requestedAttributes = null)
+    public function getJobs(int $requestId = 1, ?string $whichJobs = null, ?int $limit = null, ?bool $myJobs = null, ?array $requestedAttributes = null): \obray\ipp\transport\IPPPayload
     {
         $attributes = [];
         if ($whichJobs !== null) {
@@ -410,7 +410,7 @@ class Printer
      * @return \obray\ipp\transport\IPPPayload
      */
 
-    public function pausePrinter(int $requestId=1)
+    public function pausePrinter(int $requestId=1): \obray\ipp\transport\IPPPayload
     {
         $operationAttributes = $this->createOperationAttributes();
 
@@ -444,7 +444,7 @@ class Printer
      * @return \obray\ipp\transport\IPPPayload
      */
 
-    public function resumePrinter(int $requestId=1)
+    public function resumePrinter(int $requestId=1): \obray\ipp\transport\IPPPayload
     {
         $operationAttributes = $this->createOperationAttributes();
 
@@ -481,7 +481,7 @@ class Printer
      * @return \obray\ipp\transport\IPPPayload
      */
 
-    public function purgeJobs(int $requestId=1)
+    public function purgeJobs(int $requestId=1): \obray\ipp\transport\IPPPayload
     {
         $operationAttributes = $this->createOperationAttributes();
 
@@ -506,7 +506,7 @@ class Printer
      *
      * @return \obray\ipp\transport\IPPPayload
      */
-    public function getDefault(int $requestId=1, ?array $requestedAttributes=null)
+    public function getDefault(int $requestId=1, ?array $requestedAttributes=null): \obray\ipp\transport\IPPPayload
     {
         $attributes = [];
         if ($requestedAttributes !== null) {
@@ -537,7 +537,7 @@ class Printer
      *
      * @return \obray\ipp\transport\IPPPayload
      */
-    public function getPrinters(int $requestId=1, ?array $requestedAttributes=null, ?int $limit=null)
+    public function getPrinters(int $requestId=1, ?array $requestedAttributes=null, ?int $limit=null): \obray\ipp\transport\IPPPayload
     {
         $attributes = [];
         if ($requestedAttributes !== null) {
@@ -571,7 +571,7 @@ class Printer
      *
      * @return \obray\ipp\transport\IPPPayload
      */
-    public function getClasses(int $requestId=1, ?array $requestedAttributes=null, ?int $limit=null)
+    public function getClasses(int $requestId=1, ?array $requestedAttributes=null, ?int $limit=null): \obray\ipp\transport\IPPPayload
     {
         $attributes = [];
         if ($requestedAttributes !== null) {
@@ -592,7 +592,7 @@ class Printer
         );
     }
 
-    public function getPrinterSupportedValues(int $requestId = 1, ?array $attributes = null)
+    public function getPrinterSupportedValues(int $requestId = 1, ?array $attributes = null): \obray\ipp\transport\IPPPayload
     {
         $operationAttributes = $this->createOperationAttributes($attributes);
 
@@ -608,7 +608,7 @@ class Printer
         );
     }
 
-    public function getResourceAttributes(int $requestId = 1, ?array $attributes = null)
+    public function getResourceAttributes(int $requestId = 1, ?array $attributes = null): \obray\ipp\transport\IPPPayload
     {
         $operationAttributes = $this->createOperationAttributes($attributes);
 
@@ -624,7 +624,7 @@ class Printer
         );
     }
 
-    public function getResourceData(int $requestId = 1, ?array $attributes = null)
+    public function getResourceData(int $requestId = 1, ?array $attributes = null): \obray\ipp\transport\IPPPayload
     {
         $operationAttributes = $this->createOperationAttributes($attributes);
 
@@ -640,7 +640,7 @@ class Printer
         );
     }
 
-    public function getResources(int $requestId = 1, ?array $attributes = null)
+    public function getResources(int $requestId = 1, ?array $attributes = null): \obray\ipp\transport\IPPPayload
     {
         $operationAttributes = $this->createOperationAttributes($attributes);
 
@@ -656,7 +656,7 @@ class Printer
         );
     }
 
-    public function cancelJobs(int $requestId = 1)
+    public function cancelJobs(int $requestId = 1): \obray\ipp\transport\IPPPayload
     {
         $operationAttributes = $this->createOperationAttributes();
 
@@ -672,7 +672,7 @@ class Printer
         );
     }
 
-    public function cancelMyJobs(int $requestId = 1)
+    public function cancelMyJobs(int $requestId = 1): \obray\ipp\transport\IPPPayload
     {
         $operationAttributes = $this->createOperationAttributes();
 
@@ -686,5 +686,44 @@ class Printer
                 '2.0'
             )
         );
+    }
+
+    /**
+     * Set Printer Attributes
+     *
+     * RFC 8011 4.2.19:
+     * This OPTIONAL operation allows a client to modify the values of one or
+     * more Printer object attributes. Only a privileged user (e.g. operator
+     * or administrator) should be permitted to perform this operation.
+     *
+     * @param array $attributes Associative array of printer attribute names to set
+     * @param int   $requestId  Client request id
+     *
+     * @return \obray\ipp\transport\IPPPayload
+     */
+    public function setPrinterAttributes(array $attributes, int $requestId = 1): \obray\ipp\transport\IPPPayload
+    {
+        $operationAttributes = $this->createOperationAttributes();
+        $printerAttributes = new \obray\ipp\PrinterAttributes();
+        foreach ($attributes as $name => $value) {
+            $printerAttributes->set($name, $value);
+        }
+
+        \obray\ipp\spec\OperationRequestValidator::validate(
+            \obray\ipp\types\Operation::SET_PRINTER_ATTRIBUTES,
+            $operationAttributes
+        );
+
+        $payload = new \obray\ipp\transport\IPPPayload(
+            new \obray\ipp\types\VersionNumber('1.1'),
+            new \obray\ipp\types\Operation(\obray\ipp\types\Operation::SET_PRINTER_ATTRIBUTES),
+            new \obray\ipp\types\Integer($requestId),
+            null,
+            $operationAttributes,
+            null,
+            $printerAttributes
+        );
+
+        return $this->sendPayload($payload);
     }
 }

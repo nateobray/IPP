@@ -27,7 +27,13 @@ class FakeRequest implements \obray\ipp\interfaces\RequestInterface
         $jobAttributes = null;
         if ($nextTag === 0x02) {
             $jobAttributes = new \obray\ipp\JobAttributes();
-            $jobAttributes->decode($encodedPayload, $offset);
+            $nextTag = $jobAttributes->decode($encodedPayload, $offset);
+        }
+
+        $printerAttributes = null;
+        if ($nextTag === 0x04) {
+            $printerAttributes = new \obray\ipp\PrinterAttributes();
+            $printerAttributes->decode($encodedPayload, $offset);
         }
 
         $document = '';
@@ -46,6 +52,7 @@ class FakeRequest implements \obray\ipp\interfaces\RequestInterface
             'requestId' => $header['requestId'],
             'operationAttributes' => $operationAttributes,
             'jobAttributes' => $jobAttributes,
+            'printerAttributes' => $printerAttributes,
             'document' => $document,
         ];
 

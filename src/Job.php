@@ -152,7 +152,7 @@ class Job
      * @return \obray\ipp\transport\IPPPayload
      */
 
-    public function sendDocument(string $document = '', bool|int $lastDocument = true, int|bool $requestId = 1, ?array $attributes = null)
+    public function sendDocument(string $document = '', bool|int $lastDocument = true, int|bool $requestId = 1, ?array $attributes = null): \obray\ipp\transport\IPPPayload
     {
         if (is_int($lastDocument) && is_bool($requestId)) {
             [$lastDocument, $requestId] = [$requestId, $lastDocument];
@@ -204,7 +204,7 @@ class Job
      * @return \obray\ipp\transport\IPPPayload
      */
 
-    public function sendURI(string $documentURI, bool|int $lastDocument = true, int|bool|array $requestId = 1, ?array $attributes = null)
+    public function sendURI(string $documentURI, bool|int $lastDocument = true, int|bool|array $requestId = 1, ?array $attributes = null): \obray\ipp\transport\IPPPayload
     {
         if (is_array($requestId)) {
             $attributes = $requestId;
@@ -246,7 +246,7 @@ class Job
      * @return \obray\ipp\transport\IPPPayload
      */
 
-    public function cancelJob(int $requestId=1)
+    public function cancelJob(int $requestId=1): \obray\ipp\transport\IPPPayload
     {
         $operationAttributes = $this->createOperationAttributes();
 
@@ -300,7 +300,7 @@ class Job
      * @return \obray\ipp\transport\IPPPayload
      */
 
-    public function getJobAttributes(int $requestId=1, ?array $requestedAttributes = null)
+    public function getJobAttributes(int $requestId=1, ?array $requestedAttributes = null): \obray\ipp\transport\IPPPayload
     {
         $attributes = [];
         if ($requestedAttributes !== null) {
@@ -334,7 +334,7 @@ class Job
      * @return \obray\ipp\transport\IPPPayload
      */
 
-    public function holdJob(int $requestId=1, ?string $jobHoldUntil = null)
+    public function holdJob(int $requestId=1, ?string $jobHoldUntil = null): \obray\ipp\transport\IPPPayload
     {
         $attributes = [];
         if ($jobHoldUntil !== null) {
@@ -373,7 +373,7 @@ class Job
      * @return \obray\ipp\transport\IPPPayload
      */
 
-    public function releaseJob(int $requestId=1)
+    public function releaseJob(int $requestId=1): \obray\ipp\transport\IPPPayload
     {
         $operationAttributes = $this->createOperationAttributes();
 
@@ -411,7 +411,7 @@ class Job
      * @return \obray\ipp\transport\IPPPayload
      */
 
-    public function restartJob(int $requestId=1, ?string $jobHoldUntil = null)
+    public function restartJob(int $requestId=1, ?string $jobHoldUntil = null): \obray\ipp\transport\IPPPayload
     {
         $attributes = [];
         if ($jobHoldUntil !== null) {
@@ -429,7 +429,7 @@ class Job
         );
     }
 
-    public function closeJob(int $requestId = 1)
+    public function closeJob(int $requestId = 1): \obray\ipp\transport\IPPPayload
     {
         $operationAttributes = $this->createOperationAttributes();
 
@@ -454,7 +454,7 @@ class Job
      *
      * @return \obray\ipp\transport\IPPPayload
      */
-    public function moveJob(string $destinationPrinterURI, int $requestId=1)
+    public function moveJob(string $destinationPrinterURI, int $requestId=1): \obray\ipp\transport\IPPPayload
     {
         $attributes = ['job-printer-uri' => $destinationPrinterURI];
         $operationAttributes = $this->createOperationAttributes($attributes);
@@ -478,7 +478,7 @@ class Job
      *
      * @return \obray\ipp\transport\IPPPayload
      */
-    public function authenticateJob(int $requestId=1)
+    public function authenticateJob(int $requestId=1): \obray\ipp\transport\IPPPayload
     {
         $operationAttributes = $this->createOperationAttributes();
 
@@ -489,6 +489,41 @@ class Job
                 $operationAttributes
             )
         );
+    }
+
+    /**
+     * Set Job Attributes
+     *
+     * RFC 8011 4.2.20:
+     * This OPTIONAL operation allows a client to modify the values of one or
+     * more Job object attributes. The job MUST be in the pending or held
+     * state for this operation to succeed.
+     *
+     * @param array $attributes Associative array of job attribute names to set
+     * @param int   $requestId  Client request id
+     *
+     * @return \obray\ipp\transport\IPPPayload
+     */
+    public function setJobAttributes(array $attributes, int $requestId = 1): \obray\ipp\transport\IPPPayload
+    {
+        $operationAttributes = $this->createOperationAttributes();
+        $jobAttributes = new \obray\ipp\JobAttributes($attributes);
+
+        \obray\ipp\spec\OperationRequestValidator::validate(
+            \obray\ipp\types\Operation::SET_JOB_ATTRIBUTES,
+            $operationAttributes
+        );
+
+        $payload = new \obray\ipp\transport\IPPPayload(
+            new \obray\ipp\types\VersionNumber('1.1'),
+            new \obray\ipp\types\Operation(\obray\ipp\types\Operation::SET_JOB_ATTRIBUTES),
+            new \obray\ipp\types\Integer($requestId),
+            null,
+            $operationAttributes,
+            $jobAttributes
+        );
+
+        return $this->sendPayload($payload);
     }
 
 }

@@ -21,6 +21,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **`Collection::getValueTag()`** and **`Collection::getLength()`** helper methods.
 - CUPS PDF printer real-fixture recordings for integration testing.
 - IPPS/TLS transport support (`ipps://` URIs mapped to HTTPS).
+- **`Printer::setPrinterAttributes(array $attributes)`** — RFC 8011 Set-Printer-Attributes operation.
+- **`Job::setJobAttributes(array $attributes)`** — RFC 8011 Set-Job-Attributes operation.
+- **PHP 8 return type declarations** on all public methods in `Printer` and `Job`.
 
 ### Fixed
 - `Collection::encode()` — fatal `len()` call replaced with `strlen()`.
