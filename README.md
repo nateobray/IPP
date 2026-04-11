@@ -25,6 +25,9 @@ The goals of this implementation is to follow the IPP specification as closely a
    - [Method `pausePrinter`](#method-pauseprinter)
    - [Method `resumePrinter`](#method-resumeprinter)
    - [Method `purgeJobs`](#method-purgejobs)
+   - [Method `getDefault` (CUPS)](#method-getdefault-cups)
+   - [Method `getPrinters` (CUPS)](#method-getprinters-cups)
+   - [Method `getClasses` (CUPS)](#method-getclasses-cups)
  - [Job Object & Methods](#job-object-and-methods)
    - [Method `sendDocument`](#method-senddocument)
    - [Method `sendURI`](#method-senduri)
@@ -33,6 +36,9 @@ The goals of this implementation is to follow the IPP specification as closely a
    - [Method `holdJob`](#method-holdjob)
    - [Method `releaseJob`](#method-releasejob)
    - [Method `restartJob`](#method-restartjob)
+   - [Method `moveJob` (CUPS)](#method-movejob-cups)
+   - [Method `authenticateJob` (CUPS)](#method-authenticatejob-cups)
+ - [Exceptions](#exceptions)
  - [Printer URIs](#printer-uris)
  - [Project Status](#project-status)
 
@@ -312,6 +318,47 @@ $response = $printer->purgeJobs({request-id});
 | request-id | no | A unique identifier for the print request. If omitted, the default is `1`. |
 
 
+#  
+### Method `getDefault` (CUPS)
+CUPS extension ([cups.org](https://www.cups.org/doc/spec-ipp.html)): Returns the attributes of the default printer configured on the CUPS server. Use this with a CUPS server URI (e.g. `ipp://localhost/`) rather than a specific printer queue URI.
+
+###### Usage:
+```PHP
+$response = $printer->getDefault({request-id}, {[requested-attributes]});
+```
+| Parameter | Required | Description |
+| --------- | -------- | ----------- |
+| request-id | no | A unique identifier for the request. If omitted, the default is `1`. |
+| requested-attributes | no | An array of printer attribute names to return. If omitted, all attributes are returned. |
+
+#  
+### Method `getPrinters` (CUPS)
+CUPS extension: Returns attributes for all printers configured on the CUPS server. Use this with a CUPS server URI (e.g. `ipp://localhost/`) rather than a specific printer queue URI.
+
+###### Usage:
+```PHP
+$response = $printer->getPrinters({request-id}, {[requested-attributes]}, {limit});
+```
+| Parameter | Required | Description |
+| --------- | -------- | ----------- |
+| request-id | no | A unique identifier for the request. If omitted, the default is `1`. |
+| requested-attributes | no | An array of printer attribute names to return. |
+| limit | no | Maximum number of printers to return. |
+
+#  
+### Method `getClasses` (CUPS)
+CUPS extension: Returns attributes for all printer classes configured on the CUPS server. Use this with a CUPS server URI (e.g. `ipp://localhost/`) rather than a specific printer queue URI.
+
+###### Usage:
+```PHP
+$response = $printer->getClasses({request-id}, {[requested-attributes]}, {limit});
+```
+| Parameter | Required | Description |
+| --------- | -------- | ----------- |
+| request-id | no | A unique identifier for the request. If omitted, the default is `1`. |
+| requested-attributes | no | An array of printer attribute names to return. |
+| limit | no | Maximum number of classes to return. |
+
 ## Job Object and Methods
 
 ### Job Constructor
@@ -442,6 +489,50 @@ $response = $job->restartJob({request-id}, {job-hold-until});
 | --------- | -------- | ----------- |
 | request-id | no | Client request id, will be passed back in the response _(default 1)_ |
 | job-hold-until | no | Optional hold keyword to apply when restarting the job. |
+
+#  
+### Method `moveJob` (CUPS)
+CUPS extension: Moves a job to a different printer queue. The destination printer URI is passed as an operation attribute (`job-printer-uri`). The `Printer` object must be the source printer queue and the `Job` must belong to that queue.
+
+###### Usage:
+```PHP
+$response = $job->moveJob({destination-printer-uri}, {request-id});
+```
+| Parameter | Required | Description |
+| --------- | -------- | ----------- |
+| destination-printer-uri | yes | IPP URI of the destination printer queue (e.g. `ipp://localhost/printers/other-queue`). |
+| request-id | no | Client request id, will be passed back in the response _(default 1)_ |
+
+#  
+### Method `authenticateJob` (CUPS)
+CUPS extension: Authenticates a held job that requires credentials before it can be released for printing. This is used when a job was held because authentication was required (job state reason: `authentication-needed`).
+
+###### Usage:
+```PHP
+$response = $job->authenticateJob({request-id});
+```
+| Parameter | Required | Description |
+| --------- | -------- | ----------- |
+| request-id | no | Client request id, will be passed back in the response _(default 1)_ |
+
+#  
+## Exceptions
+
+The library throws typed exceptions so callers can distinguish network failures from protocol errors.
+
+| Exception | Description |
+| --------- | ----------- |
+| `\obray\ipp\exceptions\NetworkError` | Thrown when the cURL transport layer fails (connection refused, DNS failure, TLS error, timeout, etc.). Carries the printer URI, cURL error code, and cURL error message. |
+
+```PHP
+try {
+    $response = $printer->getPrinterAttributes();
+} catch (\obray\ipp\exceptions\NetworkError $e) {
+    // $e->getMessage() — human-readable description including the URI
+    // $e->getPrinterUri() — the printer URI that was targeted
+    // $e->getCurlErrorCode() — the cURL error code (CURLE_* constant value)
+}
+```
 
 #   
 ## Printer URIs

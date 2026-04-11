@@ -13,7 +13,33 @@ class Collection implements JsonSerializable
     protected $attributes;
     protected $currentKey = null;
     protected $offset;
-    
+
+    public function __construct(?array $attributes = null)
+    {
+        $this->attributes = [];
+
+        if ($attributes === null) {
+            return;
+        }
+
+        foreach ($attributes as $name => $value) {
+            if (is_array($value) && array_key_exists('value', $value) && array_key_exists('type', $value)) {
+                $type = $this->normalizeType($value['type']);
+                $value = \obray\ipp\enums\Types::getType($type, $value['value']);
+            } else if (is_array($value)) {
+                $value = new self($value);
+            } else if (is_bool($value)) {
+                $value = new \obray\ipp\types\Boolean($value);
+            } else if (is_int($value)) {
+                $value = new \obray\ipp\types\Integer($value);
+            } else {
+                $value = new \obray\ipp\types\Keyword((string) $value);
+            }
+
+            $this->attributes[$name] = $value;
+        }
+    }
+
     public function set($name, $value)
     {
         $this->attributes[$name] = $value;
@@ -37,6 +63,16 @@ class Collection implements JsonSerializable
         return $this->offset;
     }
 
+    public function getValueTag()
+    {
+        return $this->valueTag;
+    }
+
+    public function getLength()
+    {
+        return strlen($this->encode());
+    }
+
     public function encode()
     {
         $binary = '';
@@ -47,7 +83,7 @@ class Collection implements JsonSerializable
             $binary .= (new \obray\ipp\types\basic\SignedShort(0))->encode();
             
             // value length
-            $binary .= (new \obray\ipp\types\basic\SignedShort(len($key)))->encode();
+            $binary .= (new \obray\ipp\types\basic\SignedShort(strlen($key)))->encode();
 
             // value length
             $binary .= (new \obray\ipp\types\basic\LocalizedString($key))->encode();
@@ -55,7 +91,7 @@ class Collection implements JsonSerializable
             $binary .= $attribute->encode();
         }
         
-        $binary .= pack('c', $this->endValueTag);
+        $binary .= pack('c', $this->endTag);
         return $binary;
     }
     
@@ -119,5 +155,29 @@ class Collection implements JsonSerializable
         //print_r((object)$this->attributes);
         //exit();
         return (object)$this->attributes;
+    }
+
+    private function normalizeType($type): ?int
+    {
+        if (is_int($type)) {
+            return $type;
+        }
+
+        if (!is_string($type)) {
+            return NULL;
+        }
+
+        $lookup = [
+            'boolean' => \obray\ipp\enums\Types::BOOLEAN,
+            'integer' => \obray\ipp\enums\Types::INTEGER,
+            'keyword' => \obray\ipp\enums\Types::KEYWORD,
+            'name' => \obray\ipp\enums\Types::NAME,
+            'text' => \obray\ipp\enums\Types::TEXT,
+            'uri' => \obray\ipp\enums\Types::URI,
+            'collection' => \obray\ipp\enums\Types::COLLECTION,
+        ];
+
+        $type = strtolower(trim($type));
+        return $lookup[$type] ?? NULL;
     }
 }

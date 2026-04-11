@@ -31,8 +31,40 @@ class CollectionAttribute implements \JsonSerializable
         $this->name = new \obray\ipp\types\basic\LocalizedString($name);
         $valueLength = 0;
         forEach($members as $name => $value){
-            $this->members[] = new \obray\ipp\types\MemberAttribute($name, $value);
+            $type = NULL;
+            $memberValue = $value;
+
+            if (is_array($value) && array_key_exists('value', $value) && array_key_exists('type', $value)) {
+                $type = $this->normalizeType($value['type']);
+                $memberValue = $value['value'];
+            }
+
+            $this->members[] = new \obray\ipp\types\MemberAttribute($name, $memberValue, $type);
         }
+    }
+
+    private function normalizeType($type): ?int
+    {
+        if (is_int($type)) {
+            return $type;
+        }
+
+        if (!is_string($type)) {
+            return NULL;
+        }
+
+        $lookup = [
+            'boolean' => \obray\ipp\enums\Types::BOOLEAN,
+            'integer' => \obray\ipp\enums\Types::INTEGER,
+            'keyword' => \obray\ipp\enums\Types::KEYWORD,
+            'name' => \obray\ipp\enums\Types::NAME,
+            'text' => \obray\ipp\enums\Types::TEXT,
+            'uri' => \obray\ipp\enums\Types::URI,
+            'collection' => \obray\ipp\enums\Types::COLLECTION,
+        ];
+
+        $type = strtolower(trim($type));
+        return $lookup[$type] ?? NULL;
     }
 
     private function getArray()

@@ -134,7 +134,71 @@ class PrinterAttributes extends \obray\ipp\AttributeGroup
                 $this->attributes[$name] = $this->createAttributeInstances('uri-security-supported', $value, \obray\ipp\enums\Types::KEYWORD);
                 break;
             default:
-                throw new \Exception("Invalid operational parameter.");
+                $this->attributes[$name] = $this->buildGenericAttribute($name, $value);
         }
+    }
+
+    private function buildGenericAttribute(string $name, $value)
+    {
+        if (is_array($value) && array_key_exists('value', $value)) {
+            $type = $this->normalizeType($value['type'] ?? NULL);
+            $attributeValue = $value['value'];
+
+            if ($type === \obray\ipp\enums\Types::COLLECTION && is_array($attributeValue)) {
+                return new \obray\ipp\CollectionAttribute($name, $attributeValue);
+            }
+
+            if ($type !== NULL) {
+                return new \obray\ipp\Attribute($name, $attributeValue, $type);
+            }
+        }
+
+        if (is_array($value)) {
+            return new \obray\ipp\CollectionAttribute($name, $value);
+        }
+
+        if (is_bool($value)) {
+            return new \obray\ipp\Attribute($name, $value, \obray\ipp\enums\Types::BOOLEAN);
+        }
+
+        if (is_int($value)) {
+            return new \obray\ipp\Attribute($name, $value, \obray\ipp\enums\Types::INTEGER);
+        }
+
+        if (is_string($value)) {
+            return new \obray\ipp\Attribute($name, $value, \obray\ipp\enums\Types::KEYWORD);
+        }
+
+        throw new \Exception("Invalid operational parameter.");
+    }
+
+    private function normalizeType($type): ?int
+    {
+        if (is_int($type)) {
+            return $type;
+        }
+
+        if (!is_string($type)) {
+            return NULL;
+        }
+
+        $lookup = [
+            'boolean' => \obray\ipp\enums\Types::BOOLEAN,
+            'integer' => \obray\ipp\enums\Types::INTEGER,
+            'enum' => \obray\ipp\enums\Types::ENUM,
+            'keyword' => \obray\ipp\enums\Types::KEYWORD,
+            'mime' => \obray\ipp\enums\Types::MIMEMEDIATYPE,
+            'mime-media-type' => \obray\ipp\enums\Types::MIMEMEDIATYPE,
+            'name' => \obray\ipp\enums\Types::NAME,
+            'range' => \obray\ipp\enums\Types::RANGEOFINTEGER,
+            'range-of-integer' => \obray\ipp\enums\Types::RANGEOFINTEGER,
+            'resolution' => \obray\ipp\enums\Types::RESOLUTION,
+            'text' => \obray\ipp\enums\Types::TEXT,
+            'uri' => \obray\ipp\enums\Types::URI,
+            'collection' => \obray\ipp\enums\Types::COLLECTION,
+        ];
+
+        $type = strtolower(trim($type));
+        return $lookup[$type] ?? NULL;
     }
 }

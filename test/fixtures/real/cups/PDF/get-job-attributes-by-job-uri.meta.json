@@ -1,0 +1,55 @@
+{
+    "recorded_at": "2026-04-11T20:13:41+00:00",
+    "kind": "ipp-response",
+    "source": "cups",
+    "label": "PDF",
+    "printer_uri": "ipp://localhost/printers/PDF",
+    "operation": "get-job-attributes-by-job-uri",
+    "request": {
+        "job_id": 3,
+        "job_uri": "ipp://localhost:631/jobs/3",
+        "requested_attributes": [
+            "job-uri",
+            "job-id",
+            "job-printer-uri",
+            "job-name",
+            "job-originating-user-name",
+            "job-state",
+            "job-state-reasons",
+            "time-at-creation",
+            "time-at-processing",
+            "time-at-completed",
+            "job-printer-up-time",
+            "attributes-charset",
+            "attributes-natural-language"
+        ]
+    },
+    "request_file": "get-job-attributes-by-job-uri.request.bin",
+    "response_file": "get-job-attributes-by-job-uri.response.bin",
+    "http": {
+        "post_url": "http://localhost:631/jobs/3",
+        "status": 200
+    },
+    "summary": {
+        "version": "1.1",
+        "request_id": 2023,
+        "status": "successful-ok",
+        "operation_attribute_names": [
+            "attributes-charset",
+            "attributes-natural-language"
+        ],
+        "job_attribute_group_count": 1,
+        "printer_attribute_group_count": 0,
+        "unsupported_attribute_group_count": 0,
+        "printer_names": [],
+        "job_ids": [
+            "3"
+        ],
+        "job_states": [
+            "pendingheld"
+        ],
+        "document_formats_supported": [],
+        "operations_supported": [],
+        "unsupported_attribute_names": []
+    }
+}

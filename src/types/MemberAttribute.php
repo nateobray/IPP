@@ -23,15 +23,21 @@ class MemberAttribute implements \JsonSerializable
         if($type===NULL){
             if(is_integer($value)){
                 $type = \obray\ipp\enums\Types::INTEGER;
+            } else if (is_bool($value)){
+                $type = \obray\ipp\enums\Types::BOOLEAN;
+            } else if (is_array($value)){
+                $type = \obray\ipp\enums\Types::COLLECTION;
             } else if (is_string($value)){
                 $type = \obray\ipp\enums\Types::KEYWORD;
             }
         }
-        
+
         // member value
         $this->memberValueTag = $type;
         $this->memberValue = \obray\ipp\enums\Types::getType($type, $value, $natuarlLanguage, $maxLength);
-        $this->memberValueLength = new \obray\ipp\types\basic\SignedShort($this->memberValue->getLength());
+        $this->memberValueLength = new \obray\ipp\types\basic\SignedShort(
+            $type === \obray\ipp\enums\Types::COLLECTION ? 0 : $this->memberValue->getLength()
+        );
     }
 
     public function getKey()
