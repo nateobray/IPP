@@ -152,6 +152,56 @@ class JobTest extends TestCase
         $this->assertSame('50', (string) FakeRequest::$lastCall['jobAttributes']->{'job-priority'});
     }
 
+    public function testCancelCurrentJobBuildsExpectedPayload(): void
+    {
+        $this->job->cancelCurrentJob(118);
+        $this->assertSame(\obray\ipp\types\Operation::CANCEL_CURRENT_JOB, FakeRequest::$lastCall['operation']);
+        $this->assertSame(118, FakeRequest::$lastCall['requestId']);
+    }
+
+    public function testSuspendCurrentJobBuildsExpectedPayload(): void
+    {
+        $this->job->suspendCurrentJob(119);
+        $this->assertSame(\obray\ipp\types\Operation::SUSPEND_CURRENT_JOB, FakeRequest::$lastCall['operation']);
+        $this->assertSame(119, FakeRequest::$lastCall['requestId']);
+    }
+
+    public function testResumeJobBuildsExpectedPayload(): void
+    {
+        $this->job->resumeJob(120);
+        $this->assertSame(\obray\ipp\types\Operation::RESUME_JOB, FakeRequest::$lastCall['operation']);
+        $this->assertSame(120, FakeRequest::$lastCall['requestId']);
+    }
+
+    public function testPromoteJobBuildsExpectedPayload(): void
+    {
+        $this->job->promoteJob(121);
+        $this->assertSame(\obray\ipp\types\Operation::PROMOTE_JOB, FakeRequest::$lastCall['operation']);
+        $this->assertSame(121, FakeRequest::$lastCall['requestId']);
+    }
+
+    public function testReprocessJobBuildsExpectedPayload(): void
+    {
+        $this->job->reprocessJob(122);
+        $this->assertSame(\obray\ipp\types\Operation::REPROCESS_JOB, FakeRequest::$lastCall['operation']);
+        $this->assertSame(122, FakeRequest::$lastCall['requestId']);
+    }
+
+    public function testScheduleJobAfterWithJobIdBuildsExpectedPayload(): void
+    {
+        $this->job->scheduleJobAfter(99, 123);
+        $this->assertSame(\obray\ipp\types\Operation::SCHEDULE_JOB_AFTER, FakeRequest::$lastCall['operation']);
+        $this->assertSame(123, FakeRequest::$lastCall['requestId']);
+        $this->assertSame('99', (string) FakeRequest::$lastCall['operationAttributes']->{'job-id-after'});
+    }
+
+    public function testScheduleJobAfterWithJobUriBuildsExpectedPayload(): void
+    {
+        $this->job->scheduleJobAfter('ipp://localhost/jobs/99', 124);
+        $this->assertSame(\obray\ipp\types\Operation::SCHEDULE_JOB_AFTER, FakeRequest::$lastCall['operation']);
+        $this->assertSame('ipp://localhost/jobs/99', (string) FakeRequest::$lastCall['operationAttributes']->{'job-uri-after'});
+    }
+
     public function testCloseJobBuildsExpectedPayload(): void
     {
         $this->job->closeJob(115);

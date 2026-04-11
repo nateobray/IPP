@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.3] — 2026-04-11
+
+### Added
+- **10 printer administration operations** — `enablePrinter`, `disablePrinter`, `pausePrinterAfterCurrentJob`, `holdNewJobs`, `releaseHeldNewJobs`, `deactivatePrinter`, `activatePrinter`, `restartPrinter`, `shutdownPrinter`, `startPrinter`.
+- **6 job administration operations** — `cancelCurrentJob`, `suspendCurrentJob`, `resumeJob`, `promoteJob`, `reprocessJob`, `scheduleJobAfter` (accepts job-id or job-uri).
+
 ## [1.1.2] — 2026-04-11
 
 ### Added

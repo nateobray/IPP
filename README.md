@@ -26,6 +26,7 @@ The goals of this implementation is to follow the IPP specification as closely a
    - [Method `resumePrinter`](#method-resumeprinter)
    - [Method `purgeJobs`](#method-purgejobs)
    - [Method `identifyPrinter`](#method-identifyprinter)
+   - [Printer Administration Methods](#printer-administration-methods)
    - [Method `getDefault` (CUPS)](#method-getdefault-cups)
    - [Method `getPrinters` (CUPS)](#method-getprinters-cups)
    - [Method `getClasses` (CUPS)](#method-getclasses-cups)
@@ -41,6 +42,7 @@ The goals of this implementation is to follow the IPP specification as closely a
    - [Method `moveJob` (CUPS)](#method-movejob-cups)
    - [Method `authenticateJob` (CUPS)](#method-authenticatejob-cups)
    - [Method `setJobAttributes`](#method-setjobattributes)
+   - [Job Administration Methods](#job-administration-methods)
  - [Exceptions](#exceptions)
  - [Printer URIs](#printer-uris)
  - [Project Status](#project-status)
@@ -321,6 +323,22 @@ $response = $printer->purgeJobs({request-id});
 | request-id | no | A unique identifier for the print request. If omitted, the default is `1`. |
 
 
+### Printer Administration Methods
+The following methods require operator/administrator privileges on the target printer. All accept only an optional `request-id` parameter.
+
+| Method | Operation | Description |
+| ------ | --------- | ----------- |
+| `enablePrinter(int $requestId = 1)` | Enable-Printer | Allow the printer to accept new jobs. |
+| `disablePrinter(int $requestId = 1)` | Disable-Printer | Stop the printer from accepting new jobs. |
+| `pausePrinterAfterCurrentJob(int $requestId = 1)` | Pause-Printer-After-Current-Job | Pause once the current job finishes. |
+| `holdNewJobs(int $requestId = 1)` | Hold-New-Jobs | Hold all newly submitted jobs. |
+| `releaseHeldNewJobs(int $requestId = 1)` | Release-Held-New-Jobs | Release jobs previously held by `holdNewJobs`. |
+| `deactivatePrinter(int $requestId = 1)` | Deactivate-Printer | Deactivate the printer (stop processing). |
+| `activatePrinter(int $requestId = 1)` | Activate-Printer | Reactivate a deactivated printer. |
+| `restartPrinter(int $requestId = 1)` | Restart-Printer | Restart the printer service. |
+| `shutdownPrinter(int $requestId = 1)` | Shutdown-Printer | Shut down the printer service. |
+| `startPrinter(int $requestId = 1)` | Start-Printer | Start a previously shut-down printer. |
+
 #  
 ### Method `getDefault` (CUPS)
 CUPS extension ([cups.org](https://www.cups.org/doc/spec-ipp.html)): Returns the attributes of the default printer configured on the CUPS server. Use this with a CUPS server URI (e.g. `ipp://localhost/`) rather than a specific printer queue URI.
@@ -554,6 +572,18 @@ $response = $job->setJobAttributes({attributes}, {request-id});
 | --------- | -------- | ----------- |
 | attributes | yes | Associative array of job attribute names to set (`['job-priority' => 50, ...]`). |
 | request-id | no | Client request id, will be passed back in the response _(default 1)_ |
+
+### Job Administration Methods
+Advanced job operations for reordering, suspending, and managing active jobs. All accept only an optional `request-id` parameter unless noted.
+
+| Method | Operation | Description |
+| ------ | --------- | ----------- |
+| `cancelCurrentJob(int $requestId = 1)` | Cancel-Current-Job | Cancel the job currently being printed. |
+| `suspendCurrentJob(int $requestId = 1)` | Suspend-Current-Job | Suspend the job currently being printed. |
+| `resumeJob(int $requestId = 1)` | Resume-Job | Resume a previously suspended job. |
+| `promoteJob(int $requestId = 1)` | Promote-Job | Move this job ahead of other pending jobs. |
+| `reprocessJob(int $requestId = 1)` | Reprocess-Job | Re-queue a completed job for reprinting. |
+| `scheduleJobAfter(int\|string $jobAfter, int $requestId = 1)` | Schedule-Job-After | Schedule this job to print after `$jobAfter` (job-id integer or job-uri string). |
 
 #  
 ## Exceptions

@@ -491,6 +491,89 @@ class Job
         );
     }
 
+    public function cancelCurrentJob(int $requestId = 1): \obray\ipp\transport\IPPPayload
+    {
+        $operationAttributes = $this->createOperationAttributes();
+
+        return $this->sendPayload(
+            $this->buildPayload(
+                \obray\ipp\types\Operation::CANCEL_CURRENT_JOB,
+                $requestId,
+                $operationAttributes
+            )
+        );
+    }
+
+    public function suspendCurrentJob(int $requestId = 1): \obray\ipp\transport\IPPPayload
+    {
+        $operationAttributes = $this->createOperationAttributes();
+
+        return $this->sendPayload(
+            $this->buildPayload(
+                \obray\ipp\types\Operation::SUSPEND_CURRENT_JOB,
+                $requestId,
+                $operationAttributes
+            )
+        );
+    }
+
+    public function resumeJob(int $requestId = 1): \obray\ipp\transport\IPPPayload
+    {
+        $operationAttributes = $this->createOperationAttributes();
+
+        return $this->sendPayload(
+            $this->buildPayload(
+                \obray\ipp\types\Operation::RESUME_JOB,
+                $requestId,
+                $operationAttributes
+            )
+        );
+    }
+
+    public function promoteJob(int $requestId = 1): \obray\ipp\transport\IPPPayload
+    {
+        $operationAttributes = $this->createOperationAttributes();
+
+        return $this->sendPayload(
+            $this->buildPayload(
+                \obray\ipp\types\Operation::PROMOTE_JOB,
+                $requestId,
+                $operationAttributes
+            )
+        );
+    }
+
+    public function reprocessJob(int $requestId = 1): \obray\ipp\transport\IPPPayload
+    {
+        $operationAttributes = $this->createOperationAttributes();
+
+        return $this->sendPayload(
+            $this->buildPayload(
+                \obray\ipp\types\Operation::REPROCESS_JOB,
+                $requestId,
+                $operationAttributes
+            )
+        );
+    }
+
+    public function scheduleJobAfter(int|string $jobAfter, int $requestId = 1): \obray\ipp\transport\IPPPayload
+    {
+        $operationAttributes = $this->createOperationAttributes();
+        if (is_int($jobAfter)) {
+            $operationAttributes->{'job-id-after'} = $jobAfter;
+        } else {
+            $operationAttributes->{'job-uri-after'} = ['value' => $jobAfter, 'type' => 'uri'];
+        }
+
+        return $this->sendPayload(
+            $this->buildPayload(
+                \obray\ipp\types\Operation::SCHEDULE_JOB_AFTER,
+                $requestId,
+                $operationAttributes
+            )
+        );
+    }
+
     /**
      * Set Job Attributes
      *

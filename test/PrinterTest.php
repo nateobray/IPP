@@ -248,6 +248,76 @@ class PrinterTest extends TestCase
         $this->assertSame(23, FakeRequest::$lastCall['requestId']);
     }
 
+    public function testEnablePrinterBuildsExpectedPayload(): void
+    {
+        $this->printer->enablePrinter(23);
+        $this->assertSame(\obray\ipp\types\Operation::ENABLE_PRINTER, FakeRequest::$lastCall['operation']);
+        $this->assertSame(23, FakeRequest::$lastCall['requestId']);
+    }
+
+    public function testDisablePrinterBuildsExpectedPayload(): void
+    {
+        $this->printer->disablePrinter(24);
+        $this->assertSame(\obray\ipp\types\Operation::DISABLE_PRINTER, FakeRequest::$lastCall['operation']);
+        $this->assertSame(24, FakeRequest::$lastCall['requestId']);
+    }
+
+    public function testPausePrinterAfterCurrentJobBuildsExpectedPayload(): void
+    {
+        $this->printer->pausePrinterAfterCurrentJob(25);
+        $this->assertSame(\obray\ipp\types\Operation::PAUSE_PRINTER_AFTER_CURRENT_JOB, FakeRequest::$lastCall['operation']);
+        $this->assertSame(25, FakeRequest::$lastCall['requestId']);
+    }
+
+    public function testHoldNewJobsBuildsExpectedPayload(): void
+    {
+        $this->printer->holdNewJobs(26);
+        $this->assertSame(\obray\ipp\types\Operation::HOLD_NEW_JOBS, FakeRequest::$lastCall['operation']);
+        $this->assertSame(26, FakeRequest::$lastCall['requestId']);
+    }
+
+    public function testReleaseHeldNewJobsBuildsExpectedPayload(): void
+    {
+        $this->printer->releaseHeldNewJobs(27);
+        $this->assertSame(\obray\ipp\types\Operation::RELEASE_HELD_NEW_JOBS, FakeRequest::$lastCall['operation']);
+        $this->assertSame(27, FakeRequest::$lastCall['requestId']);
+    }
+
+    public function testDeactivatePrinterBuildsExpectedPayload(): void
+    {
+        $this->printer->deactivatePrinter(28);
+        $this->assertSame(\obray\ipp\types\Operation::DEACTIVATE_PRINTER, FakeRequest::$lastCall['operation']);
+        $this->assertSame(28, FakeRequest::$lastCall['requestId']);
+    }
+
+    public function testActivatePrinterBuildsExpectedPayload(): void
+    {
+        $this->printer->activatePrinter(29);
+        $this->assertSame(\obray\ipp\types\Operation::ACTIVATE_PRINTER, FakeRequest::$lastCall['operation']);
+        $this->assertSame(29, FakeRequest::$lastCall['requestId']);
+    }
+
+    public function testRestartPrinterBuildsExpectedPayload(): void
+    {
+        $this->printer->restartPrinter(30);
+        $this->assertSame(\obray\ipp\types\Operation::RESTART_PRINTER, FakeRequest::$lastCall['operation']);
+        $this->assertSame(30, FakeRequest::$lastCall['requestId']);
+    }
+
+    public function testShutdownPrinterBuildsExpectedPayload(): void
+    {
+        $this->printer->shutdownPrinter(31);
+        $this->assertSame(\obray\ipp\types\Operation::SHUTDOWN_PRINTER, FakeRequest::$lastCall['operation']);
+        $this->assertSame(31, FakeRequest::$lastCall['requestId']);
+    }
+
+    public function testStartPrinterBuildsExpectedPayload(): void
+    {
+        $this->printer->startPrinter(32);
+        $this->assertSame(\obray\ipp\types\Operation::START_PRINTER, FakeRequest::$lastCall['operation']);
+        $this->assertSame(32, FakeRequest::$lastCall['requestId']);
+    }
+
     public function testGetDefaultBuildsExpectedPayload(): void
     {
         $this->printer->getDefault(17);

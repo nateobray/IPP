@@ -656,6 +656,136 @@ class Printer
         );
     }
 
+    public function enablePrinter(int $requestId = 1): \obray\ipp\transport\IPPPayload
+    {
+        $operationAttributes = $this->createOperationAttributes();
+
+        return $this->sendPayload(
+            $this->buildPayload(
+                \obray\ipp\types\Operation::ENABLE_PRINTER,
+                $requestId,
+                $operationAttributes
+            )
+        );
+    }
+
+    public function disablePrinter(int $requestId = 1): \obray\ipp\transport\IPPPayload
+    {
+        $operationAttributes = $this->createOperationAttributes();
+
+        return $this->sendPayload(
+            $this->buildPayload(
+                \obray\ipp\types\Operation::DISABLE_PRINTER,
+                $requestId,
+                $operationAttributes
+            )
+        );
+    }
+
+    public function pausePrinterAfterCurrentJob(int $requestId = 1): \obray\ipp\transport\IPPPayload
+    {
+        $operationAttributes = $this->createOperationAttributes();
+
+        return $this->sendPayload(
+            $this->buildPayload(
+                \obray\ipp\types\Operation::PAUSE_PRINTER_AFTER_CURRENT_JOB,
+                $requestId,
+                $operationAttributes
+            )
+        );
+    }
+
+    public function holdNewJobs(int $requestId = 1): \obray\ipp\transport\IPPPayload
+    {
+        $operationAttributes = $this->createOperationAttributes();
+
+        return $this->sendPayload(
+            $this->buildPayload(
+                \obray\ipp\types\Operation::HOLD_NEW_JOBS,
+                $requestId,
+                $operationAttributes
+            )
+        );
+    }
+
+    public function releaseHeldNewJobs(int $requestId = 1): \obray\ipp\transport\IPPPayload
+    {
+        $operationAttributes = $this->createOperationAttributes();
+
+        return $this->sendPayload(
+            $this->buildPayload(
+                \obray\ipp\types\Operation::RELEASE_HELD_NEW_JOBS,
+                $requestId,
+                $operationAttributes
+            )
+        );
+    }
+
+    public function deactivatePrinter(int $requestId = 1): \obray\ipp\transport\IPPPayload
+    {
+        $operationAttributes = $this->createOperationAttributes();
+
+        return $this->sendPayload(
+            $this->buildPayload(
+                \obray\ipp\types\Operation::DEACTIVATE_PRINTER,
+                $requestId,
+                $operationAttributes
+            )
+        );
+    }
+
+    public function activatePrinter(int $requestId = 1): \obray\ipp\transport\IPPPayload
+    {
+        $operationAttributes = $this->createOperationAttributes();
+
+        return $this->sendPayload(
+            $this->buildPayload(
+                \obray\ipp\types\Operation::ACTIVATE_PRINTER,
+                $requestId,
+                $operationAttributes
+            )
+        );
+    }
+
+    public function restartPrinter(int $requestId = 1): \obray\ipp\transport\IPPPayload
+    {
+        $operationAttributes = $this->createOperationAttributes();
+
+        return $this->sendPayload(
+            $this->buildPayload(
+                \obray\ipp\types\Operation::RESTART_PRINTER,
+                $requestId,
+                $operationAttributes
+            )
+        );
+    }
+
+    public function shutdownPrinter(int $requestId = 1): \obray\ipp\transport\IPPPayload
+    {
+        $operationAttributes = $this->createOperationAttributes();
+
+        return $this->sendPayload(
+            $this->buildPayload(
+                \obray\ipp\types\Operation::SHUTDOWN_PRINTER,
+                $requestId,
+                $operationAttributes
+            )
+        );
+    }
+
+    public function startPrinter(int $requestId = 1): \obray\ipp\transport\IPPPayload
+    {
+        $operationAttributes = $this->createOperationAttributes();
+
+        return $this->sendPayload(
+            $this->buildPayload(
+                \obray\ipp\types\Operation::START_PRINTER,
+                $requestId,
+                $operationAttributes
+            )
+        );
+    }
+
     public function cancelJobs(int $requestId = 1): \obray\ipp\transport\IPPPayload
     {
         $operationAttributes = $this->createOperationAttributes();
