@@ -15,7 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **CUPS job operations** on `Job`: `moveJob()`, `authenticateJob()`
 - **`IppStatusException`** — thrown automatically when the printer returns a non-successful IPP status code (any code ≥ `0x0100`). Carries the full decoded response payload, printer URI, and status code. See [Exceptions](README.md#exceptions).
 - **`NetworkError` exception** — thrown on cURL-level transport failures (connection refused, DNS failure, TLS error, timeout).
-- **Generic attribute fallback** in `JobAttributes` and `PrinterAttributes` — unknown attribute names are now accepted with type inference (bool → `boolean`, int → `integer`, string → `keyword`, array → collection) instead of throwing immediately.
+- **Generic attribute fallback** in `JobAttributes`, `PrinterAttributes`, and `OperationAttributes` — unknown attribute names are now accepted with type inference (bool → `boolean`, int → `integer`, string → `keyword`, typed `{value, type}` arrays) instead of throwing immediately.
 - **Typed member construction** in `CollectionAttribute` and `Collection` — members can now be passed as `['value' => ..., 'type' => 'keyword']` to force a specific IPP type.
 - **`Collection` constructor** — accepts an optional associative array with the same type-inference logic.
 - **`Collection::getValueTag()`** and **`Collection::getLength()`** helper methods.
