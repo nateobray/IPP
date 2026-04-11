@@ -46,7 +46,7 @@ class Request implements \obray\ipp\interfaces\RequestInterface
         curl_close($ch);
 
         if ($curlError !== null) {
-            throw new \Exception($curlError);
+            throw new \obray\ipp\exceptions\NetworkError($printerURI, curl_errno($ch), $curlError);
         }
 
         return [

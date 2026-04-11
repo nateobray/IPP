@@ -494,6 +494,104 @@ class Printer
         );
     }
 
+    /**
+     * CUPS Get Default
+     *
+     * Returns the attributes of the default destination printer on a CUPS
+     * server. The Printer object should be initialized with the CUPS server
+     * URI (e.g. ipp://localhost/).
+     *
+     * @param int        $requestId           Client request id
+     * @param array|null $requestedAttributes Optional list of attribute names to return
+     *
+     * @return \obray\ipp\transport\IPPPayload
+     */
+    public function getDefault(int $requestId=1, ?array $requestedAttributes=null)
+    {
+        $attributes = [];
+        if ($requestedAttributes !== null) {
+            $attributes['requested-attributes'] = $requestedAttributes;
+        }
+
+        $operationAttributes = $this->createOperationAttributes($attributes);
+
+        return $this->sendPayload(
+            $this->buildPayload(
+                \obray\ipp\types\Operation::CUPS_GET_DEFAULT,
+                $requestId,
+                $operationAttributes
+            )
+        );
+    }
+
+    /**
+     * CUPS Get Printers
+     *
+     * Returns a list of printers known to the CUPS server. The Printer
+     * object should be initialized with the CUPS server URI (e.g.
+     * ipp://localhost/).
+     *
+     * @param int        $requestId           Client request id
+     * @param array|null $requestedAttributes Optional list of attribute names to return
+     * @param int|null   $limit               Maximum number of printers to return
+     *
+     * @return \obray\ipp\transport\IPPPayload
+     */
+    public function getPrinters(int $requestId=1, ?array $requestedAttributes=null, ?int $limit=null)
+    {
+        $attributes = [];
+        if ($requestedAttributes !== null) {
+            $attributes['requested-attributes'] = $requestedAttributes;
+        }
+        if ($limit !== null) {
+            $attributes['limit'] = $limit;
+        }
+
+        $operationAttributes = $this->createOperationAttributes($attributes);
+
+        return $this->sendPayload(
+            $this->buildPayload(
+                \obray\ipp\types\Operation::CUPS_GET_PRINTERS,
+                $requestId,
+                $operationAttributes
+            )
+        );
+    }
+
+    /**
+     * CUPS Get Classes
+     *
+     * Returns a list of printer classes known to the CUPS server. The
+     * Printer object should be initialized with the CUPS server URI (e.g.
+     * ipp://localhost/).
+     *
+     * @param int        $requestId           Client request id
+     * @param array|null $requestedAttributes Optional list of attribute names to return
+     * @param int|null   $limit               Maximum number of classes to return
+     *
+     * @return \obray\ipp\transport\IPPPayload
+     */
+    public function getClasses(int $requestId=1, ?array $requestedAttributes=null, ?int $limit=null)
+    {
+        $attributes = [];
+        if ($requestedAttributes !== null) {
+            $attributes['requested-attributes'] = $requestedAttributes;
+        }
+        if ($limit !== null) {
+            $attributes['limit'] = $limit;
+        }
+
+        $operationAttributes = $this->createOperationAttributes($attributes);
+
+        return $this->sendPayload(
+            $this->buildPayload(
+                \obray\ipp\types\Operation::CUPS_GET_CLASSES,
+                $requestId,
+                $operationAttributes
+            )
+        );
+    }
+
     public function getPrinterSupportedValues(int $requestId = 1, ?array $attributes = null)
     {
         $operationAttributes = $this->createOperationAttributes($attributes);

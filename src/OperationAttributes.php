@@ -58,6 +58,9 @@ class OperationAttributes extends \obray\ipp\AttributeGroup
             case 'job-uri':
                 $this->attributes[$name] = new \obray\ipp\Attribute('job-uri', $value, \obray\ipp\enums\Types::URI, 1023);
                 break;
+            case 'job-printer-uri':
+                $this->attributes[$name] = new \obray\ipp\Attribute('job-printer-uri', $value, \obray\ipp\enums\Types::URI, 1023);
+                break;
             case 'job-id':
                 $this->attributes[$name] = new \obray\ipp\Attribute('job-id', $value, \obray\ipp\enums\Types::INTEGER);
                 break;
@@ -122,7 +125,7 @@ class OperationAttributes extends \obray\ipp\AttributeGroup
                 $this->attributes[$name] = $this->createAttributeInstances('requested-attributes', $value, \obray\ipp\enums\Types::KEYWORD);
                 break;
             default:
-                throw new \Exception("Invalid operational parameter.");
+                throw new \Exception("Invalid operational parameter: '" . $name . "' is not a supported operation attribute.");
         }
     }
 

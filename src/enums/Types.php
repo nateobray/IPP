@@ -90,7 +90,7 @@ class Types extends \obray\ipp\types\Enum
                 break;
             case \obray\ipp\enums\Types::NAMEWITHLANGUAGE:
                 if(empty($naturalLanguage)){
-                    $natuarlLanguage = "en-us";
+                    $naturalLanguage = "en-us";
                     //throw new \Exception("Natural language must be specified.");
                 }
                 return new \obray\ipp\types\NameWithLanguage($naturalLanguage, $value);

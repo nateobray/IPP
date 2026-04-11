@@ -24,7 +24,7 @@ class Operation extends \obray\ipp\types\Enum
     const PURGE_JOBS = 0x0012;
 
     // IPP/2.0 (RFC 8010) Extended Operation Codes:
-    const SET_PRINTER_ATTIRBUTES = 0x0013;
+    const SET_PRINTER_ATTRIBUTES = 0x0013;
     const SET_JOB_ATTRIBUTES = 0x0014;
     const GET_PRINTER_SUPPORTED_VALUES = 0x0015;
     const CREATE_PRINTER_SUBSCRIPTION = 0x0016;
@@ -76,7 +76,7 @@ class Operation extends \obray\ipp\types\Enum
     const CUPS_SET_DEFAULT = 0x400A;
     const CUPS_GET_DEVICES = 0x400B;
     const CUPS_GET_PPDS = 0x400C;
-    const CUPS_MOVE_JBO = 0x400D;
+    const CUPS_MOVE_JOB = 0x400D;
     const CUPS_AUTHENTICATE_JOB = 0x400E;
     const CUPS_GET_PPD = 0x400F;
     const CUPS_GET_DOCUMENT = 0x4027;

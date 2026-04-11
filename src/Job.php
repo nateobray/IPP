@@ -59,6 +59,7 @@ class Job
             'ipp-attribute-fidelity',
             'job-hold-until',
             'job-name',
+            'job-printer-uri',
             'last-document',
             'requested-attributes',
         ];
@@ -439,6 +440,53 @@ class Job
                 $operationAttributes,
                 null,
                 '2.0'
+            )
+        );
+    }
+
+    /**
+     * CUPS Move Job
+     *
+     * Moves a job to a different printer queue on the same CUPS server.
+     *
+     * @param string $destinationPrinterURI The URI of the destination printer
+     * @param int    $requestId             Client request id
+     *
+     * @return \obray\ipp\transport\IPPPayload
+     */
+    public function moveJob(string $destinationPrinterURI, int $requestId=1)
+    {
+        $attributes = ['job-printer-uri' => $destinationPrinterURI];
+        $operationAttributes = $this->createOperationAttributes($attributes);
+
+        return $this->sendPayload(
+            $this->buildPayload(
+                \obray\ipp\types\Operation::CUPS_MOVE_JOB,
+                $requestId,
+                $operationAttributes
+            )
+        );
+    }
+
+    /**
+     * CUPS Authenticate Job
+     *
+     * Authenticates a held job so that it can be scheduled for printing.
+     * Used when a job is held awaiting authentication.
+     *
+     * @param int $requestId Client request id
+     *
+     * @return \obray\ipp\transport\IPPPayload
+     */
+    public function authenticateJob(int $requestId=1)
+    {
+        $operationAttributes = $this->createOperationAttributes();
+
+        return $this->sendPayload(
+            $this->buildPayload(
+                \obray\ipp\types\Operation::CUPS_AUTHENTICATE_JOB,
+                $requestId,
+                $operationAttributes
             )
         );
     }
