@@ -4,10 +4,10 @@ namespace obray\ipp;
 
 class Printer
 {
-    private string $printerURI;
-    private string $user;
-    private string $password;
-    private array $curlOptions = [];
+    private readonly string $printerURI;
+    private readonly string $user;
+    private readonly string $password;
+    private readonly array $curlOptions;
     private string $requestClass;
 
     public function __construct(string $uri, string $user = '', string $password = '', array $curlOptions = [], ?string $requestClass = null)
@@ -692,6 +692,55 @@ class Printer
      * Set Printer Attributes
      *
      * RFC 8011 4.2.19:
+     * This OPTIONAL operation allows a client to modify the values of one or
+     * more Printer object attributes. Only a privileged user (e.g. operator
+     * or administrator) should be permitted to perform this operation.
+     *
+     * @param array $attributes Associative array of printer attribute names to set
+     * @param int   $requestId  Client request id
+     *
+     * @return \obray\ipp\transport\IPPPayload
+     */
+    /**
+     * Identify Printer
+     *
+     * RFC 8011 §4.2.22:
+     * This OPTIONAL operation causes the Printer to perform one or more
+     * human-perceptible actions (e.g. flash a light, sound a tone, display
+     * a message) so that a user can identify which physical device corresponds
+     * to the Printer object.
+     *
+     * @param int        $requestId       Client request id
+     * @param array|null $identifyActions Actions to perform (e.g. ['flash', 'sound'])
+     * @param string|null $message        Optional message to display on the printer
+     *
+     * @return \obray\ipp\transport\IPPPayload
+     */
+    public function identifyPrinter(int $requestId = 1, ?array $identifyActions = null, ?string $message = null): \obray\ipp\transport\IPPPayload
+    {
+        $attributes = [];
+        if ($identifyActions !== null) {
+            $attributes['identify-actions'] = $identifyActions;
+        }
+        if ($message !== null) {
+            $attributes['message'] = $message;
+        }
+
+        $operationAttributes = $this->createOperationAttributes($attributes);
+
+        return $this->sendPayload(
+            $this->buildPayload(
+                \obray\ipp\types\Operation::IDENTIFY_PRINTER,
+                $requestId,
+                $operationAttributes
+            )
+        );
+    }
+
+    /**
+     * Set Printer Attributes
+     *
+     * RFC 8011 §4.2.19:
      * This OPTIONAL operation allows a client to modify the values of one or
      * more Printer object attributes. Only a privileged user (e.g. operator
      * or administrator) should be permitted to perform this operation.

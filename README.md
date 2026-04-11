@@ -25,6 +25,7 @@ The goals of this implementation is to follow the IPP specification as closely a
    - [Method `pausePrinter`](#method-pauseprinter)
    - [Method `resumePrinter`](#method-resumeprinter)
    - [Method `purgeJobs`](#method-purgejobs)
+   - [Method `identifyPrinter`](#method-identifyprinter)
    - [Method `getDefault` (CUPS)](#method-getdefault-cups)
    - [Method `getPrinters` (CUPS)](#method-getprinters-cups)
    - [Method `getClasses` (CUPS)](#method-getclasses-cups)
@@ -360,6 +361,19 @@ $response = $printer->getClasses({request-id}, {[requested-attributes]}, {limit}
 | request-id | no | A unique identifier for the request. If omitted, the default is `1`. |
 | requested-attributes | no | An array of printer attribute names to return. |
 | limit | no | Maximum number of classes to return. |
+
+### Method `identifyPrinter`
+[RFC 8011 4.2.22](https://tools.ietf.org/html/rfc8011#section-4.2.22): Causes the printer to perform one or more human-perceptible identification actions (e.g. flash an LED, sound a tone, display a message) so a user can locate the physical device.
+
+###### Usage:
+```PHP
+$response = $printer->identifyPrinter({request-id}, {[identify-actions]}, {message});
+```
+| Parameter | Required | Description |
+| --------- | -------- | ----------- |
+| request-id | no | Client request id, will be passed back in the response _(default 1)_ |
+| identify-actions | no | Array of action keywords, e.g. `['flash', 'sound']`. Printer-specific; common values: `flash`, `sound`, `display`, `speak`. |
+| message | no | Text message to display on the printer. |
 
 ### Method `setPrinterAttributes`
 [RFC 8011 4.2.19](https://tools.ietf.org/html/rfc8011#section-4.2.19): Modifies one or more printer object attributes. Pass an associative array of attribute names to values; standard attributes are type-checked automatically and unknown attributes fall back to type inference.

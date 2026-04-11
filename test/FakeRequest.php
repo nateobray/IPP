@@ -5,10 +5,12 @@ namespace obray\ipp\test;
 class FakeRequest implements \obray\ipp\interfaces\RequestInterface
 {
     public static array $lastCall = [];
+    public static ?\obray\ipp\transport\IPPPayload $nextResponse = null;
 
     public static function reset(): void
     {
         self::$lastCall = [];
+        self::$nextResponse = null;
     }
 
     public static function send(
@@ -55,6 +57,12 @@ class FakeRequest implements \obray\ipp\interfaces\RequestInterface
             'printerAttributes' => $printerAttributes,
             'document' => $document,
         ];
+
+        if (self::$nextResponse !== null) {
+            $response = self::$nextResponse;
+            self::$nextResponse = null;
+            return $response;
+        }
 
         $response = new \obray\ipp\transport\IPPPayload();
         $response->versionNumber = new \obray\ipp\types\VersionNumber(self::$lastCall['version']);

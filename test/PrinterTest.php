@@ -195,6 +195,59 @@ class PrinterTest extends TestCase
         $this->assertSame('My Printer', (string) FakeRequest::$lastCall['printerAttributes']->{'printer-info'});
     }
 
+    private function makePrinterAttributesResponse(\obray\ipp\PrinterAttributes $printerAttributes): \obray\ipp\transport\IPPPayload
+    {
+        $response = new \obray\ipp\transport\IPPPayload();
+        $response->versionNumber = new \obray\ipp\types\VersionNumber('1.1');
+        $response->requestId = new \obray\ipp\types\Integer(1);
+        $response->statusCode = new \obray\ipp\types\StatusCode(\obray\ipp\types\StatusCode::successful_ok);
+        $response->operationAttributes = new \obray\ipp\OperationAttributes();
+        $response->printerAttributes = $printerAttributes;
+        return $response;
+    }
+
+    public function testGetSupportedMediaReturnsParsedValues(): void
+    {
+        $printerAttributes = new \obray\ipp\PrinterAttributes();
+        $printerAttributes->set('media-supported', ['iso_a4_210x297mm', 'na_letter_8.5x11in']);
+        FakeRequest::$nextResponse = $this->makePrinterAttributesResponse($printerAttributes);
+
+        $media = $this->printer->getSupportedMedia();
+
+        $this->assertSame(['iso_a4_210x297mm', 'na_letter_8.5x11in'], $media);
+        $this->assertSame(\obray\ipp\types\Operation::GET_PRINTER_ATTRIBUTES, FakeRequest::$lastCall['operation']);
+    }
+
+    public function testGetSupportedMediaReturnsEmptyWhenAttributeMissing(): void
+    {
+        $this->assertSame([], $this->printer->getSupportedMedia());
+    }
+
+    public function testGetSupportedResolutionsReturnsParsedValues(): void
+    {
+        $printerAttributes = new \obray\ipp\PrinterAttributes();
+        $printerAttributes->set('printer-resolution-supported', ['300dpi', '600dpi']);
+        FakeRequest::$nextResponse = $this->makePrinterAttributesResponse($printerAttributes);
+
+        $resolutions = $this->printer->getSupportedResolutions();
+
+        $this->assertCount(2, $resolutions);
+        $this->assertSame(\obray\ipp\types\Operation::GET_PRINTER_ATTRIBUTES, FakeRequest::$lastCall['operation']);
+    }
+
+    public function testGetSupportedResolutionsReturnsEmptyWhenAttributeMissing(): void
+    {
+        $this->assertSame([], $this->printer->getSupportedResolutions());
+    }
+
+    public function testIdentifyPrinterBuildsExpectedPayload(): void
+    {
+        $this->printer->identifyPrinter(23, ['flash', 'sound'], 'Hello');
+
+        $this->assertSame(\obray\ipp\types\Operation::IDENTIFY_PRINTER, FakeRequest::$lastCall['operation']);
+        $this->assertSame(23, FakeRequest::$lastCall['requestId']);
+    }
+
     public function testGetDefaultBuildsExpectedPayload(): void
     {
         $this->printer->getDefault(17);

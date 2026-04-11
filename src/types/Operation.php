@@ -61,7 +61,8 @@ class Operation extends \obray\ipp\types\Enum
 
     const CANCEL_JOBS = 0x0038;
     const CANCEL_MY_JOBS = 0x0039;
-    const CLOSE_JOB = 0x003b;
+    const CLOSE_JOB = 0x003B;
+    const IDENTIFY_PRINTER = 0x003C;
 
     // CUPS specific operations
     const CUPS_GET_DEFAULT = 0x4001;

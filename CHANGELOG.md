@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.2] — 2026-04-11
+
+### Added
+- **`Printer::identifyPrinter()`** — RFC 8011 §4.2.22 Identify-Printer operation. Accepts optional `$identifyActions` array (e.g. `['flash', 'sound']`) and `$message` string.
+- **`Operation::IDENTIFY_PRINTER`** constant (0x003C).
+- **PHP 8.1 `readonly` properties** on all constructor-assigned properties in `Printer` and `Job`.
+- Unit tests for `getSupportedMedia`, `getSupportedResolutions`, and `identifyPrinter`.
+- `FakeRequest::$nextResponse` — injectable response for testing methods that parse responses.
+
 ## [1.1.1] — 2026-04-11
 
 ### Added

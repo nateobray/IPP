@@ -3,11 +3,11 @@ namespace obray\ipp;
 
 class Job
 {
-    private string $printerURI;
-    private int|string $jobID;
-    private ?string $user;
-    private ?string $password;
-    private array $curlOptions = [];
+    private readonly string $printerURI;
+    private readonly int|string $jobID;
+    private readonly ?string $user;
+    private readonly ?string $password;
+    private readonly array $curlOptions;
     private string $requestClass;
 
     public function __construct(string $uri, int|string $jobID, ?string $user = null, ?string $password = null, array $curlOptions = [], ?string $requestClass = null)
