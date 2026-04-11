@@ -151,4 +151,30 @@ class JobTest extends TestCase
         $this->assertNotNull(FakeRequest::$lastCall['jobAttributes']);
         $this->assertSame('50', (string) FakeRequest::$lastCall['jobAttributes']->{'job-priority'});
     }
+
+    public function testCloseJobBuildsExpectedPayload(): void
+    {
+        $this->job->closeJob(115);
+
+        $this->assertSame(\obray\ipp\types\Operation::CLOSE_JOB, FakeRequest::$lastCall['operation']);
+        $this->assertSame(115, FakeRequest::$lastCall['requestId']);
+        $this->assertSame('2.0', FakeRequest::$lastCall['version']);
+    }
+
+    public function testMoveJobBuildsExpectedPayload(): void
+    {
+        $this->job->moveJob('ipp://localhost/printers/OTHER', 116);
+
+        $this->assertSame(\obray\ipp\types\Operation::CUPS_MOVE_JOB, FakeRequest::$lastCall['operation']);
+        $this->assertSame(116, FakeRequest::$lastCall['requestId']);
+        $this->assertSame('ipp://localhost/printers/OTHER', (string) FakeRequest::$lastCall['operationAttributes']->{'job-printer-uri'});
+    }
+
+    public function testAuthenticateJobBuildsExpectedPayload(): void
+    {
+        $this->job->authenticateJob(117);
+
+        $this->assertSame(\obray\ipp\types\Operation::CUPS_AUTHENTICATE_JOB, FakeRequest::$lastCall['operation']);
+        $this->assertSame(117, FakeRequest::$lastCall['requestId']);
+    }
 }

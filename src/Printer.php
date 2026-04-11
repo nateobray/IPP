@@ -4,11 +4,11 @@ namespace obray\ipp;
 
 class Printer
 {
-    private $printerURI;
-    private $user;
-    private $password;
-    private $curlOptions = [];
-    private $requestClass;
+    private string $printerURI;
+    private string $user;
+    private string $password;
+    private array $curlOptions = [];
+    private string $requestClass;
 
     public function __construct(string $uri, string $user = '', string $password = '', array $curlOptions = [], ?string $requestClass = null)
     {

@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.1] — 2026-04-11
+
+### Added
+- **`Printer::setPrinterAttributes(array $attributes)`** — RFC 8011 §4.2.19 Set-Printer-Attributes operation.
+- **`Job::setJobAttributes(array $attributes)`** — RFC 8011 §4.2.20 Set-Job-Attributes operation.
+- **PHP 8 return type declarations** on all public methods in `Printer` and `Job`.
+- **PHP 8 property type declarations** on all properties in `Printer` and `Job`.
+
+## [1.1.0] — 2026-04-11
+
 ### Added
 - **`Enum` tolerates unknown values** — constructing or decoding an `Enum`-based type (e.g. `StatusCode`, `Operation`) with an unrecognised numeric code no longer throws. The raw value is stored and rendered as a zero-padded hex string (e.g. `"0x003C"`). `StatusCode::getClass()` still works correctly based on numeric range.
 - **New `StatusCode` constants** (RFC 3380 / RFC 8011): `successful_ok_ignored_subscriptions` (0x0003), `successful_ok_ignored_notifications` (0x0004), `successful_ok_too_many_events` (0x0005), `successful_ok_but_cancel_subscription` (0x0006), `successful_ok_events_complete` (0x0007), `client_error_ignored_all_subscriptions` (0x0413), `client_error_too_many_subscriptions` (0x0414), `client_error_ignored_all_notifications` (0x0415), `client_error_print_support_file_not_found` (0x0416), `server_error_printer_is_deactivated` (0x050A), `server_error_too_many_jobs` (0x050B), `server_error_too_many_documents` (0x050C).
@@ -21,9 +31,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **`Collection::getValueTag()`** and **`Collection::getLength()`** helper methods.
 - CUPS PDF printer real-fixture recordings for integration testing.
 - IPPS/TLS transport support (`ipps://` URIs mapped to HTTPS).
-- **`Printer::setPrinterAttributes(array $attributes)`** — RFC 8011 Set-Printer-Attributes operation.
-- **`Job::setJobAttributes(array $attributes)`** — RFC 8011 Set-Job-Attributes operation.
-- **PHP 8 return type declarations** on all public methods in `Printer` and `Job`.
 
 ### Fixed
 - `Collection::encode()` — fatal `len()` call replaced with `strlen()`.

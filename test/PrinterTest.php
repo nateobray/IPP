@@ -194,4 +194,59 @@ class PrinterTest extends TestCase
         $this->assertNotNull(FakeRequest::$lastCall['printerAttributes']);
         $this->assertSame('My Printer', (string) FakeRequest::$lastCall['printerAttributes']->{'printer-info'});
     }
+
+    public function testGetDefaultBuildsExpectedPayload(): void
+    {
+        $this->printer->getDefault(17);
+
+        $this->assertSame(\obray\ipp\types\Operation::CUPS_GET_DEFAULT, FakeRequest::$lastCall['operation']);
+        $this->assertSame(17, FakeRequest::$lastCall['requestId']);
+    }
+
+    public function testGetDefaultSupportsRequestedAttributes(): void
+    {
+        $this->printer->getDefault(18, ['printer-name', 'printer-state']);
+
+        $this->assertSame(\obray\ipp\types\Operation::CUPS_GET_DEFAULT, FakeRequest::$lastCall['operation']);
+        $attrs = FakeRequest::$lastCall['operationAttributes']->{'requested-attributes'};
+        $this->assertIsArray($attrs);
+        $this->assertSame('printer-name', (string) $attrs[0]);
+        $this->assertSame('printer-state', (string) $attrs[1]);
+    }
+
+    public function testGetPrintersBuildsExpectedPayload(): void
+    {
+        $this->printer->getPrinters(19, ['printer-name', 'printer-state'], 5);
+
+        $this->assertSame(\obray\ipp\types\Operation::CUPS_GET_PRINTERS, FakeRequest::$lastCall['operation']);
+        $this->assertSame(19, FakeRequest::$lastCall['requestId']);
+        $this->assertSame('5', (string) FakeRequest::$lastCall['operationAttributes']->{'limit'});
+        $this->assertSame('printer-name', (string) FakeRequest::$lastCall['operationAttributes']->{'requested-attributes'}[0]);
+        $this->assertSame('printer-state', (string) FakeRequest::$lastCall['operationAttributes']->{'requested-attributes'}[1]);
+    }
+
+    public function testGetClassesBuildsExpectedPayload(): void
+    {
+        $this->printer->getClasses(20, null, 3);
+
+        $this->assertSame(\obray\ipp\types\Operation::CUPS_GET_CLASSES, FakeRequest::$lastCall['operation']);
+        $this->assertSame(20, FakeRequest::$lastCall['requestId']);
+        $this->assertSame('3', (string) FakeRequest::$lastCall['operationAttributes']->{'limit'});
+    }
+
+    public function testCancelJobsBuildsExpectedPayload(): void
+    {
+        $this->printer->cancelJobs(21);
+
+        $this->assertSame(\obray\ipp\types\Operation::CANCEL_JOBS, FakeRequest::$lastCall['operation']);
+        $this->assertSame(21, FakeRequest::$lastCall['requestId']);
+    }
+
+    public function testCancelMyJobsBuildsExpectedPayload(): void
+    {
+        $this->printer->cancelMyJobs(22);
+
+        $this->assertSame(\obray\ipp\types\Operation::CANCEL_MY_JOBS, FakeRequest::$lastCall['operation']);
+        $this->assertSame(22, FakeRequest::$lastCall['requestId']);
+    }
 }
