@@ -29,6 +29,20 @@ final class RecordedRealOperationRequestTest extends TestCase
         return self::fixtureProvider('cancel-job-authenticated');
     }
 
+    public static function getDocumentsFixtureProvider(): array
+    {
+        $fixtures = self::fixtureProvider('get-documents');
+
+        return $fixtures === [] ? ['pending recording' => [null]] : $fixtures;
+    }
+
+    public static function getDocumentAttributesFixtureProvider(): array
+    {
+        $fixtures = self::fixtureProvider('get-document-attributes');
+
+        return $fixtures === [] ? ['pending recording' => [null]] : $fixtures;
+    }
+
     /**
      * @dataProvider printJobFixtureProvider
      */
@@ -129,6 +143,59 @@ final class RecordedRealOperationRequestTest extends TestCase
         $this->assertContains('requesting-user-name', $request['operation_attribute_names']);
         $this->assertSame('', $request['document']);
         $this->assertSame('successful-ok', (string) $response->statusCode);
+    }
+
+    /**
+     * @dataProvider getDocumentsFixtureProvider
+     */
+    public function testRecordedGetDocumentsRequestsCarryRequiredJobTargetAttributes(?string $metaPath): void
+    {
+        if ($metaPath === null) {
+            $this->markTestSkipped('No recorded Get-Documents fixtures exist yet. Run `composer record:fixtures` on a machine with a PWG5100.5-capable printer.');
+        }
+
+        $fixture = $this->loadFixture($metaPath);
+        $request = $fixture['request'];
+        $response = $fixture['response'];
+
+        $this->assertSame(\obray\ipp\types\Operation::GET_DOCUMENTS, $request['header']['operation']);
+        $this->assertSame(['attributes-charset', 'attributes-natural-language'], array_slice($request['operation_attribute_names'], 0, 2));
+        $this->assertContains('printer-uri', $request['operation_attribute_names']);
+        $this->assertContains('job-id', $request['operation_attribute_names']);
+        $this->assertContains('requested-attributes', $request['operation_attribute_names']);
+        $this->assertSame(['document-number', 'document-name', 'document-format', 'document-state'], $this->attributeValues($request['operation_attributes']->{'requested-attributes'}));
+        $this->assertSame('', $request['document']);
+
+        $documentGroup = $this->firstGroup($response->documentAttributes);
+        $this->assertNotNull($documentGroup);
+        $this->assertTrue($documentGroup->has('document-number'));
+    }
+
+    /**
+     * @dataProvider getDocumentAttributesFixtureProvider
+     */
+    public function testRecordedGetDocumentAttributesRequestsCarryRequiredDocumentTargetAttributes(?string $metaPath): void
+    {
+        if ($metaPath === null) {
+            $this->markTestSkipped('No recorded Get-Document-Attributes fixtures exist yet. Run `composer record:fixtures` on a machine with a PWG5100.5-capable printer.');
+        }
+
+        $fixture = $this->loadFixture($metaPath);
+        $request = $fixture['request'];
+        $response = $fixture['response'];
+
+        $this->assertSame(\obray\ipp\types\Operation::GET_DOCUMENT_ATTRIBUTES, $request['header']['operation']);
+        $this->assertSame(['attributes-charset', 'attributes-natural-language'], array_slice($request['operation_attribute_names'], 0, 2));
+        $this->assertContains('printer-uri', $request['operation_attribute_names']);
+        $this->assertContains('job-id', $request['operation_attribute_names']);
+        $this->assertContains('document-number', $request['operation_attribute_names']);
+        $this->assertContains('requested-attributes', $request['operation_attribute_names']);
+        $this->assertSame(['document-number', 'document-name', 'document-format', 'document-state'], $this->attributeValues($request['operation_attributes']->{'requested-attributes'}));
+        $this->assertSame('', $request['document']);
+
+        $documentGroup = $this->firstGroup($response->documentAttributes);
+        $this->assertNotNull($documentGroup);
+        $this->assertTrue($documentGroup->has('document-number'));
     }
 
     private static function fixtureProvider(string $operation): array

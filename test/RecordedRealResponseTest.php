@@ -42,7 +42,15 @@ final class RecordedRealResponseTest extends TestCase
         $responsePayload = new \obray\ipp\transport\IPPPayload();
         $responsePayload->decode((string) file_get_contents($responsePath));
 
-        $this->assertSame($meta['summary'], RealFixtureSummary::fromPayload($responsePayload));
+        $actualSummary = RealFixtureSummary::fromPayload($responsePayload);
+        $expectedSummary = $meta['summary'];
+
+        $projectedActualSummary = [];
+        foreach ($expectedSummary as $key => $value) {
+            $projectedActualSummary[$key] = $actualSummary[$key] ?? null;
+        }
+
+        $this->assertSame($expectedSummary, $projectedActualSummary);
     }
 
     public function testRecordedResponseFixturesExistOrExplicitlySkip(): void

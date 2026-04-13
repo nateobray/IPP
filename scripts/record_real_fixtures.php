@@ -77,6 +77,7 @@ foreach ($targets as $target) {
 }
 
 recordHeldPrintJobLifecycle($targets, $fixtureRoot, $preferredFormatsByTarget);
+recordDocumentObjectLifecycle($targets, $fixtureRoot, $preferredFormatsByTarget);
 recordCancelJobAuthenticationChallenge($targets, $fixtureRoot, $curlOptions);
 
 echo "Recorded real response fixtures.\n";
@@ -321,6 +322,96 @@ function recordCancelJobAuthenticationChallenge(array $targets, string $fixtureR
     }
 }
 
+function recordDocumentObjectLifecycle(array $targets, string $fixtureRoot, array $preferredFormatsByTarget): void
+{
+    foreach ($targets as $target) {
+        if (!targetSupportsOperations($target, ['create-job', 'send-document', 'cancel-job', 'get-documents', 'get-document-attributes'])) {
+            continue;
+        }
+
+        $targetKey = $target['source'] . '|' . $target['uri'];
+        $documentFormat = $preferredFormatsByTarget[$targetKey] ?? 'text/plain';
+        $targetDir = $fixtureRoot . '/' . $target['source'] . '/' . sanitizePathSegment($target['label']);
+        $printer = new Printer($target['uri'], $target['user'], $target['password'], $target['curl_options'], FixtureRecordingRequest::class);
+        $jobId = null;
+
+        try {
+            FixtureRecordingRequest::reset();
+            $createResponse = $printer->createJob(2030, [
+                'job-name' => 'IPP Recorded Document Object Probe',
+                'job-hold-until' => 'indefinite',
+            ]);
+            $jobAttributes = is_array($createResponse->jobAttributes) ? ($createResponse->jobAttributes[0] ?? null) : null;
+            if (!$jobAttributes instanceof \obray\ipp\JobAttributes || !$jobAttributes->has('job-id')) {
+                continue;
+            }
+
+            $jobId = (int) $jobAttributes->{'job-id'}->getAttributeValue();
+            $job = new \obray\ipp\Job($target['uri'], $jobId, $target['user'], $target['password'], $target['curl_options'], FixtureRecordingRequest::class);
+
+            FixtureRecordingRequest::reset();
+            $sendResponse = $job->sendDocument("recorded document object probe\n", true, 2031, [
+                'document-format' => $documentFormat,
+                'document-name' => 'IPP Recorded Document Object Probe',
+            ]);
+
+            if (!str_starts_with((string) $sendResponse->statusCode, 'successful-ok')) {
+                cleanupRecordedJob($target, $jobId);
+                continue;
+            }
+
+            FixtureRecordingRequest::reset();
+            $getDocumentsResponse = $job->getDocuments(2032, requestedDocumentAttributes());
+            writeRecordedPayloadFixture(
+                $target,
+                $targetDir,
+                'get-documents',
+                [
+                    'job_id' => $jobId,
+                    'requested_attributes' => requestedDocumentAttributes(),
+                ],
+                FixtureRecordingRequest::$lastExchange,
+                $getDocumentsResponse
+            );
+
+            $documentGroups = is_array($getDocumentsResponse->documentAttributes) ? $getDocumentsResponse->documentAttributes : [];
+            $firstDocument = reset($documentGroups);
+            if (!$firstDocument instanceof \obray\ipp\DocumentAttributes || !$firstDocument->has('document-number')) {
+                cleanupRecordedJob($target, $jobId);
+                continue;
+            }
+
+            $documentNumber = (int) $firstDocument->{'document-number'}->getAttributeValue();
+            $document = new \obray\ipp\Document($target['uri'], $jobId, $documentNumber, $target['user'], $target['password'], $target['curl_options'], FixtureRecordingRequest::class);
+
+            FixtureRecordingRequest::reset();
+            $getDocumentResponse = $document->getDocumentAttributes(2033, requestedDocumentAttributes());
+            writeRecordedPayloadFixture(
+                $target,
+                $targetDir,
+                'get-document-attributes',
+                [
+                    'job_id' => $jobId,
+                    'document_number' => $documentNumber,
+                    'requested_attributes' => requestedDocumentAttributes(),
+                ],
+                FixtureRecordingRequest::$lastExchange,
+                $getDocumentResponse
+            );
+
+            cleanupRecordedJob($target, $jobId);
+            echo "  - get-documents => " . (string) $getDocumentsResponse->statusCode . "\n";
+            echo "  - get-document-attributes => " . (string) $getDocumentResponse->statusCode . "\n";
+            return;
+        } catch (\Throwable $exception) {
+            if ($jobId !== null) {
+                cleanupRecordedJob($target, $jobId);
+            }
+            continue;
+        }
+    }
+}
+
 function discoverTargets(string $user, string $password): array
 {
     $targets = [];
@@ -469,6 +560,48 @@ function requestedPrinterAttributes(): array
 function requestedJobDescriptionAttributes(): array
 {
     return \obray\ipp\spec\Rfc2911AttributeMatrix::requiredJobDescriptionAttributeNames();
+}
+
+function requestedDocumentAttributes(): array
+{
+    return ['document-number', 'document-name', 'document-format', 'document-state'];
+}
+
+function targetSupportsOperations(array $target, array $requiredOperations): bool
+{
+    try {
+        $response = (new Printer($target['uri'], $target['user'], $target['password'], $target['curl_options']))->getPrinterAttributes(1, ['operations-supported']);
+    } catch (\Throwable) {
+        return false;
+    }
+
+    $printerAttributes = $response->printerAttributes;
+    if ($printerAttributes instanceof \obray\ipp\AttributeGroup) {
+        $printerAttributes = [$printerAttributes];
+    }
+
+    $firstGroup = is_array($printerAttributes) ? reset($printerAttributes) : null;
+    if (!$firstGroup instanceof \obray\ipp\AttributeGroup || !$firstGroup->has('operations-supported')) {
+        return false;
+    }
+
+    $supported = [];
+    $operations = $firstGroup->{'operations-supported'};
+    if (is_array($operations)) {
+        foreach ($operations as $operation) {
+            $supported[] = (string) $operation;
+        }
+    } else {
+        $supported[] = (string) $operations;
+    }
+
+    foreach ($requiredOperations as $operation) {
+        if (!in_array($operation, $supported, true)) {
+            return false;
+        }
+    }
+
+    return true;
 }
 
 function sanitizePathSegment(string $segment): string

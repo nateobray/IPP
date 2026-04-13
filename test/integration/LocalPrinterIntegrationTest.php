@@ -10,6 +10,7 @@ final class LocalPrinterIntegrationTest extends TestCase
 {
     private static ?LocalPrinterTarget $target = null;
     private static ?LocalPrinterTarget $jobTarget = null;
+    private static ?LocalPrinterTarget $documentTarget = null;
     private static array $preferredDocumentFormats = [
         'text/plain',
         'application/octet-stream',
@@ -22,6 +23,9 @@ final class LocalPrinterIntegrationTest extends TestCase
     {
         self::$target = LocalPrinterTarget::discover();
         self::$jobTarget = LocalPrinterTarget::discover(true);
+        self::$documentTarget = self::$jobTarget !== null && self::$jobTarget->supportsDocumentObjects()
+            ? self::$jobTarget
+            : null;
     }
 
     public function testCanDiscoverARealPrinterTarget(): void
@@ -243,6 +247,67 @@ final class LocalPrinterIntegrationTest extends TestCase
         }
     }
 
+    public function testGetDocumentsAndGetDocumentAttributesAgainstRealPrinter(): void
+    {
+        $target = $this->requireDocumentTarget();
+        $job = null;
+        try {
+            try {
+                $createResponse = $target->printer()->createJob(130, [
+                    'job-name' => 'IPP Document Integration ' . date('YmdHis'),
+                    'job-hold-until' => 'indefinite',
+                ]);
+            } catch (\obray\ipp\exceptions\AuthenticationError $exception) {
+                $this->markTestSkipped('Document Object validation requires authenticated Create-Job access on this queue.');
+            }
+
+            $this->assertSuccessfulStatus($createResponse);
+
+            $jobAttributes = LocalPrinterTarget::firstAttributeGroup($createResponse->jobAttributes);
+            if ($jobAttributes === null || !$jobAttributes->has('job-id')) {
+                $this->markTestSkipped('Create-Job succeeded but did not return a usable job-id for Document Object validation.');
+            }
+
+            $jobId = (int) $jobAttributes->{'job-id'}->getAttributeValue();
+            $job = $target->job($jobId);
+            $documentFormat = $this->preferredDocumentFormat($target);
+
+            try {
+                $sendResponse = $job->sendDocument("IPP document object probe\n", true, 131, [
+                    'document-format' => $documentFormat,
+                    'document-name' => 'IPP Document Object Probe',
+                ]);
+            } catch (\obray\ipp\exceptions\AuthenticationError $exception) {
+                $this->markTestSkipped('Send-Document requires authentication on this queue for Document Object validation.');
+            }
+
+            $this->assertSuccessfulStatus($sendResponse);
+
+            $documentsResponse = $job->getDocuments(132, ['document-number', 'document-name', 'document-state']);
+            $this->assertSuccessfulStatus($documentsResponse);
+            $documentGroups = $documentsResponse->documentAttributes ?? [];
+            $firstDocument = LocalPrinterTarget::firstAttributeGroup($documentGroups);
+            $this->assertNotNull($firstDocument, 'Get-Documents returned no document attribute groups.');
+            $this->assertTrue($firstDocument->has('document-number'));
+
+            $documentNumber = (int) (string) $firstDocument->{'document-number'};
+            $document = new \obray\ipp\Document($target->uri, $jobId, $documentNumber, $target->user, $target->password);
+            $documentResponse = $document->getDocumentAttributes(133, ['document-number', 'document-name', 'document-state']);
+
+            $this->assertSuccessfulStatus($documentResponse);
+            $documentAttributes = LocalPrinterTarget::firstAttributeGroup($documentResponse->documentAttributes);
+            $this->assertNotNull($documentAttributes, 'Get-Document-Attributes returned no document attribute groups.');
+            $this->assertSame((string) $documentNumber, (string) $documentAttributes->{'document-number'});
+        } finally {
+            if ($job instanceof \obray\ipp\Job) {
+                try {
+                    $job->cancelJob(134);
+                } catch (\Throwable) {
+                }
+            }
+        }
+    }
+
     private function requireTarget(): LocalPrinterTarget
     {
         if (self::$target === null) {
@@ -259,6 +324,15 @@ final class LocalPrinterIntegrationTest extends TestCase
         }
 
         return self::$jobTarget;
+    }
+
+    private function requireDocumentTarget(): LocalPrinterTarget
+    {
+        if (self::$documentTarget === null) {
+            $this->markTestSkipped('No discovered printer advertises Get-Documents and Get-Document-Attributes for PWG5100.5 validation.');
+        }
+
+        return self::$documentTarget;
     }
 
     private function preferredDocumentFormat(LocalPrinterTarget $target): string

@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 final class LocalPrinterTarget
 {
+    private ?array $operationsSupported = null;
+
     public function __construct(
         public readonly string $uri,
         public readonly ?string $queue,
@@ -76,21 +78,19 @@ final class LocalPrinterTarget
 
     public function supportsSubscriptions(): bool
     {
-        try {
-            $response = $this->printer()->getPrinterAttributes(1, ['operations-supported']);
-        } catch (\Throwable) {
-            return false;
-        }
+        return $this->supportsOperations([
+            'create-printer-subscription',
+            'get-subscription',
+            'cancel-subscription',
+        ]);
+    }
 
-        $printerAttributes = self::firstAttributeGroup($response->printerAttributes);
-        if ($printerAttributes === null || !$printerAttributes->has('operations-supported')) {
-            return false;
-        }
-
-        $operations = self::attributeValues($printerAttributes->{'operations-supported'});
-        return in_array('create-printer-subscription', $operations, true)
-            && in_array('get-subscription', $operations, true)
-            && in_array('cancel-subscription', $operations, true);
+    public function supportsDocumentObjects(): bool
+    {
+        return $this->supportsOperations([
+            'get-documents',
+            'get-document-attributes',
+        ]);
     }
 
     public static function firstAttributeGroup(?array $attributeGroups): ?\obray\ipp\AttributeGroup
@@ -119,29 +119,47 @@ final class LocalPrinterTarget
 
     private static function supportsRequiredOperations(self $target, bool $requireJobManagement): bool
     {
-        try {
-            $response = $target->printer()->getPrinterAttributes(1, ['operations-supported']);
-        } catch (\Throwable) {
-            return false;
-        }
-
-        $printerAttributes = self::firstAttributeGroup($response->printerAttributes);
-        if ($printerAttributes === null || !$printerAttributes->has('operations-supported')) {
-            return false;
-        }
-
-        $operations = self::attributeValues($printerAttributes->{'operations-supported'});
         $required = $requireJobManagement
             ? ['create-job', 'send-document', 'cancel-job', 'get-job-attributes']
             : ['get-printer-attributes', 'validate-job', 'get-jobs'];
 
-        foreach ($required as $operation) {
+        return $target->supportsOperations($required);
+    }
+
+    private function supportsOperations(array $requiredOperations): bool
+    {
+        $operations = $this->operationsSupported();
+        if ($operations === []) {
+            return false;
+        }
+
+        foreach ($requiredOperations as $operation) {
             if (!in_array($operation, $operations, true)) {
                 return false;
             }
         }
 
         return true;
+    }
+
+    private function operationsSupported(): array
+    {
+        if ($this->operationsSupported !== null) {
+            return $this->operationsSupported;
+        }
+
+        try {
+            $response = $this->printer()->getPrinterAttributes(1, ['operations-supported']);
+        } catch (\Throwable) {
+            return $this->operationsSupported = [];
+        }
+
+        $printerAttributes = self::firstAttributeGroup($response->printerAttributes);
+        if ($printerAttributes === null || !$printerAttributes->has('operations-supported')) {
+            return $this->operationsSupported = [];
+        }
+
+        return $this->operationsSupported = self::attributeValues($printerAttributes->{'operations-supported'});
     }
 
     private static function cupsQueues(): array

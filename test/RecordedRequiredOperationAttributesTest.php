@@ -123,6 +123,18 @@ final class RecordedRequiredOperationAttributesTest extends TestCase
                 'required_operation_attributes' => ['requesting-user-name'],
                 'required_job_attributes' => [],
             ],
+            'get-documents' => [
+                'operation' => \obray\ipp\types\Operation::GET_DOCUMENTS,
+                'required_target_attributes' => ['printer-uri', 'job-id'],
+                'required_operation_attributes' => ['requested-attributes'],
+                'required_job_attributes' => [],
+            ],
+            'get-document-attributes' => [
+                'operation' => \obray\ipp\types\Operation::GET_DOCUMENT_ATTRIBUTES,
+                'required_target_attributes' => ['printer-uri', 'job-id', 'document-number'],
+                'required_operation_attributes' => ['requested-attributes'],
+                'required_job_attributes' => [],
+            ],
             'cancel-job-unauthenticated' => [
                 'operation' => \obray\ipp\types\Operation::CANCEL_JOB,
                 'required_target_attributes' => ['printer-uri', 'job-id'],
