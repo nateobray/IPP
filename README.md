@@ -6,7 +6,7 @@
 [![CI](https://img.shields.io/github/actions/workflow/status/nateobray/IPP/ci.yml?branch=master)](https://github.com/nateobray/IPP/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-An Internet Printing Protocol (IPP) PHP Client Implementation.  This implements the raw IPP protocol defined in [RFC2911](https://tools.ietf.org/html/rfc2911) & [RFC2910](https://tools.ietf.org/html/rfc2910) and will work with any IPP printer or IPP print server such as CUPS.
+An Internet Printing Protocol (IPP) PHP Client Implementation.  This implements the raw IPP protocol defined in [RFC2911](https://tools.ietf.org/html/rfc2911), [RFC2910](https://tools.ietf.org/html/rfc2910), [RFC8011](https://tools.ietf.org/html/rfc8011), [RFC3995](https://datatracker.ietf.org/doc/html/rfc3995), and [RFC3996](https://datatracker.ietf.org/doc/html/rfc3996), and will work with any IPP printer or IPP print server such as CUPS.
 
 The goals of this implementation is to follow the IPP specification as closely as possible and offer a raw interface to that protocol in a form that is as simple as possible to use.
 
@@ -31,6 +31,14 @@ The goals of this implementation is to follow the IPP specification as closely a
    - [Method `getPrinters` (CUPS)](#method-getprinters-cups)
    - [Method `getClasses` (CUPS)](#method-getclasses-cups)
    - [Method `setPrinterAttributes`](#method-setprinterattributes)
+   - [Method `createPrinterSubscription`](#method-createprintersubscription)
+   - [Method `getSubscriptions`](#method-getsubscriptions)
+   - [Method `getNotifications` (Printer)](#method-getnotifications-printer)
+ - [Subscription Object & Methods](#subscription-object-and-methods)
+   - [Method `getSubscriptionAttributes`](#method-getsubscriptionattributes)
+   - [Method `renewSubscription`](#method-renewsubscription)
+   - [Method `cancelSubscription`](#method-cancelsubscription)
+   - [Method `getNotifications` (Subscription)](#method-getnotifications-subscription)
  - [Job Object & Methods](#job-object-and-methods)
    - [Method `sendDocument`](#method-senddocument)
    - [Method `sendURI`](#method-senduri)
@@ -42,6 +50,7 @@ The goals of this implementation is to follow the IPP specification as closely a
    - [Method `moveJob` (CUPS)](#method-movejob-cups)
    - [Method `authenticateJob` (CUPS)](#method-authenticatejob-cups)
    - [Method `setJobAttributes`](#method-setjobattributes)
+   - [Method `createJobSubscription`](#method-createjobsubscription)
    - [Job Administration Methods](#job-administration-methods)
  - [Exceptions](#exceptions)
  - [Printer URIs](#printer-uris)
@@ -51,7 +60,7 @@ The goals of this implementation is to follow the IPP specification as closely a
 Install the stable release with Composer:
 
 ```bash
-composer require obray/ipp:^1.1
+composer require obray/ipp:^1.2
 ```
 
 This library currently supports PHP `8.1+` and is tested locally on PHP `8.1`, `8.2`, `8.3`, and `8.4`.
@@ -405,6 +414,128 @@ $response = $printer->setPrinterAttributes({attributes}, {request-id});
 | attributes | yes | Associative array of printer attribute names to set (`['printer-info' => 'My printer', ...]`). |
 | request-id | no | Client request id, will be passed back in the response _(default 1)_ |
 
+### Method `createPrinterSubscription`
+[RFC 3995 §7](https://datatracker.ietf.org/doc/html/rfc3995#section-7): Creates a printer-level event notification subscription. Returns a response whose `subscriptionAttributes` property contains the assigned `notify-subscription-id`. Use the returned id to construct a [`Subscription`](#subscription-object-and-methods) object for subsequent polling or management operations.
+
+###### Usage:
+```PHP
+$response = $printer->createPrinterSubscription({subscription-attributes}, {request-id});
+$subGroup = $response->subscriptionAttributes[0];
+$subscriptionId = (int)(string) $subGroup->{'notify-subscription-id'};
+$subscription = new \obray\ipp\Subscription($printerUri, $subscriptionId, $user, $password);
+```
+| Parameter | Required | Description |
+| --------- | -------- | ----------- |
+| subscription-attributes | yes | Associative array of subscription template attributes, e.g. `['notify-pull-method' => 'ippget', 'notify-events' => ['all'], 'notify-lease-duration' => 300]`. |
+| request-id | no | Client request id, will be passed back in the response _(default 1)_ |
+
+#  
+### Method `getSubscriptions`
+[RFC 3995 §9](https://datatracker.ietf.org/doc/html/rfc3995#section-9): Returns the list of active subscriptions on the printer. The response `subscriptionAttributes` array contains one entry per subscription.
+
+###### Usage:
+```PHP
+$response = $printer->getSubscriptions({request-id}, {notify-job-id}, {requested-attributes}, {my-subscriptions});
+```
+| Parameter | Required | Description |
+| --------- | -------- | ----------- |
+| request-id | no | Client request id, will be passed back in the response _(default 1)_ |
+| notify-job-id | no | If set, only subscriptions belonging to this job id are returned. |
+| requested-attributes | no | Array of subscription attribute names to include in the response. |
+| my-subscriptions | no | If `true`, only subscriptions belonging to the authenticated user are returned. |
+
+#  
+### Method `getNotifications` (Printer)
+[RFC 3996 §5](https://datatracker.ietf.org/doc/html/rfc3996#section-5): Polls for pending event notifications across one or more subscriptions. The response `eventNotificationAttributes` array contains one `EventNotificationAttributes` group (tag `0x07`) per pending event. `notify-get-interval` in `operationAttributes` tells the client how many seconds to wait before polling again.
+
+###### Usage:
+```PHP
+$response = $printer->getNotifications({subscription-ids}, {request-id}, {sequence-numbers}, {wait});
+```
+| Parameter | Required | Description |
+| --------- | -------- | ----------- |
+| subscription-ids | yes | Integer subscription id or array of integer subscription ids to poll. |
+| request-id | no | Client request id, will be passed back in the response _(default 1)_ |
+| sequence-numbers | no | Integer or array of integers — the last sequence number received per subscription. Events at or before this number are not re-delivered. |
+| wait | no | If `true`, the printer may hold the response open until an event arrives (long-poll). |
+
+## Subscription Object and Methods
+
+The `Subscription` object wraps a `(printer-uri, subscription-id)` pair and provides methods to inspect, renew, cancel, and poll an individual subscription.
+
+### Subscription Constructor
+
+```PHP
+$subscription = new \obray\ipp\Subscription(
+  {printer-uri},
+  {subscription-id},
+  {username},    // optional
+  {password},    // optional
+  {curlOptions}  // optional
+);
+```
+| Parameter | Required | Description |
+| --------- | -------- | ----------- |
+| printer-uri | yes | The URI of the printer that owns the subscription. |
+| subscription-id | yes | The numeric subscription id returned by `createPrinterSubscription` or `createJobSubscription`. |
+| username | no | Username for authentication. |
+| password | no | Password for authentication. |
+| curlOptions | no | cURL options array. |
+
+#  
+### Method `getSubscriptionAttributes`
+[RFC 3995 §11.2.4](https://datatracker.ietf.org/doc/html/rfc3995#section-11.2.4): Returns all attributes of this subscription.
+
+###### Usage:
+```PHP
+$response = $subscription->getSubscriptionAttributes({request-id});
+```
+| Parameter | Required | Description |
+| --------- | -------- | ----------- |
+| request-id | no | Client request id, will be passed back in the response _(default 1)_ |
+
+#  
+### Method `renewSubscription`
+[RFC 3995 §11.2.5](https://datatracker.ietf.org/doc/html/rfc3995#section-11.2.5): Extends the subscription lease. If `$leaseDuration` is omitted the printer applies its default duration.
+
+###### Usage:
+```PHP
+$response = $subscription->renewSubscription({request-id}, {lease-duration});
+```
+| Parameter | Required | Description |
+| --------- | -------- | ----------- |
+| request-id | no | Client request id, will be passed back in the response _(default 1)_ |
+| lease-duration | no | New lease duration in seconds. If omitted, the printer's default is used. |
+
+#  
+### Method `cancelSubscription`
+[RFC 3995 §11.2.6](https://datatracker.ietf.org/doc/html/rfc3995#section-11.2.6): Cancels and removes this subscription.
+
+###### Usage:
+```PHP
+$response = $subscription->cancelSubscription({request-id});
+```
+| Parameter | Required | Description |
+| --------- | -------- | ----------- |
+| request-id | no | Client request id, will be passed back in the response _(default 1)_ |
+
+#  
+### Method `getNotifications` (Subscription)
+[RFC 3996 §5](https://datatracker.ietf.org/doc/html/rfc3996#section-5): Polls for pending events on this subscription. The response `eventNotificationAttributes` array contains one group per event. Pass `$lastSequenceNumber` to suppress events you have already processed.
+
+###### Usage:
+```PHP
+$response = $subscription->getNotifications({request-id}, {last-sequence-number}, {wait});
+foreach ($response->eventNotificationAttributes as $event) {
+    echo $event->{'notify-subscribed-event'} . PHP_EOL;
+}
+```
+| Parameter | Required | Description |
+| --------- | -------- | ----------- |
+| request-id | no | Client request id, will be passed back in the response _(default 1)_ |
+| last-sequence-number | no | The sequence number of the last event already processed. Events at or before this number are not re-delivered. |
+| wait | no | If `true`, the printer may hold the response open until an event arrives (long-poll). |
+
 ## Job Object and Methods
 
 ### Job Constructor
@@ -573,6 +704,21 @@ $response = $job->setJobAttributes({attributes}, {request-id});
 | attributes | yes | Associative array of job attribute names to set (`['job-priority' => 50, ...]`). |
 | request-id | no | Client request id, will be passed back in the response _(default 1)_ |
 
+### Method `createJobSubscription`
+[RFC 3995 §7](https://datatracker.ietf.org/doc/html/rfc3995#section-7): Creates a job-level event notification subscription scoped to this job. Returns a response whose `subscriptionAttributes` property contains the assigned `notify-subscription-id`. Use the returned id to construct a [`Subscription`](#subscription-object-and-methods) object.
+
+###### Usage:
+```PHP
+$response = $job->createJobSubscription({subscription-attributes}, {request-id});
+$subGroup = $response->subscriptionAttributes[0];
+$subscriptionId = (int)(string) $subGroup->{'notify-subscription-id'};
+$subscription = new \obray\ipp\Subscription($printerUri, $subscriptionId, $user, $password);
+```
+| Parameter | Required | Description |
+| --------- | -------- | ----------- |
+| subscription-attributes | yes | Associative array of subscription template attributes, e.g. `['notify-pull-method' => 'ippget', 'notify-events' => ['job-completed']]`. |
+| request-id | no | Client request id, will be passed back in the response _(default 1)_ |
+
 ### Job Administration Methods
 Advanced job operations for reordering, suspending, and managing active jobs. All accept only an optional `request-id` parameter unless noted.
 
@@ -639,7 +785,7 @@ In this case CUPS would be installed on localhost and listening on port 631 (def
 
 ## Project Status
 
-Core IPP/1.1 support (RFC 2910, RFC 2911, RFC 8011) and administrative operations (RFC 3380, RFC 3998) are complete. Event notification subscriptions (RFC 3995/3996) are the main remaining gap. Newer IPP/PWG extensions are tracked in the matrix below.
+Core IPP/1.1 support (RFC 2910, RFC 2911, RFC 8011), administrative operations (RFC 3380, RFC 3998), and event notification subscriptions with pull-delivery (RFC 3995, RFC 3996) are complete. Newer IPP/PWG extensions are tracked in the matrix below.
 
 | IETF or PWG Specification | obray\ipp | IPP/1.1 | IPP/2.0 | IPP/2.1 | IPP/2.2 |
 | ------------------------- | --------- | ------- | ------- | ------- | ------- |
@@ -659,8 +805,8 @@ Core IPP/1.1 support (RFC 2910, RFC 2911, RFC 8011) and administrative operation
 | [RFC3380 - Job and Printer Set Operations](https://datatracker.ietf.org/doc/html/rfc3380)                   |   DONE    |         |         |   REQ   |   REQ   |
 | [RFC3382 - The 'collection' attribute syntax](https://datatracker.ietf.org/doc/html/rfc3382)                   |   DONE    |         |         |   REQ   |   REQ   |
 | [RFC3510 - IPP URL Scheme](https://datatracker.ietf.org/doc/html/rfc3510)                   |   DONE    |   REQ   |   REQ   |   REQ   |   REQ   |
-| [RFC3995 - Event Notifications and Subscriptions](https://datatracker.ietf.org/doc/html/rfc3995)                   |           |         |         |   REQ   |   REQ   |
-| [RFC3996 - The 'ippget' Delivery Method for Event Notifications](https://datatracker.ietf.org/doc/html/rfc3996)                   |           |         |         |   REQ   |   REQ   |
+| [RFC3995 - Event Notifications and Subscriptions](https://datatracker.ietf.org/doc/html/rfc3995)                   |   DONE    |         |         |   REQ   |   REQ   |
+| [RFC3996 - The 'ippget' Delivery Method for Event Notifications](https://datatracker.ietf.org/doc/html/rfc3996)                   |   DONE    |         |         |   REQ   |   REQ   |
 | [RFC3998 - Job and Printer Administrative Operations](https://datatracker.ietf.org/doc/html/rfc3998)                   |   DONE    |         |         |   REQ   |   REQ   |
 | [RFC5246 - The Transport Layer Security (TLS) Protocol](https://datatracker.ietf.org/doc/html/rfc5246)                   |  via PHP/cURL/OpenSSL  |         |  RECMD  |  RECMD  |   REQ   |
 | [RFC7472 - HTTPS Transport Binding and the 'ipps' URI Scheme](https://datatracker.ietf.org/doc/html/rfc7472)                   |   DONE    |         |  RECMD  |  RECMD  |   REQ   |
