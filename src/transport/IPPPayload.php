@@ -18,6 +18,7 @@ class IPPPayload
     public $operationAttributes;
     public $jobAttributes;
     public $printerAttributes;
+    public $subscriptionAttributes;
     public $unsupportedAttributes;
     private $document;
 
@@ -29,7 +30,8 @@ class IPPPayload
         ?\obray\ipp\OperationAttributes $operationAttributes = null,
         ?\obray\ipp\JobAttributes $jobAttributes = null,
         ?\obray\ipp\PrinterAttributes $printerAttributes = null,
-        ?\obray\ipp\UnsupportedAttributes $unsupportedAttributes = null)
+        ?\obray\ipp\UnsupportedAttributes $unsupportedAttributes = null,
+        ?\obray\ipp\SubscriptionAttributes $subscriptionAttributes = null)
     {
         $this->versionNumber = $versionNumber;
         $this->operation = $operation;
@@ -38,6 +40,7 @@ class IPPPayload
         $this->operationAttributes = $operationAttributes;
         $this->jobAttributes = $jobAttributes;
         $this->printerAttributes = $printerAttributes;
+        $this->subscriptionAttributes = $subscriptionAttributes;
         $this->unsupportedAttributes = $unsupportedAttributes;
     }
 
@@ -58,6 +61,10 @@ class IPPPayload
         // Printer Attribute Group
         if(!empty($this->printerAttributes)){
             $binary .= $this->printerAttributes->encode();
+        }
+        // Subscription Attribute Group
+        if(!empty($this->subscriptionAttributes)){
+            $binary .= $this->subscriptionAttributes->encode();
         }
         // Unsupported Attribute Group
         if(!empty($this->unsupportedAttributes)){
@@ -109,6 +116,15 @@ class IPPPayload
                 $printerAttributes = new \obray\ipp\PrinterAttributes();
                 $newTag = $printerAttributes->decode($binary, $offset);
                 $this->printerAttributes[] = $printerAttributes;
+            }
+        }
+
+        if($newTag!==false && $newTag === 0x06){
+            $this->subscriptionAttributes = [];
+            while($newTag !== false && $newTag === 0x06){
+                $subscriptionAttributes = new \obray\ipp\SubscriptionAttributes();
+                $newTag = $subscriptionAttributes->decode($binary, $offset);
+                $this->subscriptionAttributes[] = $subscriptionAttributes;
             }
         }
 

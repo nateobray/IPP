@@ -372,4 +372,39 @@ class PrinterTest extends TestCase
         $this->assertSame(\obray\ipp\types\Operation::CANCEL_MY_JOBS, FakeRequest::$lastCall['operation']);
         $this->assertSame(22, FakeRequest::$lastCall['requestId']);
     }
+
+    public function testCreatePrinterSubscriptionBuildsExpectedPayload(): void
+    {
+        $this->printer->createPrinterSubscription([
+            'notify-pull-method' => 'ippget',
+            'notify-events'      => ['job-completed', 'printer-state-changed'],
+        ], 33);
+
+        $this->assertSame(\obray\ipp\types\Operation::CREATE_PRINTER_SUBSCRIPTION, FakeRequest::$lastCall['operation']);
+        $this->assertSame(33, FakeRequest::$lastCall['requestId']);
+        $this->assertSame('1.1', FakeRequest::$lastCall['version']);
+        $this->assertNotNull(FakeRequest::$lastCall['subscriptionAttributes']);
+        $this->assertSame('ippget', (string) FakeRequest::$lastCall['subscriptionAttributes']->{'notify-pull-method'});
+        $events = FakeRequest::$lastCall['subscriptionAttributes']->{'notify-events'};
+        $this->assertIsArray($events);
+        $this->assertSame('job-completed', (string) $events[0]);
+        $this->assertSame('printer-state-changed', (string) $events[1]);
+    }
+
+    public function testGetSubscriptionsBuildsExpectedPayload(): void
+    {
+        $this->printer->getSubscriptions(34);
+
+        $this->assertSame(\obray\ipp\types\Operation::GET_SUBSCRIPTION, FakeRequest::$lastCall['operation']);
+        $this->assertSame(34, FakeRequest::$lastCall['requestId']);
+        $this->assertNull(FakeRequest::$lastCall['subscriptionAttributes']);
+    }
+
+    public function testGetSubscriptionsSupportsNotifyJobId(): void
+    {
+        $this->printer->getSubscriptions(35, 42);
+
+        $this->assertSame(\obray\ipp\types\Operation::GET_SUBSCRIPTION, FakeRequest::$lastCall['operation']);
+        $this->assertSame('42', (string) FakeRequest::$lastCall['operationAttributes']->{'notify-job-id'});
+    }
 }

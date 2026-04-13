@@ -202,6 +202,20 @@ class JobTest extends TestCase
         $this->assertSame('ipp://localhost/jobs/99', (string) FakeRequest::$lastCall['operationAttributes']->{'job-uri-after'});
     }
 
+    public function testCreateJobSubscriptionBuildsExpectedPayload(): void
+    {
+        $this->job->createJobSubscription([
+            'notify-pull-method' => 'ippget',
+            'notify-events'      => ['job-completed'],
+        ], 125);
+
+        $this->assertSame(\obray\ipp\types\Operation::CREATE_JOB_SUBSCRIPTION, FakeRequest::$lastCall['operation']);
+        $this->assertSame(125, FakeRequest::$lastCall['requestId']);
+        $this->assertSame('1.1', FakeRequest::$lastCall['version']);
+        $this->assertNotNull(FakeRequest::$lastCall['subscriptionAttributes']);
+        $this->assertSame('ippget', (string) FakeRequest::$lastCall['subscriptionAttributes']->{'notify-pull-method'});
+    }
+
     public function testCloseJobBuildsExpectedPayload(): void
     {
         $this->job->closeJob(115);

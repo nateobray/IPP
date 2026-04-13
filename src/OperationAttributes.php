@@ -121,6 +121,18 @@ class OperationAttributes extends \obray\ipp\AttributeGroup
             case 'my-jobs':
                 $this->attributes[$name] = new \obray\ipp\Attribute('my-jobs', $value, \obray\ipp\enums\Types::BOOLEAN);
                 break;
+            case 'my-subscriptions':
+                $this->attributes[$name] = new \obray\ipp\Attribute('my-subscriptions', $value, \obray\ipp\enums\Types::BOOLEAN);
+                break;
+            case 'notify-subscription-id':
+                $this->attributes[$name] = new \obray\ipp\Attribute('notify-subscription-id', $value, \obray\ipp\enums\Types::INTEGER);
+                break;
+            case 'notify-job-id':
+                $this->attributes[$name] = new \obray\ipp\Attribute('notify-job-id', $value, \obray\ipp\enums\Types::INTEGER);
+                break;
+            case 'notify-lease-duration':
+                $this->attributes[$name] = new \obray\ipp\Attribute('notify-lease-duration', $value, \obray\ipp\enums\Types::INTEGER);
+                break;
             case 'requested-attributes':
                 $this->attributes[$name] = $this->createAttributeInstances('requested-attributes', $value, \obray\ipp\enums\Types::KEYWORD);
                 break;

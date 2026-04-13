@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.0] — 2026-04-11
+
+### Added
+- **RFC 3995 event notification subscriptions** — Create, inspect, renew, and cancel IPP event subscriptions.
+- **`Printer::createPrinterSubscription(array $subscriptionAttributes, int $requestId = 1)`** — Create-Printer-Subscription (0x0016); accepts a Subscription Template Attributes array (e.g. `notify-pull-method`, `notify-events`).
+- **`Printer::getSubscriptions(int $requestId, ?int $notifyJobId, ?array $requestedAttributes, ?bool $mySubscriptions)`** — Get-Subscriptions (0x0019); optional job-id and user filters.
+- **`Job::createJobSubscription(array $subscriptionAttributes, int $requestId = 1)`** — Create-Job-Subscription (0x0017).
+- **`Subscription` class** — wraps a `(printerURI, subscriptionId)` pair and exposes:
+  - `getSubscriptionAttributes(int $requestId = 1)` — Get-Subscription-Attributes (0x0018)
+  - `renewSubscription(int $requestId = 1, ?int $leaseDuration = null)` — Renew-Subscription (0x001A)
+  - `cancelSubscription(int $requestId = 1)` — Cancel-Subscription (0x001B)
+- **`SubscriptionAttributes` class** — AttributeGroup with tag `0x06` for encoding/decoding RFC 3995 subscription attribute groups. Supports all template and description attributes.
+- **IPP 2.0 version numbers** for RFC 8011 and RFC 3380/3998 operations — `identifyPrinter`, `setPrinterAttributes`, `setJobAttributes`, and all six RFC 3380 job admin methods now send version `2.0` in the IPP header.
+- Subscription attribute groups (tag `0x06`) are now decoded from IPP response payloads into `IPPPayload::$subscriptionAttributes`.
+
 ## [1.1.3] — 2026-04-11
 
 ### Added

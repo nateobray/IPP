@@ -467,6 +467,57 @@ final class OperationRequestValidator
                 'document_requirement' => 'forbidden',
                 'requires_last_document_true_without_document' => false,
             ],
+            Operation::CREATE_PRINTER_SUBSCRIPTION => [
+                'target_prefixes' => [['printer-uri']],
+                'required_operation_attributes' => [],
+                'forbidden_operation_attributes' => ['document-uri', 'last-document'],
+                'forbidden_job_attributes' => [],
+                'document_requirement' => 'forbidden',
+                'requires_last_document_true_without_document' => false,
+            ],
+            Operation::CREATE_JOB_SUBSCRIPTION => [
+                'target_prefixes' => [
+                    ['printer-uri', 'job-id'],
+                    ['job-uri'],
+                ],
+                'required_operation_attributes' => [],
+                'forbidden_operation_attributes' => ['document-uri', 'last-document'],
+                'forbidden_job_attributes' => [],
+                'document_requirement' => 'forbidden',
+                'requires_last_document_true_without_document' => false,
+            ],
+            Operation::GET_SUBSCRIPTION => [
+                'target_prefixes' => [['printer-uri']],
+                'required_operation_attributes' => [],
+                'forbidden_operation_attributes' => ['document-uri', 'last-document'],
+                'forbidden_job_attributes' => [],
+                'document_requirement' => 'forbidden',
+                'requires_last_document_true_without_document' => false,
+            ],
+            Operation::GET_SUBSCRIPTION_ATTRIBUTES => [
+                'target_prefixes' => [['printer-uri', 'notify-subscription-id']],
+                'required_operation_attributes' => [],
+                'forbidden_operation_attributes' => ['document-uri', 'last-document'],
+                'forbidden_job_attributes' => [],
+                'document_requirement' => 'forbidden',
+                'requires_last_document_true_without_document' => false,
+            ],
+            Operation::RENEW_SUBSCRIPTION => [
+                'target_prefixes' => [['printer-uri', 'notify-subscription-id']],
+                'required_operation_attributes' => [],
+                'forbidden_operation_attributes' => ['document-uri', 'last-document'],
+                'forbidden_job_attributes' => [],
+                'document_requirement' => 'forbidden',
+                'requires_last_document_true_without_document' => false,
+            ],
+            Operation::CANCEL_SUBSCRIPTION => [
+                'target_prefixes' => [['printer-uri', 'notify-subscription-id']],
+                'required_operation_attributes' => [],
+                'forbidden_operation_attributes' => ['document-uri', 'last-document'],
+                'forbidden_job_attributes' => [],
+                'document_requirement' => 'forbidden',
+                'requires_last_document_true_without_document' => false,
+            ],
         ];
     }
 
@@ -655,6 +706,12 @@ final class OperationRequestValidator
             Operation::IDENTIFY_PRINTER => 'Identify-Printer',
             Operation::SET_PRINTER_ATTRIBUTES => 'Set-Printer-Attributes',
             Operation::SET_JOB_ATTRIBUTES => 'Set-Job-Attributes',
+            Operation::CREATE_PRINTER_SUBSCRIPTION => 'Create-Printer-Subscription',
+            Operation::CREATE_JOB_SUBSCRIPTION => 'Create-Job-Subscription',
+            Operation::GET_SUBSCRIPTION => 'Get-Subscriptions',
+            Operation::GET_SUBSCRIPTION_ATTRIBUTES => 'Get-Subscription-Attributes',
+            Operation::RENEW_SUBSCRIPTION => 'Renew-Subscription',
+            Operation::CANCEL_SUBSCRIPTION => 'Cancel-Subscription',
             default => sprintf('IPP operation 0x%04x', $operationCode),
         };
     }

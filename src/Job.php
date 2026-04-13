@@ -587,6 +587,46 @@ class Job
     }
 
     /**
+     * Create Job Subscription
+     *
+     * RFC 3995 §11.1.2:
+     * This OPTIONAL operation creates a subscription associated with a Job
+     * object. The client supplies one Subscription Template Attributes group.
+     *
+     * @param array $subscriptionAttributes Associative array of subscription attributes
+     * @param int   $requestId              Client request id
+     *
+     * @return \obray\ipp\transport\IPPPayload
+     */
+    public function createJobSubscription(array $subscriptionAttributes, int $requestId = 1): \obray\ipp\transport\IPPPayload
+    {
+        $operationAttributes = $this->createOperationAttributes();
+        $subAttrs = new \obray\ipp\SubscriptionAttributes();
+        foreach ($subscriptionAttributes as $name => $value) {
+            $subAttrs->set($name, $value);
+        }
+
+        \obray\ipp\spec\OperationRequestValidator::validate(
+            \obray\ipp\types\Operation::CREATE_JOB_SUBSCRIPTION,
+            $operationAttributes
+        );
+
+        $payload = new \obray\ipp\transport\IPPPayload(
+            new \obray\ipp\types\VersionNumber('1.1'),
+            new \obray\ipp\types\Operation(\obray\ipp\types\Operation::CREATE_JOB_SUBSCRIPTION),
+            new \obray\ipp\types\Integer($requestId),
+            null,
+            $operationAttributes,
+            null,
+            null,
+            null,
+            $subAttrs
+        );
+
+        return $this->sendPayload($payload);
+    }
+
+    /**
      * Set Job Attributes
      *
      * RFC 8011 4.2.20:

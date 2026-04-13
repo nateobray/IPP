@@ -55,6 +55,8 @@ class Printer
             'last-document',
             'limit',
             'my-jobs',
+            'my-subscriptions',
+            'notify-job-id',
             'requested-attributes',
             'resource-format',
             'resource-name',
@@ -896,6 +898,85 @@ class Printer
                 null,
                 null,
                 '2.0'
+            )
+        );
+    }
+
+    /**
+     * Create Printer Subscription
+     *
+     * RFC 3995 §11.1.1:
+     * This OPTIONAL operation creates a subscription associated with a Printer
+     * object. The client supplies one Subscription Template Attributes group.
+     *
+     * @param array $subscriptionAttributes Associative array of subscription attributes
+     * @param int   $requestId              Client request id
+     *
+     * @return \obray\ipp\transport\IPPPayload
+     */
+    public function createPrinterSubscription(array $subscriptionAttributes, int $requestId = 1): \obray\ipp\transport\IPPPayload
+    {
+        $operationAttributes = $this->createOperationAttributes();
+        $subAttrs = new \obray\ipp\SubscriptionAttributes();
+        foreach ($subscriptionAttributes as $name => $value) {
+            $subAttrs->set($name, $value);
+        }
+
+        \obray\ipp\spec\OperationRequestValidator::validate(
+            \obray\ipp\types\Operation::CREATE_PRINTER_SUBSCRIPTION,
+            $operationAttributes
+        );
+
+        $payload = new \obray\ipp\transport\IPPPayload(
+            new \obray\ipp\types\VersionNumber('1.1'),
+            new \obray\ipp\types\Operation(\obray\ipp\types\Operation::CREATE_PRINTER_SUBSCRIPTION),
+            new \obray\ipp\types\Integer($requestId),
+            null,
+            $operationAttributes,
+            null,
+            null,
+            null,
+            $subAttrs
+        );
+
+        return $this->sendPayload($payload);
+    }
+
+    /**
+     * Get Subscriptions
+     *
+     * RFC 3995 §11.2.2:
+     * This OPTIONAL operation returns the attributes of one or more existing
+     * Subscription objects associated with the Printer. The client may filter
+     * by job, user, or subscription ID.
+     *
+     * @param int        $requestId           Client request id
+     * @param int|null   $notifyJobId         Limit results to subscriptions for this job
+     * @param array|null $requestedAttributes List of attribute names to return
+     * @param bool|null  $mySubscriptions     If true, return only the caller's subscriptions
+     *
+     * @return \obray\ipp\transport\IPPPayload
+     */
+    public function getSubscriptions(int $requestId = 1, ?int $notifyJobId = null, ?array $requestedAttributes = null, ?bool $mySubscriptions = null): \obray\ipp\transport\IPPPayload
+    {
+        $attributes = [];
+        if ($notifyJobId !== null) {
+            $attributes['notify-job-id'] = $notifyJobId;
+        }
+        if ($requestedAttributes !== null) {
+            $attributes['requested-attributes'] = $requestedAttributes;
+        }
+        if ($mySubscriptions !== null) {
+            $attributes['my-subscriptions'] = $mySubscriptions;
+        }
+
+        $operationAttributes = $this->createOperationAttributes($attributes);
+
+        return $this->sendPayload(
+            $this->buildPayload(
+                \obray\ipp\types\Operation::GET_SUBSCRIPTION,
+                $requestId,
+                $operationAttributes
             )
         );
     }

@@ -483,7 +483,7 @@ class IPPPayloadTest extends TestCase
 
         $binary = pack('C2nN', 1, 1, \obray\ipp\types\StatusCode::successful_ok, 6004);
         $binary .= (new \obray\ipp\OperationAttributes())->encode();
-        $binary .= pack('c', 0x06);
+        $binary .= pack('c', 0x07);
         $binary .= pack('c', 0x03);
 
         $payload = new \obray\ipp\transport\IPPPayload();
