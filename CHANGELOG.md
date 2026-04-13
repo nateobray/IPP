@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.3.0] — 2026-04-13
+
+### Added
+- **PWG5100.2 `output-bin`** — `output-bin` (keyword) added to `JobAttributes`; `output-bin-default` and `output-bin-supported` (1setOf keyword) added to `PrinterAttributes`. Completes IPP/2.0 REQ coverage for the output-bin attribute extension.
+- **PWG5101.1 media size names** — New `MediaSize` class (`obray\ipp\enums\MediaSize`) with string constants for all PWG-standardized media size keyword values (ISO A/B/C, JIS B, North American letter/legal/ledger/envelopes, Japanese, and others). Use these constants wherever the `media` job-template attribute or `media-size` collection member requires a standard size name. `media-default`, `media-ready`, `media-size-supported`, `media-col-default`, `media-col-database`, and `media-col-ready` added to `PrinterAttributes`. Completes IPP/2.0 REQ coverage for PWG5101.1.
+- **PWG5100.1 Finishings 2.1** — `Finishings` enum extended with all PWG5100.1 values: `fold`, `trim`, `bale`, `booklet-maker`, `jog-offset`, `coat`, `laminate` (10–16); triple-staple positions (32–35); bind positions (50–53); trim-after positions (60–63); punch positions (70–85); fold variants `fold-accordion` through `fold-z` (90–101). `finishings-default`, `finishings-supported`, `finishings-ready` (1setOf enum), and `finishings-col-supported` (1setOf keyword) added to `PrinterAttributes`. `Types::getType()` updated to resolve `finishings-default/supported/ready` to the `Finishings` enum class. Completes IPP/2.0 REQ coverage for PWG5100.1.
+
 ## [1.2.0] — 2026-04-11
 
 ### Added

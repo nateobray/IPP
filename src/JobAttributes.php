@@ -197,6 +197,9 @@ class JobAttributes extends \obray\ipp\AttributeGroup
             case 'media-col':
                 $this->attributes[$name] = new \obray\ipp\CollectionAttribute('media-col', $value);
                 break;
+            case 'output-bin':
+                $this->attributes[$name] = new \obray\ipp\Attribute('output-bin', $value, \obray\ipp\enums\Types::KEYWORD);
+                break;
             default:
                 $this->attributes[$name] = $this->buildGenericAttribute($name, $value);
                 break;

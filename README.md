@@ -789,8 +789,8 @@ Core IPP/1.1 support (RFC 2910, RFC 2911, RFC 8011), administrative operations (
 
 | IETF or PWG Specification | obray\ipp | IPP/1.1 | IPP/2.0 | IPP/2.1 | IPP/2.2 |
 | ------------------------- | --------- | ------- | ------- | ------- | ------- |
-| [PWG5100.1 - IPP Finishings 2.1](http://ftp.pwg.org/pub/pwg/candidates/cs-ippfinishings21-20170217-5100.1.pdf)                 |           |         |   REQ   |   REQ   |   REQ   |
-| [PWG5100.2 - “output-bin” attribute extension](https://ftp.pwg.org/pub/pwg/candidates/cs-ippoutputbin10-20010207-5100.2.pdf)                 |           |         |   REQ   |   REQ   |   REQ   |
+| [PWG5100.1 - IPP Finishings 2.1](http://ftp.pwg.org/pub/pwg/candidates/cs-ippfinishings21-20170217-5100.1.pdf)                 |   DONE    |         |   REQ   |   REQ   |   REQ   |
+| [PWG5100.2 - “output-bin” attribute extension](https://ftp.pwg.org/pub/pwg/candidates/cs-ippoutputbin10-20010207-5100.2.pdf)                 |   DONE    |         |   REQ   |   REQ   |   REQ   |
 | [PWG5100.3 - Production Printing Attributes – Set1](https://ftp.pwg.org/pub/pwg/candidates/cs-ippprodprint10-20010212-5100.3.pdf)                 |           |         |         |   REQ   |   REQ   |
 | [PWG5100.5 - Document Object](https://ftp.pwg.org/pub/pwg/candidates/cs-ippdocobject10-20031031-5100.5.pdf)                 |           |         |         |         |   REQ   |
 | [PWG5100.6 - Page Overrides](https://ftp.pwg.org/pub/pwg/candidates/cs-ipppageoverride10-20031031-5100.6.pdf)                 |           |         |         |   REC   |   REQ   |
@@ -798,7 +798,7 @@ Core IPP/1.1 support (RFC 2910, RFC 2911, RFC 8011), administrative operations (
 | [PWG5100.8 - “-actual” attributes](https://ftp.pwg.org/pub/pwg/candidates/cs-ippactuals10-20030313-5100.8.pdf)                 |           |         |         |         |   REQ   |
 | [PWG5100.9 - Printer State Extensions v1.0](https://ftp.pwg.org/pub/pwg/candidates/cs-ippstate10-20090731-5100.9.pdf)                 |           |         |  RECMD  |   REQ   |   REQ   |
 | [PWG5100.11 - Job and Printer Extensions – Set 2](https://ftp.pwg.org/pub/pwg/candidates/cs-ippjobprinterext10-20101030-5100.11.pdf)                |           |         |         |  RECMD  |   REQ   |
-| [PWG5101.1 - PWG Media Standardized Names 2.0](https://ftp.pwg.org/pub/pwg/candidates/cs-pwgmsn20-20130328-5101.1.pdf)                 |           |         |   REQ   |   REQ   |   REQ   |
+| [PWG5101.1 - PWG Media Standardized Names 2.0](https://ftp.pwg.org/pub/pwg/candidates/cs-pwgmsn20-20130328-5101.1.pdf)                 |   DONE    |         |   REQ   |   REQ   |   REQ   |
 | [PWG5107.2 - PWG Command Set Format for IEEE 1284 Device ID v1.0](https://ftp.pwg.org/pub/pwg/candidates/cs-pmp1284cmdset10-20100531-5107.2.pdf)                 |           |         |  RECMD  |  RECMD  |   REQ   |
 | [RFC2910 - Encoding and Transport](https://datatracker.ietf.org/doc/html/rfc2910)                   |   DONE    |   REQ   |   REQ   |   REQ   |   REQ   |
 | [RFC2911 - Model and Semantics](https://datatracker.ietf.org/doc/html/rfc2911)                   |   DONE    |   REQ   |   REQ   |   REQ   |   REQ   |

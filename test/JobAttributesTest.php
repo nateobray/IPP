@@ -188,5 +188,80 @@ class JobAttributesTest extends TestCase
         );
     }
 
+    // PWG5100.2 — output-bin
+
+    public function testOutputBinEncodesAsKeyword(): void
+    {
+        $jobAttributes = new \obray\ipp\JobAttributes();
+        $jobAttributes->set('output-bin', 'face-down');
+
+        $this->assertSame('face-down', (string) $jobAttributes->{'output-bin'});
+        $this->assertInstanceOf(
+            \obray\ipp\types\Keyword::class,
+            $jobAttributes->{'output-bin'}->getAttributeValueClass()
+        );
+    }
+
+    public function testOutputBinRoundTripsViaEncodeDecode(): void
+    {
+        $jobAttributes = new \obray\ipp\JobAttributes();
+        $jobAttributes->set('output-bin', 'top');
+
+        $decoded = new \obray\ipp\JobAttributes();
+        $offset = 0;
+        $decoded->decode($jobAttributes->encode(), $offset);
+
+        $this->assertSame('top', (string) $decoded->{'output-bin'});
+    }
+
+    // PWG5100.1 — extended finishings enum values
+
+    public function testFinishingsPwg5100Point1ValuesAreRecognised(): void
+    {
+        $cases = [
+            \obray\ipp\enums\Finishings::fold          => 'fold',
+            \obray\ipp\enums\Finishings::trim          => 'trim',
+            \obray\ipp\enums\Finishings::bale          => 'bale',
+            \obray\ipp\enums\Finishings::booklet_maker => 'booklet-maker',
+            \obray\ipp\enums\Finishings::jog_offset    => 'jog-offset',
+            \obray\ipp\enums\Finishings::coat          => 'coat',
+            \obray\ipp\enums\Finishings::laminate      => 'laminate',
+            \obray\ipp\enums\Finishings::staple_triple_left  => 'staple-triple-left',
+            \obray\ipp\enums\Finishings::bind_left     => 'bind-left',
+            \obray\ipp\enums\Finishings::trim_after_pages    => 'trim-after-pages',
+            \obray\ipp\enums\Finishings::punch_top_left      => 'punch-top-left',
+            \obray\ipp\enums\Finishings::punch_quad_bottom   => 'punch-quad-bottom',
+            \obray\ipp\enums\Finishings::fold_accordion      => 'fold-accordion',
+            \obray\ipp\enums\Finishings::fold_half     => 'fold-half',
+            \obray\ipp\enums\Finishings::fold_letter   => 'fold-letter',
+            \obray\ipp\enums\Finishings::fold_z        => 'fold-z',
+        ];
+
+        foreach ($cases as $enumValue => $expectedName) {
+            $jobAttributes = new \obray\ipp\JobAttributes();
+            $jobAttributes->set('finishings', $enumValue);
+            $this->assertSame($expectedName, (string) $jobAttributes->{'finishings'}, "finishings enum value $enumValue should render as '$expectedName'");
+        }
+    }
+
+    public function testFinishingsPwg5100Point1ValuesRoundTrip(): void
+    {
+        $jobAttributes = new \obray\ipp\JobAttributes();
+        $jobAttributes->set('finishings', [
+            \obray\ipp\enums\Finishings::fold_half,
+            \obray\ipp\enums\Finishings::bind_left,
+            \obray\ipp\enums\Finishings::punch_dual_top,
+        ]);
+
+        $decoded = new \obray\ipp\JobAttributes();
+        $offset = 0;
+        $decoded->decode($jobAttributes->encode(), $offset);
+
+        $this->assertIsArray($decoded->{'finishings'});
+        $this->assertSame('fold-half', (string) $decoded->{'finishings'}[0]);
+        $this->assertSame('bind-left', (string) $decoded->{'finishings'}[1]);
+        $this->assertSame('punch-dual-top', (string) $decoded->{'finishings'}[2]);
+    }
+
 
 }

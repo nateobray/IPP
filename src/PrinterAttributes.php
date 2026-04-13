@@ -133,6 +133,45 @@ class PrinterAttributes extends \obray\ipp\AttributeGroup
             case 'uri-security-supported':
                 $this->attributes[$name] = $this->createAttributeInstances('uri-security-supported', $value, \obray\ipp\enums\Types::KEYWORD);
                 break;
+            // PWG5100.2 — output-bin
+            case 'output-bin-default':
+                $this->attributes[$name] = new \obray\ipp\Attribute('output-bin-default', $value, \obray\ipp\enums\Types::KEYWORD);
+                break;
+            case 'output-bin-supported':
+                $this->attributes[$name] = $this->createAttributeInstances('output-bin-supported', $value, \obray\ipp\enums\Types::KEYWORD);
+                break;
+            // PWG5101.1 — media description attributes
+            case 'media-default':
+                $this->attributes[$name] = new \obray\ipp\Attribute('media-default', $value, \obray\ipp\enums\Types::KEYWORD);
+                break;
+            case 'media-ready':
+                $this->attributes[$name] = $this->createAttributeInstances('media-ready', $value, \obray\ipp\enums\Types::KEYWORD);
+                break;
+            case 'media-size-supported':
+                $this->attributes[$name] = $this->createAttributeInstances('media-size-supported', $value, \obray\ipp\enums\Types::COLLECTION);
+                break;
+            case 'media-col-default':
+                $this->attributes[$name] = new \obray\ipp\CollectionAttribute('media-col-default', $value);
+                break;
+            case 'media-col-database':
+                $this->attributes[$name] = new \obray\ipp\CollectionAttribute('media-col-database', $value);
+                break;
+            case 'media-col-ready':
+                $this->attributes[$name] = new \obray\ipp\CollectionAttribute('media-col-ready', $value);
+                break;
+            // PWG5100.1 — finishings description attributes
+            case 'finishings-default':
+                $this->attributes[$name] = $this->createAttributeInstances('finishings-default', $value, \obray\ipp\enums\Types::ENUM);
+                break;
+            case 'finishings-supported':
+                $this->attributes[$name] = $this->createAttributeInstances('finishings-supported', $value, \obray\ipp\enums\Types::ENUM);
+                break;
+            case 'finishings-ready':
+                $this->attributes[$name] = $this->createAttributeInstances('finishings-ready', $value, \obray\ipp\enums\Types::ENUM);
+                break;
+            case 'finishings-col-supported':
+                $this->attributes[$name] = $this->createAttributeInstances('finishings-col-supported', $value, \obray\ipp\enums\Types::KEYWORD);
+                break;
             default:
                 $this->attributes[$name] = $this->buildGenericAttribute($name, $value);
         }

@@ -101,4 +101,110 @@ class PrinterAttributesTest extends TestCase
         $this->assertSame('none', (string) $decoded->{'uri-authentication-supported'}[0]);
         $this->assertSame('basic', (string) $decoded->{'uri-authentication-supported'}[1]);
     }
+
+    // PWG5100.2 — output-bin
+
+    public function testOutputBinDefaultEncodesAsKeyword(): void
+    {
+        $printerAttributes = new \obray\ipp\PrinterAttributes();
+        $printerAttributes->{'output-bin-default'} = 'face-down';
+
+        $this->assertSame('face-down', (string) $printerAttributes->{'output-bin-default'});
+        $this->assertInstanceOf(
+            \obray\ipp\types\Keyword::class,
+            $printerAttributes->{'output-bin-default'}->getAttributeValueClass()
+        );
+    }
+
+    public function testOutputBinSupportedEncodes1setOfKeywords(): void
+    {
+        $printerAttributes = new \obray\ipp\PrinterAttributes();
+        $printerAttributes->{'output-bin-supported'} = ['face-up', 'face-down', 'top'];
+
+        $decoded = new \obray\ipp\PrinterAttributes();
+        $offset = 0;
+        $decoded->decode($printerAttributes->encode(), $offset);
+
+        $this->assertIsArray($decoded->{'output-bin-supported'});
+        $this->assertSame('face-up',   (string) $decoded->{'output-bin-supported'}[0]);
+        $this->assertSame('face-down', (string) $decoded->{'output-bin-supported'}[1]);
+        $this->assertSame('top',       (string) $decoded->{'output-bin-supported'}[2]);
+    }
+
+    // PWG5101.1 — media description attributes
+
+    public function testMediaDefaultEncodesAsKeyword(): void
+    {
+        $printerAttributes = new \obray\ipp\PrinterAttributes();
+        $printerAttributes->{'media-default'} = \obray\ipp\enums\MediaSize::ISO_A4;
+
+        $this->assertSame(\obray\ipp\enums\MediaSize::ISO_A4, (string) $printerAttributes->{'media-default'});
+    }
+
+    public function testMediaReadyEncodes1setOfKeywords(): void
+    {
+        $printerAttributes = new \obray\ipp\PrinterAttributes();
+        $printerAttributes->{'media-ready'} = [
+            \obray\ipp\enums\MediaSize::ISO_A4,
+            \obray\ipp\enums\MediaSize::NA_LETTER,
+        ];
+
+        $decoded = new \obray\ipp\PrinterAttributes();
+        $offset = 0;
+        $decoded->decode($printerAttributes->encode(), $offset);
+
+        $this->assertIsArray($decoded->{'media-ready'});
+        $this->assertSame(\obray\ipp\enums\MediaSize::ISO_A4,    (string) $decoded->{'media-ready'}[0]);
+        $this->assertSame(\obray\ipp\enums\MediaSize::NA_LETTER, (string) $decoded->{'media-ready'}[1]);
+    }
+
+    // PWG5100.1 — finishings description attributes
+
+    public function testFinishingsSupportedEncodes1setOfFinishingsEnum(): void
+    {
+        $printerAttributes = new \obray\ipp\PrinterAttributes();
+        $printerAttributes->{'finishings-supported'} = [
+            \obray\ipp\enums\Finishings::none,
+            \obray\ipp\enums\Finishings::staple,
+            \obray\ipp\enums\Finishings::fold_half,
+        ];
+
+        $decoded = new \obray\ipp\PrinterAttributes();
+        $offset = 0;
+        $decoded->decode($printerAttributes->encode(), $offset);
+
+        $this->assertIsArray($decoded->{'finishings-supported'});
+        $this->assertSame('none',      (string) $decoded->{'finishings-supported'}[0]);
+        $this->assertSame('staple',    (string) $decoded->{'finishings-supported'}[1]);
+        $this->assertSame('fold-half', (string) $decoded->{'finishings-supported'}[2]);
+    }
+
+    public function testFinishingsDefaultEncodes1setOfFinishingsEnum(): void
+    {
+        $printerAttributes = new \obray\ipp\PrinterAttributes();
+        $printerAttributes->{'finishings-default'} = \obray\ipp\enums\Finishings::none;
+
+        $decoded = new \obray\ipp\PrinterAttributes();
+        $offset = 0;
+        $decoded->decode($printerAttributes->encode(), $offset);
+
+        $this->assertSame('none', (string) $decoded->{'finishings-default'});
+    }
+
+    public function testFinishingsReadyEncodes1setOfFinishingsEnum(): void
+    {
+        $printerAttributes = new \obray\ipp\PrinterAttributes();
+        $printerAttributes->{'finishings-ready'} = [
+            \obray\ipp\enums\Finishings::staple,
+            \obray\ipp\enums\Finishings::punch,
+        ];
+
+        $decoded = new \obray\ipp\PrinterAttributes();
+        $offset = 0;
+        $decoded->decode($printerAttributes->encode(), $offset);
+
+        $this->assertIsArray($decoded->{'finishings-ready'});
+        $this->assertSame('staple', (string) $decoded->{'finishings-ready'}[0]);
+        $this->assertSame('punch',  (string) $decoded->{'finishings-ready'}[1]);
+    }
 }
