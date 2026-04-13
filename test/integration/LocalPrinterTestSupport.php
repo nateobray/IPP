@@ -69,6 +69,30 @@ final class LocalPrinterTarget
         return new \obray\ipp\Job($this->uri, $jobId, $this->user, $this->password);
     }
 
+    public function subscription(int $subscriptionId): \obray\ipp\Subscription
+    {
+        return new \obray\ipp\Subscription($this->uri, $subscriptionId, $this->user, $this->password);
+    }
+
+    public function supportsSubscriptions(): bool
+    {
+        try {
+            $response = $this->printer()->getPrinterAttributes(1, ['operations-supported']);
+        } catch (\Throwable) {
+            return false;
+        }
+
+        $printerAttributes = self::firstAttributeGroup($response->printerAttributes);
+        if ($printerAttributes === null || !$printerAttributes->has('operations-supported')) {
+            return false;
+        }
+
+        $operations = self::attributeValues($printerAttributes->{'operations-supported'});
+        return in_array('create-printer-subscription', $operations, true)
+            && in_array('get-subscription', $operations, true)
+            && in_array('cancel-subscription', $operations, true);
+    }
+
     public static function firstAttributeGroup(?array $attributeGroups): ?\obray\ipp\AttributeGroup
     {
         if (!is_array($attributeGroups) || $attributeGroups === []) {

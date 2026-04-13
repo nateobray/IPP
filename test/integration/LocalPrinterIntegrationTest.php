@@ -119,6 +119,58 @@ final class LocalPrinterIntegrationTest extends TestCase
         $this->assertSame((string) $jobId, (string) $inspectedJobAttributes->{'job-id'});
     }
 
+    public function testCreateInspectRenewAndCancelPrinterSubscription(): void
+    {
+        $target = $this->requireTarget();
+
+        if (!$target->supportsSubscriptions()) {
+            $this->markTestSkipped('Target printer does not advertise Create-Printer-Subscription in operations-supported.');
+        }
+
+        // Create a pull subscription with a short lease so it cleans up automatically.
+        $createResponse = $target->printer()->createPrinterSubscription([
+            'notify-pull-method'    => 'ippget',
+            'notify-events'         => ['all'],
+            'notify-lease-duration' => 120,
+        ], 110);
+
+        $this->assertSuccessfulStatus($createResponse);
+
+        // CUPS returns the new subscription-id in a subscription-attributes group (tag 0x06).
+        $this->assertIsArray($createResponse->subscriptionAttributes);
+        $subGroup = LocalPrinterTarget::firstAttributeGroup($createResponse->subscriptionAttributes);
+        $this->assertNotNull($subGroup, 'Create-Printer-Subscription response contained no subscription-attributes group.');
+        $this->assertTrue($subGroup->has('notify-subscription-id'));
+
+        $subscriptionId = (int)(string) $subGroup->{'notify-subscription-id'};
+        $subscription = $target->subscription($subscriptionId);
+
+        try {
+            // Get-Subscriptions lists it.
+            $listResponse = $target->printer()->getSubscriptions(111);
+            $this->assertSuccessfulStatus($listResponse);
+
+            // Get-Subscription-Attributes returns the subscription detail.
+            $getResponse = $subscription->getSubscriptionAttributes(112);
+            $this->assertSuccessfulStatus($getResponse);
+            $subAttrs = LocalPrinterTarget::firstAttributeGroup($getResponse->subscriptionAttributes);
+            $this->assertNotNull($subAttrs);
+            $this->assertSame((string) $subscriptionId, (string) $subAttrs->{'notify-subscription-id'});
+
+            // Renew-Subscription extends the lease.
+            $renewResponse = $subscription->renewSubscription(113, 300);
+            $this->assertSuccessfulStatus($renewResponse);
+        } finally {
+            // Always cancel to avoid leaving orphaned subscriptions on the printer.
+            try {
+                $cancelResponse = $subscription->cancelSubscription(114);
+                $this->assertSuccessfulStatus($cancelResponse);
+            } catch (\Throwable $e) {
+                // If the test already failed before cancel, note the cleanup failure but don't swallow the original.
+            }
+        }
+    }
+
     private function requireTarget(): LocalPrinterTarget
     {
         if (self::$target === null) {
