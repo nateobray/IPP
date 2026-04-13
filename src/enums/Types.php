@@ -52,6 +52,9 @@ class Types extends \obray\ipp\types\Enum
                     case 'job-state':
                         return new \obray\ipp\enums\JobState($value);
                         break;
+                    case 'document-state':
+                        return new \obray\ipp\enums\DocumentState($value);
+                        break;
                     case 'finishings':
                     case 'finishings-default':
                     case 'finishings-supported':

@@ -54,6 +54,7 @@ class Job
             'document-format',
             'document-name',
             'document-natural-language',
+            'document-number',
             'document-uri',
             'compression',
             'ipp-attribute-fidelity',
@@ -622,6 +623,89 @@ class Job
             null,
             $subAttrs
         );
+
+        return $this->sendPayload($payload);
+    }
+
+    /**
+     * Get Documents (PWG5100.5 §3.2.1)
+     *
+     * Returns a list of Document objects (and their attributes) for this job.
+     *
+     * @param int        $requestId           Client request id
+     * @param array|null $requestedAttributes Subset of document attributes to retrieve
+     *
+     * @return \obray\ipp\transport\IPPPayload
+     */
+    public function getDocuments(int $requestId = 1, ?array $requestedAttributes = null): \obray\ipp\transport\IPPPayload
+    {
+        $attributes = [];
+        if ($requestedAttributes !== null) {
+            $attributes['requested-attributes'] = $requestedAttributes;
+        }
+
+        $operationAttributes = $this->createOperationAttributes($attributes);
+
+        return $this->sendPayload(
+            $this->buildPayload(
+                \obray\ipp\types\Operation::GET_DOCUMENTS,
+                $requestId,
+                $operationAttributes,
+                null,
+                '2.0'
+            )
+        );
+    }
+
+    /**
+     * Create Document (PWG5100.5 §3.2.2)
+     *
+     * Adds a new Document object to this job. The response includes the
+     * assigned document-number and document-uri. Follow up with
+     * Send-Document or Send-URI to supply the actual document data.
+     *
+     * @param array $documentAttributes Document template attributes to set
+     * @param int   $requestId          Client request id
+     *
+     * @return \obray\ipp\transport\IPPPayload
+     */
+    public function createDocument(array $documentAttributes = [], int $requestId = 1): \obray\ipp\transport\IPPPayload
+    {
+        $attributes = array_merge(['last-document' => false], $documentAttributes);
+        $operationAttributes = $this->createOperationAttributes($attributes);
+
+        $docAttrs = null;
+        if (!empty($documentAttributes)) {
+            $docAttrs = new \obray\ipp\DocumentAttributes();
+            foreach ($documentAttributes as $name => $value) {
+                // skip attributes that belong in the operation group
+                if (in_array($name, ['last-document', 'document-name', 'document-format',
+                    'document-natural-language', 'compression', 'document-uri'], true)) {
+                    continue;
+                }
+                $docAttrs->set($name, $value);
+            }
+            if (empty($docAttrs->jsonSerialize())) {
+                $docAttrs = null;
+            }
+        }
+
+        \obray\ipp\spec\OperationRequestValidator::validate(
+            \obray\ipp\types\Operation::CREATE_DOCUMENT,
+            $operationAttributes
+        );
+
+        $payload = new \obray\ipp\transport\IPPPayload(
+            new \obray\ipp\types\VersionNumber('2.0'),
+            new \obray\ipp\types\Operation(\obray\ipp\types\Operation::CREATE_DOCUMENT),
+            new \obray\ipp\types\Integer($requestId),
+            null,
+            $operationAttributes
+        );
+
+        if ($docAttrs !== null) {
+            $payload->documentAttributes = $docAttrs;
+        }
 
         return $this->sendPayload($payload);
     }

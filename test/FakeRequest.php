@@ -50,6 +50,12 @@ class FakeRequest implements \obray\ipp\interfaces\RequestInterface
             $nextTag = $eventNotificationAttributes->decode($encodedPayload, $offset);
         }
 
+        $documentAttributes = null;
+        if ($nextTag === 0x09) {
+            $documentAttributes = new \obray\ipp\DocumentAttributes();
+            $nextTag = $documentAttributes->decode($encodedPayload, $offset);
+        }
+
         $document = '';
         if (isset($encodedPayload[$offset]) && ord($encodedPayload[$offset]) === 0x03) {
             $offset++;
@@ -69,6 +75,7 @@ class FakeRequest implements \obray\ipp\interfaces\RequestInterface
             'printerAttributes' => $printerAttributes,
             'subscriptionAttributes' => $subscriptionAttributes,
             'eventNotificationAttributes' => $eventNotificationAttributes,
+            'documentAttributes' => $documentAttributes,
             'document' => $document,
         ];
 

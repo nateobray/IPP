@@ -130,6 +130,9 @@ class OperationAttributes extends \obray\ipp\AttributeGroup
             case 'notify-job-id':
                 $this->attributes[$name] = new \obray\ipp\Attribute('notify-job-id', $value, \obray\ipp\enums\Types::INTEGER);
                 break;
+            case 'document-number':
+                $this->attributes[$name] = new \obray\ipp\Attribute('document-number', $value, \obray\ipp\enums\Types::INTEGER);
+                break;
             case 'notify-lease-duration':
                 $this->attributes[$name] = new \obray\ipp\Attribute('notify-lease-duration', $value, \obray\ipp\enums\Types::INTEGER);
                 break;

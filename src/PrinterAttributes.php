@@ -357,6 +357,13 @@ class PrinterAttributes extends \obray\ipp\AttributeGroup
             case 'finishings-col-supported':
                 $this->attributes[$name] = $this->createAttributeInstances('finishings-col-supported', $value, \obray\ipp\enums\Types::KEYWORD);
                 break;
+
+            // PWG5100.5 — Document Object printer description attributes
+            case 'document-creation-attributes-supported':
+            case 'get-document-attributes-supported':
+                $this->attributes[$name] = $this->createAttributeInstances($name, (array) $value, \obray\ipp\enums\Types::KEYWORD);
+                break;
+
             default:
                 $this->attributes[$name] = $this->buildGenericAttribute($name, $value);
         }

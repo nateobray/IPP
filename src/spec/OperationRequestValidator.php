@@ -526,6 +526,63 @@ final class OperationRequestValidator
                 'document_requirement' => 'forbidden',
                 'requires_last_document_true_without_document' => false,
             ],
+
+            // PWG5100.5 — Document Object operations
+            Operation::GET_DOCUMENT_ATTRIBUTES => [
+                'target_prefixes' => [
+                    ['printer-uri', 'job-id', 'document-number'],
+                    ['job-uri', 'document-number'],
+                ],
+                'required_operation_attributes' => [],
+                'forbidden_operation_attributes' => ['document-uri', 'last-document'],
+                'forbidden_job_attributes' => [],
+                'document_requirement' => 'forbidden',
+                'requires_last_document_true_without_document' => false,
+            ],
+            Operation::GET_DOCUMENTS => [
+                'target_prefixes' => [
+                    ['printer-uri', 'job-id'],
+                    ['job-uri'],
+                ],
+                'required_operation_attributes' => [],
+                'forbidden_operation_attributes' => ['document-uri', 'last-document'],
+                'forbidden_job_attributes' => [],
+                'document_requirement' => 'forbidden',
+                'requires_last_document_true_without_document' => false,
+            ],
+            Operation::SET_DOCUMENT_ATTRIBUTES => [
+                'target_prefixes' => [
+                    ['printer-uri', 'job-id', 'document-number'],
+                    ['job-uri', 'document-number'],
+                ],
+                'required_operation_attributes' => [],
+                'forbidden_operation_attributes' => ['document-uri', 'last-document'],
+                'forbidden_job_attributes' => [],
+                'document_requirement' => 'forbidden',
+                'requires_last_document_true_without_document' => false,
+            ],
+            Operation::CANCEL_DOCUMENT => [
+                'target_prefixes' => [
+                    ['printer-uri', 'job-id', 'document-number'],
+                    ['job-uri', 'document-number'],
+                ],
+                'required_operation_attributes' => [],
+                'forbidden_operation_attributes' => ['document-uri', 'last-document'],
+                'forbidden_job_attributes' => [],
+                'document_requirement' => 'forbidden',
+                'requires_last_document_true_without_document' => false,
+            ],
+            Operation::CREATE_DOCUMENT => [
+                'target_prefixes' => [
+                    ['printer-uri', 'job-id'],
+                    ['job-uri'],
+                ],
+                'required_operation_attributes' => ['last-document'],
+                'forbidden_operation_attributes' => ['document-uri'],
+                'forbidden_job_attributes' => [],
+                'document_requirement' => 'forbidden',
+                'requires_last_document_true_without_document' => false,
+            ],
         ];
     }
 
@@ -721,6 +778,11 @@ final class OperationRequestValidator
             Operation::RENEW_SUBSCRIPTION => 'Renew-Subscription',
             Operation::CANCEL_SUBSCRIPTION => 'Cancel-Subscription',
             Operation::GET_NOTIFICATION => 'Get-Notifications',
+            Operation::GET_DOCUMENT_ATTRIBUTES => 'Get-Document-Attributes',
+            Operation::GET_DOCUMENTS => 'Get-Documents',
+            Operation::SET_DOCUMENT_ATTRIBUTES => 'Set-Document-Attributes',
+            Operation::CANCEL_DOCUMENT => 'Cancel-Document',
+            Operation::CREATE_DOCUMENT => 'Create-Document',
             default => sprintf('IPP operation 0x%04x', $operationCode),
         };
     }

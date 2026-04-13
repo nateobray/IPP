@@ -241,4 +241,38 @@ class JobTest extends TestCase
         $this->assertSame(\obray\ipp\types\Operation::CUPS_AUTHENTICATE_JOB, FakeRequest::$lastCall['operation']);
         $this->assertSame(117, FakeRequest::$lastCall['requestId']);
     }
+
+    public function testGetDocumentsBuildsExpectedPayload(): void
+    {
+        $this->job->getDocuments(118);
+
+        $this->assertSame(\obray\ipp\types\Operation::GET_DOCUMENTS, FakeRequest::$lastCall['operation']);
+        $this->assertSame(118, FakeRequest::$lastCall['requestId']);
+        $this->assertSame('2.0', FakeRequest::$lastCall['version']);
+        $this->assertSame('42', (string) FakeRequest::$lastCall['operationAttributes']->{'job-id'});
+    }
+
+    public function testGetDocumentsWithRequestedAttributesBuildsExpectedPayload(): void
+    {
+        $this->job->getDocuments(119, ['document-name', 'document-state']);
+
+        $this->assertSame(\obray\ipp\types\Operation::GET_DOCUMENTS, FakeRequest::$lastCall['operation']);
+        $requested = FakeRequest::$lastCall['operationAttributes']->{'requested-attributes'};
+        $this->assertIsArray($requested);
+        $this->assertSame('document-name', (string) $requested[0]);
+        $this->assertSame('document-state', (string) $requested[1]);
+    }
+
+    public function testCreateDocumentBuildsExpectedPayload(): void
+    {
+        $this->job->createDocument(['document-name' => 'Slide Deck', 'document-format' => 'application/pdf'], 120);
+
+        $this->assertSame(\obray\ipp\types\Operation::CREATE_DOCUMENT, FakeRequest::$lastCall['operation']);
+        $this->assertSame(120, FakeRequest::$lastCall['requestId']);
+        $this->assertSame('2.0', FakeRequest::$lastCall['version']);
+        $this->assertSame('42', (string) FakeRequest::$lastCall['operationAttributes']->{'job-id'});
+        $this->assertSame('Slide Deck', (string) FakeRequest::$lastCall['operationAttributes']->{'document-name'});
+        $this->assertSame('application/pdf', (string) FakeRequest::$lastCall['operationAttributes']->{'document-format'});
+        $this->assertSame('false', (string) FakeRequest::$lastCall['operationAttributes']->{'last-document'});
+    }
 }

@@ -39,6 +39,10 @@ The goals of this implementation is to follow the IPP specification as closely a
    - [Method `renewSubscription`](#method-renewsubscription)
    - [Method `cancelSubscription`](#method-cancelsubscription)
    - [Method `getNotifications` (Subscription)](#method-getnotifications-subscription)
+ - [Document Object & Methods](#document-object-and-methods)
+   - [Method `getDocumentAttributes`](#method-getdocumentattributes)
+   - [Method `setDocumentAttributes`](#method-setdocumentattributes)
+   - [Method `cancelDocument`](#method-canceldocument)
  - [Job Object & Methods](#job-object-and-methods)
    - [Method `sendDocument`](#method-senddocument)
    - [Method `sendURI`](#method-senduri)
@@ -536,6 +540,69 @@ foreach ($response->eventNotificationAttributes as $event) {
 | last-sequence-number | no | The sequence number of the last event already processed. Events at or before this number are not re-delivered. |
 | wait | no | If `true`, the printer may hold the response open until an event arrives (long-poll). |
 
+## Document Object and Methods
+
+The `Document` object (PWG5100.5) wraps a `(printer-uri, job-id, document-number)` tuple and provides methods to inspect, modify, and cancel an individual document within a multi-document job.
+
+### Document Constructor
+
+```PHP
+$document = new \obray\ipp\Document(
+  {printer-uri},
+  {job-id},          // integer job-id or full job-uri string
+  {document-number}, // 1-based document sequence number
+  {username},        // optional
+  {password},        // optional
+  {curlOptions}      // optional
+);
+```
+| Parameter | Required | Description |
+| --------- | -------- | ----------- |
+| printer-uri | yes | The URI of the printer that owns the job. |
+| job-id | yes | The numeric job-id or full job-uri string. |
+| document-number | yes | The 1-based document sequence number within the job. |
+| username | no | Username for authentication. |
+| password | no | Password for authentication. |
+| curlOptions | no | cURL options array. |
+
+#  
+### Method `getDocumentAttributes`
+[PWG5100.5 §3.3.1](https://ftp.pwg.org/pub/pwg/candidates/cs-ippdocobject10-20031031-5100.5.pdf): Returns the attributes of this document.
+
+###### Usage:
+```PHP
+$response = $document->getDocumentAttributes({request-id}, {requested-attributes});
+```
+| Parameter | Required | Description |
+| --------- | -------- | ----------- |
+| request-id | no | Client request id _(default 1)_ |
+| requested-attributes | no | Array of attribute names to retrieve. If omitted, all supported attributes are returned. |
+
+#  
+### Method `setDocumentAttributes`
+[PWG5100.5 §3.3.2](https://ftp.pwg.org/pub/pwg/candidates/cs-ippdocobject10-20031031-5100.5.pdf): Modifies attributes on this document.
+
+###### Usage:
+```PHP
+$response = $document->setDocumentAttributes({attributes}, {request-id});
+```
+| Parameter | Required | Description |
+| --------- | -------- | ----------- |
+| attributes | yes | Associative array of document attribute names and values to set. |
+| request-id | no | Client request id _(default 1)_ |
+
+#  
+### Method `cancelDocument`
+[PWG5100.5 §3.3.3](https://ftp.pwg.org/pub/pwg/candidates/cs-ippdocobject10-20031031-5100.5.pdf): Cancels this document.
+
+###### Usage:
+```PHP
+$response = $document->cancelDocument({request-id});
+```
+| Parameter | Required | Description |
+| --------- | -------- | ----------- |
+| request-id | no | Client request id _(default 1)_ |
+
 ## Job Object and Methods
 
 ### Job Constructor
@@ -719,6 +786,34 @@ $subscription = new \obray\ipp\Subscription($printerUri, $subscriptionId, $user,
 | subscription-attributes | yes | Associative array of subscription template attributes, e.g. `['notify-pull-method' => 'ippget', 'notify-events' => ['job-completed']]`. |
 | request-id | no | Client request id, will be passed back in the response _(default 1)_ |
 
+### Method `getDocuments`
+[PWG5100.5 §3.2.1](https://ftp.pwg.org/pub/pwg/candidates/cs-ippdocobject10-20031031-5100.5.pdf): Returns document attribute groups for all documents within this job. The response `documentAttributes` array contains one `DocumentAttributes` object per document.
+
+###### Usage:
+```PHP
+$response = $job->getDocuments({request-id}, {requested-attributes});
+foreach ($response->documentAttributes as $doc) {
+    echo $doc->{'document-number'} . ': ' . $doc->{'document-name'} . PHP_EOL;
+}
+```
+| Parameter | Required | Description |
+| --------- | -------- | ----------- |
+| request-id | no | Client request id _(default 1)_ |
+| requested-attributes | no | Array of attribute names to retrieve for each document. |
+
+#  
+### Method `createDocument`
+[PWG5100.5 §3.2.2](https://ftp.pwg.org/pub/pwg/candidates/cs-ippdocobject10-20031031-5100.5.pdf): Creates a new Document object within this job. The printer assigns a `document-number` and returns it in the response. Follow up with `sendDocument` or `sendURI` to supply the actual document data.
+
+###### Usage:
+```PHP
+$response = $job->createDocument({document-attributes}, {request-id});
+```
+| Parameter | Required | Description |
+| --------- | -------- | ----------- |
+| document-attributes | no | Associative array of document attributes (e.g. `['document-name' => 'Report', 'document-format' => 'application/pdf']`). |
+| request-id | no | Client request id _(default 1)_ |
+
 ### Job Administration Methods
 Advanced job operations for reordering, suspending, and managing active jobs. All accept only an optional `request-id` parameter unless noted.
 
@@ -792,7 +887,7 @@ Core IPP/1.1 support (RFC 2910, RFC 2911, RFC 8011), administrative operations (
 | [PWG5100.1 - IPP Finishings 2.1](http://ftp.pwg.org/pub/pwg/candidates/cs-ippfinishings21-20170217-5100.1.pdf)                 |   DONE    |         |   REQ   |   REQ   |   REQ   |
 | [PWG5100.2 - “output-bin” attribute extension](https://ftp.pwg.org/pub/pwg/candidates/cs-ippoutputbin10-20010207-5100.2.pdf)                 |   DONE    |         |   REQ   |   REQ   |   REQ   |
 | [PWG5100.3 - Production Printing Attributes – Set1](https://ftp.pwg.org/pub/pwg/candidates/cs-ippprodprint10-20010212-5100.3.pdf)                 |   DONE    |         |         |   REQ   |   REQ   |
-| [PWG5100.5 - Document Object](https://ftp.pwg.org/pub/pwg/candidates/cs-ippdocobject10-20031031-5100.5.pdf)                 |           |         |         |         |   REQ   |
+| [PWG5100.5 - Document Object](https://ftp.pwg.org/pub/pwg/candidates/cs-ippdocobject10-20031031-5100.5.pdf)                 |   DONE    |         |         |         |   REQ   |
 | [PWG5100.6 - Page Overrides](https://ftp.pwg.org/pub/pwg/candidates/cs-ipppageoverride10-20031031-5100.6.pdf)                 |   DONE    |         |         |   REC   |   REQ   |
 | [PWG5100.7 - IPP Job Extensions v2.0](https://ftp.pwg.org/pub/pwg/candidates/cs-ippjobext20-20190816-5100.7.pdf)                 |   DONE    |         |         |   REQ   |   REQ   |
 | [PWG5100.8 - “-actual” attributes](https://ftp.pwg.org/pub/pwg/candidates/cs-ippactuals10-20030313-5100.8.pdf)                 |   DONE    |         |         |         |   REQ   |

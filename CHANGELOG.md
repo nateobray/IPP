@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.6.0] — 2026-04-13
+
+### Added
+- **PWG5100.5 Document Object** — Full implementation of the IPP Document Object extension, completing IPP/2.2 REQ coverage for PWG5100.5:
+  - **`DocumentState` enum** (`obray\ipp\enums\DocumentState`) — `pending` (3), `processing` (5), `processing-stopped` (6), `canceled` (7), `aborted` (8), `completed` (9).
+  - **`DocumentAttributes` class** (`obray\ipp\DocumentAttributes`) — AttributeGroup with tag `0x09`. Encodes and decodes all PWG5100.5 document description attributes (`document-number`, `document-name`, `document-state`, `document-state-reasons`, `document-state-message`, `document-format`, `document-format-version`, `document-natural-language`, `document-charset`, `document-message`, `document-uri`, `document-uuid`, `more-info`, `last-document`, `output-device-assigned`, `impressions`, `impressions-completed`, `k-octets`, `k-octets-processed`, `media-sheets`, `media-sheets-completed`, `time-at-creation`, `time-at-processing`, `time-at-completed`, `date-time-at-creation`, `date-time-at-processing`, `date-time-at-completed`) and document template attributes (`copies`, `finishings`, `finishings-col`, `media`, `media-col`, `number-up`, `orientation-requested`, `output-bin`, `page-ranges`, `print-quality`, `printer-resolution`, `separator-sheets`, `sheet-collate`, `sides`, and image-shift attributes).
+  - **`Document` class** (`obray\ipp\Document`) — wraps a `(printerURI, jobId, documentNumber)` tuple and exposes:
+    - `getDocumentAttributes(int $requestId = 1, ?array $requestedAttributes = null)` — Get-Document-Attributes (0x0033)
+    - `setDocumentAttributes(array $attributes, int $requestId = 1)` — Set-Document-Attributes (0x0035)
+    - `cancelDocument(int $requestId = 1)` — Cancel-Document (0x0036)
+  - **`Job::getDocuments()`** — Get-Documents (0x0034); returns document attribute groups for all documents in a job.
+  - **`Job::createDocument()`** — Create-Document (0x0037); adds a new Document object to an existing job.
+  - **Five new `Operation` constants** — `GET_DOCUMENT_ATTRIBUTES` (0x0033), `GET_DOCUMENTS` (0x0034), `SET_DOCUMENT_ATTRIBUTES` (0x0035), `CANCEL_DOCUMENT` (0x0036), `CREATE_DOCUMENT` (0x0037).
+  - **`IPPPayload`** decodes document attribute groups (tag `0x09`) into `IPPPayload::$documentAttributes` (array of `DocumentAttributes` objects). Document groups appear between job (0x02) and printer (0x04) groups in the decode sequence.
+  - **`OperationAttributes`** now accepts `document-number` (integer).
+  - **`PrinterAttributes`** now accepts `document-creation-attributes-supported` and `get-document-attributes-supported` (1setOf keyword).
+  - **`Types::getType()`** resolves `document-state` ENUM values to the `DocumentState` enum class.
+  - **`OperationRequestValidator`** requirements and `operationName()` entries added for all five Document Object operations.
+
 ## [1.5.0] — 2026-04-13
 
 ### Added

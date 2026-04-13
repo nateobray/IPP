@@ -20,6 +20,7 @@ class IPPPayload
     public $printerAttributes;
     public $subscriptionAttributes;
     public $eventNotificationAttributes;
+    public $documentAttributes;
     public $unsupportedAttributes;
     private $document;
 
@@ -58,6 +59,10 @@ class IPPPayload
         // Job Attribute Group
         if(!empty($this->jobAttributes)){
             $binary .= $this->jobAttributes->encode();
+        }
+        // Document Attribute Group
+        if(!empty($this->documentAttributes)){
+            $binary .= $this->documentAttributes->encode();
         }
         // Printer Attribute Group
         if(!empty($this->printerAttributes)){
@@ -111,6 +116,15 @@ class IPPPayload
             }
         }
         
+        if($newTag!==false && $newTag === 0x09){
+            $this->documentAttributes = [];
+            while($newTag !== false && $newTag === 0x09){
+                $documentAttributes = new \obray\ipp\DocumentAttributes();
+                $newTag = $documentAttributes->decode($binary, $offset);
+                $this->documentAttributes[] = $documentAttributes;
+            }
+        }
+
         if($newTag!==false && $newTag === 0x04){
             $this->printerAttributes = [];
             while($newTag !== false && $newTag === 0x04){
