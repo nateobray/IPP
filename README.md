@@ -882,6 +882,8 @@ In this case CUPS would be installed on localhost and listening on port 631 (def
 
 Core IPP/1.1 support (RFC 2910, RFC 2911, RFC 8011), administrative operations (RFC 3380, RFC 3998), and event notification subscriptions with pull-delivery (RFC 3995, RFC 3996) are complete. Newer IPP/PWG extensions are tracked in the matrix below.
 
+**DONE** in the matrix means the spec's required attribute types, encoding, and operation payloads are implemented and covered by unit tests. It does **not** mean every operation has been exercised against real hardware — fixture-backed interoperability tests exist for the core IPP/1.1 and subscription operations, but less-common extensions (notably PWG5100.5 Document Object ops, which most printers including CUPS do not implement) are spec-tested only.
+
 | IETF or PWG Specification | obray\ipp | IPP/1.1 | IPP/2.0 | IPP/2.1 | IPP/2.2 |
 | ------------------------- | --------- | ------- | ------- | ------- | ------- |
 | [PWG5100.1 - IPP Finishings 2.1](http://ftp.pwg.org/pub/pwg/candidates/cs-ippfinishings21-20170217-5100.1.pdf)                 |   DONE    |         |   REQ   |   REQ   |   REQ   |
