@@ -664,7 +664,10 @@ class Printer
             $this->buildPayload(
                 \obray\ipp\types\Operation::ENABLE_PRINTER,
                 $requestId,
-                $operationAttributes
+                $operationAttributes,
+                null,
+                null,
+                '2.0'
             )
         );
     }
@@ -677,7 +680,10 @@ class Printer
             $this->buildPayload(
                 \obray\ipp\types\Operation::DISABLE_PRINTER,
                 $requestId,
-                $operationAttributes
+                $operationAttributes,
+                null,
+                null,
+                '2.0'
             )
         );
     }
@@ -690,7 +696,10 @@ class Printer
             $this->buildPayload(
                 \obray\ipp\types\Operation::PAUSE_PRINTER_AFTER_CURRENT_JOB,
                 $requestId,
-                $operationAttributes
+                $operationAttributes,
+                null,
+                null,
+                '2.0'
             )
         );
     }
@@ -703,7 +712,10 @@ class Printer
             $this->buildPayload(
                 \obray\ipp\types\Operation::HOLD_NEW_JOBS,
                 $requestId,
-                $operationAttributes
+                $operationAttributes,
+                null,
+                null,
+                '2.0'
             )
         );
     }
@@ -716,7 +728,10 @@ class Printer
             $this->buildPayload(
                 \obray\ipp\types\Operation::RELEASE_HELD_NEW_JOBS,
                 $requestId,
-                $operationAttributes
+                $operationAttributes,
+                null,
+                null,
+                '2.0'
             )
         );
     }
@@ -729,7 +744,10 @@ class Printer
             $this->buildPayload(
                 \obray\ipp\types\Operation::DEACTIVATE_PRINTER,
                 $requestId,
-                $operationAttributes
+                $operationAttributes,
+                null,
+                null,
+                '2.0'
             )
         );
     }
@@ -742,7 +760,10 @@ class Printer
             $this->buildPayload(
                 \obray\ipp\types\Operation::ACTIVATE_PRINTER,
                 $requestId,
-                $operationAttributes
+                $operationAttributes,
+                null,
+                null,
+                '2.0'
             )
         );
     }
@@ -755,7 +776,10 @@ class Printer
             $this->buildPayload(
                 \obray\ipp\types\Operation::RESTART_PRINTER,
                 $requestId,
-                $operationAttributes
+                $operationAttributes,
+                null,
+                null,
+                '2.0'
             )
         );
     }
@@ -768,7 +792,10 @@ class Printer
             $this->buildPayload(
                 \obray\ipp\types\Operation::SHUTDOWN_PRINTER,
                 $requestId,
-                $operationAttributes
+                $operationAttributes,
+                null,
+                null,
+                '2.0'
             )
         );
     }
@@ -781,7 +808,10 @@ class Printer
             $this->buildPayload(
                 \obray\ipp\types\Operation::START_PRINTER,
                 $requestId,
-                $operationAttributes
+                $operationAttributes,
+                null,
+                null,
+                '2.0'
             )
         );
     }
@@ -862,7 +892,10 @@ class Printer
             $this->buildPayload(
                 \obray\ipp\types\Operation::IDENTIFY_PRINTER,
                 $requestId,
-                $operationAttributes
+                $operationAttributes,
+                null,
+                null,
+                '2.0'
             )
         );
     }
@@ -894,7 +927,7 @@ class Printer
         );
 
         $payload = new \obray\ipp\transport\IPPPayload(
-            new \obray\ipp\types\VersionNumber('1.1'),
+            new \obray\ipp\types\VersionNumber('2.0'),
             new \obray\ipp\types\Operation(\obray\ipp\types\Operation::SET_PRINTER_ATTRIBUTES),
             new \obray\ipp\types\Integer($requestId),
             null,

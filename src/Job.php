@@ -499,7 +499,9 @@ class Job
             $this->buildPayload(
                 \obray\ipp\types\Operation::CANCEL_CURRENT_JOB,
                 $requestId,
-                $operationAttributes
+                $operationAttributes,
+                null,
+                '2.0'
             )
         );
     }
@@ -512,7 +514,9 @@ class Job
             $this->buildPayload(
                 \obray\ipp\types\Operation::SUSPEND_CURRENT_JOB,
                 $requestId,
-                $operationAttributes
+                $operationAttributes,
+                null,
+                '2.0'
             )
         );
     }
@@ -525,7 +529,9 @@ class Job
             $this->buildPayload(
                 \obray\ipp\types\Operation::RESUME_JOB,
                 $requestId,
-                $operationAttributes
+                $operationAttributes,
+                null,
+                '2.0'
             )
         );
     }
@@ -538,7 +544,9 @@ class Job
             $this->buildPayload(
                 \obray\ipp\types\Operation::PROMOTE_JOB,
                 $requestId,
-                $operationAttributes
+                $operationAttributes,
+                null,
+                '2.0'
             )
         );
     }
@@ -551,7 +559,9 @@ class Job
             $this->buildPayload(
                 \obray\ipp\types\Operation::REPROCESS_JOB,
                 $requestId,
-                $operationAttributes
+                $operationAttributes,
+                null,
+                '2.0'
             )
         );
     }
@@ -569,7 +579,9 @@ class Job
             $this->buildPayload(
                 \obray\ipp\types\Operation::SCHEDULE_JOB_AFTER,
                 $requestId,
-                $operationAttributes
+                $operationAttributes,
+                null,
+                '2.0'
             )
         );
     }
@@ -598,7 +610,7 @@ class Job
         );
 
         $payload = new \obray\ipp\transport\IPPPayload(
-            new \obray\ipp\types\VersionNumber('1.1'),
+            new \obray\ipp\types\VersionNumber('2.0'),
             new \obray\ipp\types\Operation(\obray\ipp\types\Operation::SET_JOB_ATTRIBUTES),
             new \obray\ipp\types\Integer($requestId),
             null,

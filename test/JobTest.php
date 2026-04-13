@@ -147,7 +147,7 @@ class JobTest extends TestCase
 
         $this->assertSame(\obray\ipp\types\Operation::SET_JOB_ATTRIBUTES, FakeRequest::$lastCall['operation']);
         $this->assertSame(114, FakeRequest::$lastCall['requestId']);
-        $this->assertSame('1.1', FakeRequest::$lastCall['version']);
+        $this->assertSame('2.0', FakeRequest::$lastCall['version']);
         $this->assertNotNull(FakeRequest::$lastCall['jobAttributes']);
         $this->assertSame('50', (string) FakeRequest::$lastCall['jobAttributes']->{'job-priority'});
     }
