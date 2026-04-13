@@ -279,6 +279,96 @@ class JobAttributes extends \obray\ipp\AttributeGroup
             case 'job-finished-state-message':
                 $this->attributes[$name] = new \obray\ipp\Attribute('job-finished-state-message', $value, \obray\ipp\enums\Types::TEXT, 255);
                 break;
+            // PWG5100.8 — "-actual" read-back job description attributes
+            case 'copies-actual':
+                $this->attributes[$name] = $this->createAttributeInstances('copies-actual', $value, \obray\ipp\enums\Types::INTEGER);
+                break;
+            case 'document-format-actual':
+                $this->attributes[$name] = $this->createAttributeInstances('document-format-actual', $value, \obray\ipp\enums\Types::MIMEMEDIATYPE);
+                break;
+            case 'finishings-actual':
+                $this->attributes[$name] = $this->createAttributeInstances('finishings-actual', $value, \obray\ipp\enums\Types::ENUM);
+                break;
+            case 'job-account-id-actual':
+                $this->attributes[$name] = $this->createAttributeInstances('job-account-id-actual', $value, \obray\ipp\enums\Types::NAME, 255);
+                break;
+            case 'job-accounting-user-id-actual':
+                $this->attributes[$name] = $this->createAttributeInstances('job-accounting-user-id-actual', $value, \obray\ipp\enums\Types::NAME, 255);
+                break;
+            case 'job-hold-until-actual':
+                $this->attributes[$name] = $this->createAttributeInstances('job-hold-until-actual', $value, \obray\ipp\enums\Types::KEYWORD);
+                break;
+            case 'job-name-actual':
+                $this->attributes[$name] = $this->createAttributeInstances('job-name-actual', $value, \obray\ipp\enums\Types::NAME, 255);
+                break;
+            case 'job-priority-actual':
+                $this->attributes[$name] = $this->createAttributeInstances('job-priority-actual', $value, \obray\ipp\enums\Types::INTEGER);
+                break;
+            case 'job-sheet-message-actual':
+                $this->attributes[$name] = $this->createAttributeInstances('job-sheet-message-actual', $value, \obray\ipp\enums\Types::TEXT, 255);
+                break;
+            case 'job-sheets-actual':
+                $this->attributes[$name] = $this->createAttributeInstances('job-sheets-actual', $value, \obray\ipp\enums\Types::KEYWORD);
+                break;
+            case 'media-actual':
+                $this->attributes[$name] = $this->createAttributeInstances('media-actual', $value, \obray\ipp\enums\Types::KEYWORD);
+                break;
+            case 'media-col-actual':
+                $this->attributes[$name] = new \obray\ipp\CollectionAttribute('media-col-actual', $value);
+                break;
+            case 'multiple-document-handling-actual':
+                $this->attributes[$name] = $this->createAttributeInstances('multiple-document-handling-actual', $value, \obray\ipp\enums\Types::KEYWORD);
+                break;
+            case 'number-up-actual':
+                $this->attributes[$name] = $this->createAttributeInstances('number-up-actual', $value, \obray\ipp\enums\Types::INTEGER);
+                break;
+            case 'orientation-requested-actual':
+                $this->attributes[$name] = $this->createAttributeInstances('orientation-requested-actual', $value, \obray\ipp\enums\Types::ENUM);
+                break;
+            case 'output-bin-actual':
+                $this->attributes[$name] = $this->createAttributeInstances('output-bin-actual', $value, \obray\ipp\enums\Types::KEYWORD);
+                break;
+            case 'output-device-actual':
+                $this->attributes[$name] = $this->createAttributeInstances('output-device-actual', $value, \obray\ipp\enums\Types::NAME, 255);
+                break;
+            case 'overrides-actual':
+                $this->attributes[$name] = new \obray\ipp\CollectionAttribute('overrides-actual', $value);
+                break;
+            case 'page-delivery-actual':
+                $this->attributes[$name] = $this->createAttributeInstances('page-delivery-actual', $value, \obray\ipp\enums\Types::KEYWORD);
+                break;
+            case 'page-order-received-actual':
+                $this->attributes[$name] = $this->createAttributeInstances('page-order-received-actual', $value, \obray\ipp\enums\Types::KEYWORD);
+                break;
+            case 'presentation-direction-number-up-actual':
+                $this->attributes[$name] = $this->createAttributeInstances('presentation-direction-number-up-actual', $value, \obray\ipp\enums\Types::KEYWORD);
+                break;
+            case 'print-quality-actual':
+                $this->attributes[$name] = $this->createAttributeInstances('print-quality-actual', $value, \obray\ipp\enums\Types::ENUM);
+                break;
+            case 'printer-resolution-actual':
+                $this->attributes[$name] = $this->createAttributeInstances('printer-resolution-actual', $value, \obray\ipp\enums\Types::RESOLUTION);
+                break;
+            case 'proof-print-actual':
+                $this->attributes[$name] = new \obray\ipp\CollectionAttribute('proof-print-actual', $value);
+                break;
+            case 'separator-sheets-actual':
+                $this->attributes[$name] = new \obray\ipp\CollectionAttribute('separator-sheets-actual', $value);
+                break;
+            case 'sheet-collate-actual':
+                $this->attributes[$name] = $this->createAttributeInstances('sheet-collate-actual', $value, \obray\ipp\enums\Types::KEYWORD);
+                break;
+            case 'sides-actual':
+                $this->attributes[$name] = $this->createAttributeInstances('sides-actual', $value, \obray\ipp\enums\Types::KEYWORD);
+                break;
+            case 'x-image-shift-actual':
+            case 'x-side1-image-shift-actual':
+            case 'x-side2-image-shift-actual':
+            case 'y-image-shift-actual':
+            case 'y-side1-image-shift-actual':
+            case 'y-side2-image-shift-actual':
+                $this->attributes[$name] = $this->createAttributeInstances($name, $value, \obray\ipp\enums\Types::INTEGER);
+                break;
             default:
                 $this->attributes[$name] = $this->buildGenericAttribute($name, $value);
                 break;

@@ -56,6 +56,7 @@ class Types extends \obray\ipp\types\Enum
                     case 'finishings-default':
                     case 'finishings-supported':
                     case 'finishings-ready':
+                    case 'finishings-actual':
                         return new \obray\ipp\enums\Finishings($value);
                         break;
                     case 'print-quality':

@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.5.0] — 2026-04-13
+
+### Added
+- **PWG5100.8 `-actual` read-back attributes** — All 28 job description attributes that report what was actually used for a job: `copies-actual`, `document-format-actual`, `finishings-actual`, `job-account-id-actual`, `job-accounting-user-id-actual`, `job-hold-until-actual`, `job-name-actual`, `job-priority-actual`, `job-sheet-message-actual`, `job-sheets-actual`, `media-actual`, `media-col-actual`, `multiple-document-handling-actual`, `number-up-actual`, `orientation-requested-actual`, `output-bin-actual`, `output-device-actual`, `overrides-actual`, `page-delivery-actual`, `page-order-received-actual`, `presentation-direction-number-up-actual`, `print-quality-actual`, `printer-resolution-actual`, `proof-print-actual`, `separator-sheets-actual`, `sheet-collate-actual`, `sides-actual`, and the six image-shift-actual integers. `finishings-actual` resolved to the `Finishings` enum class in `Types::getType()`. Completes IPP/2.2 REQ coverage for PWG5100.8.
+- **PWG5107.2 IEEE 1284 device ID** — `printer-device-id` (text(1023)), `device-service-count` (integer), and `device-uuid` (URI) added to `PrinterAttributes`. Completes IPP/2.2 REQ coverage for PWG5107.2.
+
 ## [1.4.0] — 2026-04-13
 
 ### Added

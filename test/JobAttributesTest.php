@@ -339,5 +339,55 @@ class JobAttributesTest extends TestCase
         $this->assertSame('Printed successfully', (string) $decoded->{'job-finished-state-message'});
     }
 
+    // PWG5100.8 — "-actual" read-back attributes
+
+    public function testActualScalarAttributesEncodeCorrectly(): void
+    {
+        $jobAttributes = new \obray\ipp\JobAttributes();
+        $jobAttributes->set('copies-actual', 2);
+        $jobAttributes->set('document-format-actual', 'application/pdf');
+        $jobAttributes->set('finishings-actual', \obray\ipp\enums\Finishings::staple);
+        $jobAttributes->set('media-actual', \obray\ipp\enums\MediaSize::ISO_A4);
+        $jobAttributes->set('sides-actual', 'two-sided-long-edge');
+        $jobAttributes->set('sheet-collate-actual', 'collated');
+        $jobAttributes->set('output-bin-actual', 'face-down');
+        $jobAttributes->set('print-quality-actual', \obray\ipp\enums\PrintQuality::normal);
+        $jobAttributes->set('x-image-shift-actual', 100);
+        $jobAttributes->set('y-image-shift-actual', 200);
+
+        $decoded = new \obray\ipp\JobAttributes();
+        $offset = 0;
+        $decoded->decode($jobAttributes->encode(), $offset);
+
+        $this->assertSame('2', (string) $decoded->{'copies-actual'});
+        $this->assertSame('application/pdf', (string) $decoded->{'document-format-actual'});
+        $this->assertSame('staple', (string) $decoded->{'finishings-actual'});
+        $this->assertSame(\obray\ipp\enums\MediaSize::ISO_A4, (string) $decoded->{'media-actual'});
+        $this->assertSame('two-sided-long-edge', (string) $decoded->{'sides-actual'});
+        $this->assertSame('collated', (string) $decoded->{'sheet-collate-actual'});
+        $this->assertSame('face-down', (string) $decoded->{'output-bin-actual'});
+        $this->assertSame('100', (string) $decoded->{'x-image-shift-actual'});
+        $this->assertSame('200', (string) $decoded->{'y-image-shift-actual'});
+    }
+
+    public function testActualMultiValueAttributesDecodeToArrays(): void
+    {
+        $jobAttributes = new \obray\ipp\JobAttributes();
+        $jobAttributes->set('copies-actual', [1, 2]);
+        $jobAttributes->set('output-device-actual', ['printer-A', 'printer-B']);
+        $jobAttributes->set('job-sheets-actual', ['none', 'standard']);
+
+        $decoded = new \obray\ipp\JobAttributes();
+        $offset = 0;
+        $decoded->decode($jobAttributes->encode(), $offset);
+
+        $this->assertIsArray($decoded->{'copies-actual'});
+        $this->assertSame('1', (string) $decoded->{'copies-actual'}[0]);
+        $this->assertSame('2', (string) $decoded->{'copies-actual'}[1]);
+        $this->assertIsArray($decoded->{'output-device-actual'});
+        $this->assertSame('printer-A', (string) $decoded->{'output-device-actual'}[0]);
+        $this->assertIsArray($decoded->{'job-sheets-actual'});
+    }
+
 
 }

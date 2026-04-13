@@ -311,4 +311,22 @@ class PrinterAttributesTest extends TestCase
         $this->assertSame('job-save', (string) $decoded->{'ipp-features-supported'}[1]);
         $this->assertIsArray($decoded->{'printer-get-attributes-supported'});
     }
+
+    // PWG5107.2 — IEEE 1284 Device ID
+
+    public function testPwg5107Point2PrinterAttributesEncodeCorrectly(): void
+    {
+        $printerAttributes = new \obray\ipp\PrinterAttributes();
+        $printerAttributes->{'printer-device-id'} = 'MFG:HP;MDL:LaserJet Pro MFP M428fdw;CMD:PCL,PJL,PDF;CLS:PRINTER;';
+        $printerAttributes->{'device-service-count'} = 3;
+        $printerAttributes->{'device-uuid'} = 'urn:uuid:20000000-0000-1000-8000-000000000001';
+
+        $decoded = new \obray\ipp\PrinterAttributes();
+        $offset = 0;
+        $decoded->decode($printerAttributes->encode(), $offset);
+
+        $this->assertSame('MFG:HP;MDL:LaserJet Pro MFP M428fdw;CMD:PCL,PJL,PDF;CLS:PRINTER;', (string) $decoded->{'printer-device-id'});
+        $this->assertSame('3', (string) $decoded->{'device-service-count'});
+        $this->assertSame('urn:uuid:20000000-0000-1000-8000-000000000001', (string) $decoded->{'device-uuid'});
+    }
 }

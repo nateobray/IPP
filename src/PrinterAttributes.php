@@ -133,6 +133,16 @@ class PrinterAttributes extends \obray\ipp\AttributeGroup
             case 'uri-security-supported':
                 $this->attributes[$name] = $this->createAttributeInstances('uri-security-supported', $value, \obray\ipp\enums\Types::KEYWORD);
                 break;
+            // PWG5107.2 — IEEE 1284 Device ID
+            case 'printer-device-id':
+                $this->attributes[$name] = new \obray\ipp\Attribute('printer-device-id', $value, \obray\ipp\enums\Types::TEXT, 1023);
+                break;
+            case 'device-service-count':
+                $this->attributes[$name] = new \obray\ipp\Attribute('device-service-count', $value, \obray\ipp\enums\Types::INTEGER);
+                break;
+            case 'device-uuid':
+                $this->attributes[$name] = new \obray\ipp\Attribute('device-uuid', $value, \obray\ipp\enums\Types::URI);
+                break;
             // PWG5100.9 — Printer State Extensions
             case 'printer-uuid':
                 $this->attributes[$name] = new \obray\ipp\Attribute('printer-uuid', $value, \obray\ipp\enums\Types::URI);
