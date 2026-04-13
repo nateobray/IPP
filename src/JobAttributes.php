@@ -200,6 +200,85 @@ class JobAttributes extends \obray\ipp\AttributeGroup
             case 'output-bin':
                 $this->attributes[$name] = new \obray\ipp\Attribute('output-bin', $value, \obray\ipp\enums\Types::KEYWORD);
                 break;
+            // PWG5100.3 — Production Printing Attributes
+            case 'job-account-id':
+                $this->attributes[$name] = new \obray\ipp\Attribute('job-account-id', $value, \obray\ipp\enums\Types::NAME, 255);
+                break;
+            case 'job-accounting-user-id':
+                $this->attributes[$name] = new \obray\ipp\Attribute('job-accounting-user-id', $value, \obray\ipp\enums\Types::NAME, 255);
+                break;
+            case 'job-sheet-message':
+                $this->attributes[$name] = new \obray\ipp\Attribute('job-sheet-message', $value, \obray\ipp\enums\Types::TEXT, 255);
+                break;
+            case 'output-device':
+                $this->attributes[$name] = new \obray\ipp\Attribute('output-device', $value, \obray\ipp\enums\Types::NAME, 255);
+                break;
+            case 'page-delivery':
+                $this->attributes[$name] = new \obray\ipp\Attribute('page-delivery', $value, \obray\ipp\enums\Types::KEYWORD);
+                break;
+            case 'page-order-received':
+                $this->attributes[$name] = new \obray\ipp\Attribute('page-order-received', $value, \obray\ipp\enums\Types::KEYWORD);
+                break;
+            case 'presentation-direction-number-up':
+                $this->attributes[$name] = new \obray\ipp\Attribute('presentation-direction-number-up', $value, \obray\ipp\enums\Types::KEYWORD);
+                break;
+            case 'separator-sheets':
+                $this->attributes[$name] = new \obray\ipp\CollectionAttribute('separator-sheets', $value);
+                break;
+            case 'insert-sheet':
+                $this->attributes[$name] = new \obray\ipp\CollectionAttribute('insert-sheet', $value);
+                break;
+            // PWG5100.6 — Page Overrides
+            case 'overrides':
+                $this->attributes[$name] = new \obray\ipp\CollectionAttribute('overrides', $value);
+                break;
+            // PWG5100.7 — IPP Job Extensions v2.0
+            case 'sheet-collate':
+                $this->attributes[$name] = new \obray\ipp\Attribute('sheet-collate', $value, \obray\ipp\enums\Types::KEYWORD);
+                break;
+            case 'job-error-action':
+                $this->attributes[$name] = new \obray\ipp\Attribute('job-error-action', $value, \obray\ipp\enums\Types::KEYWORD);
+                break;
+            case 'job-mandatory-attributes':
+                $this->attributes[$name] = $this->createAttributeInstances('job-mandatory-attributes', $value, \obray\ipp\enums\Types::KEYWORD);
+                break;
+            case 'job-recipient-name':
+                $this->attributes[$name] = new \obray\ipp\Attribute('job-recipient-name', $value, \obray\ipp\enums\Types::NAME, 127);
+                break;
+            case 'imposition-template':
+                $this->attributes[$name] = $this->createKeywordOrNameAttribute('imposition-template', $value);
+                break;
+            case 'cover-back':
+                $this->attributes[$name] = new \obray\ipp\CollectionAttribute('cover-back', $value);
+                break;
+            case 'cover-front':
+                $this->attributes[$name] = new \obray\ipp\CollectionAttribute('cover-front', $value);
+                break;
+            case 'job-error-sheet':
+                $this->attributes[$name] = new \obray\ipp\CollectionAttribute('job-error-sheet', $value);
+                break;
+            case 'proof-print':
+                $this->attributes[$name] = new \obray\ipp\CollectionAttribute('proof-print', $value);
+                break;
+            case 'job-save-disposition':
+                $this->attributes[$name] = new \obray\ipp\CollectionAttribute('job-save-disposition', $value);
+                break;
+            case 'job-message-to-operator':
+                $this->attributes[$name] = new \obray\ipp\Attribute('job-message-to-operator', $value, \obray\ipp\enums\Types::TEXT, 255);
+                break;
+            // PWG5100.11 — Job and Printer Extensions Set 2
+            case 'job-accounting-sheets':
+                $this->attributes[$name] = new \obray\ipp\CollectionAttribute('job-accounting-sheets', $value);
+                break;
+            case 'job-cover-back':
+                $this->attributes[$name] = new \obray\ipp\CollectionAttribute('job-cover-back', $value);
+                break;
+            case 'job-cover-front':
+                $this->attributes[$name] = new \obray\ipp\CollectionAttribute('job-cover-front', $value);
+                break;
+            case 'job-finished-state-message':
+                $this->attributes[$name] = new \obray\ipp\Attribute('job-finished-state-message', $value, \obray\ipp\enums\Types::TEXT, 255);
+                break;
             default:
                 $this->attributes[$name] = $this->buildGenericAttribute($name, $value);
                 break;

@@ -263,5 +263,81 @@ class JobAttributesTest extends TestCase
         $this->assertSame('punch-dual-top', (string) $decoded->{'finishings'}[2]);
     }
 
+    // PWG5100.3 — Production Printing Attributes
+
+    public function testPwg5100Point3JobTemplateAttributesEncodeCorrectly(): void
+    {
+        $jobAttributes = new \obray\ipp\JobAttributes();
+        $jobAttributes->set('job-account-id', 'dept-engineering');
+        $jobAttributes->set('job-accounting-user-id', 'alice');
+        $jobAttributes->set('job-sheet-message', 'Confidential');
+        $jobAttributes->set('output-device', 'finisher-A');
+        $jobAttributes->set('page-delivery', 'same-order-face-down');
+        $jobAttributes->set('page-order-received', '1-to-n-order');
+        $jobAttributes->set('presentation-direction-number-up', 'toright-tobottom');
+
+        $decoded = new \obray\ipp\JobAttributes();
+        $offset = 0;
+        $decoded->decode($jobAttributes->encode(), $offset);
+
+        $this->assertSame('dept-engineering', (string) $decoded->{'job-account-id'});
+        $this->assertSame('alice', (string) $decoded->{'job-accounting-user-id'});
+        $this->assertSame('Confidential', (string) $decoded->{'job-sheet-message'});
+        $this->assertSame('finisher-A', (string) $decoded->{'output-device'});
+        $this->assertSame('same-order-face-down', (string) $decoded->{'page-delivery'});
+        $this->assertSame('1-to-n-order', (string) $decoded->{'page-order-received'});
+        $this->assertSame('toright-tobottom', (string) $decoded->{'presentation-direction-number-up'});
+    }
+
+    // PWG5100.6 — Page Overrides
+
+    public function testOverridesAcceptsCollectionValue(): void
+    {
+        $jobAttributes = new \obray\ipp\JobAttributes();
+        $jobAttributes->set('overrides', []);
+
+        $this->assertTrue($jobAttributes->has('overrides'));
+    }
+
+    // PWG5100.7 — IPP Job Extensions v2.0
+
+    public function testPwg5100Point7JobTemplateAttributesEncodeCorrectly(): void
+    {
+        $jobAttributes = new \obray\ipp\JobAttributes();
+        $jobAttributes->set('sheet-collate', 'collated');
+        $jobAttributes->set('job-error-action', 'abort-job');
+        $jobAttributes->set('job-mandatory-attributes', ['copies', 'sides']);
+        $jobAttributes->set('job-recipient-name', 'Bob');
+        $jobAttributes->set('imposition-template', 'signature');
+        $jobAttributes->set('job-message-to-operator', 'Please use tray 2');
+
+        $decoded = new \obray\ipp\JobAttributes();
+        $offset = 0;
+        $decoded->decode($jobAttributes->encode(), $offset);
+
+        $this->assertSame('collated', (string) $decoded->{'sheet-collate'});
+        $this->assertSame('abort-job', (string) $decoded->{'job-error-action'});
+        $this->assertIsArray($decoded->{'job-mandatory-attributes'});
+        $this->assertSame('copies', (string) $decoded->{'job-mandatory-attributes'}[0]);
+        $this->assertSame('sides',  (string) $decoded->{'job-mandatory-attributes'}[1]);
+        $this->assertSame('Bob', (string) $decoded->{'job-recipient-name'});
+        $this->assertSame('signature', (string) $decoded->{'imposition-template'});
+        $this->assertSame('Please use tray 2', (string) $decoded->{'job-message-to-operator'});
+    }
+
+    // PWG5100.11 — Job and Printer Extensions Set 2
+
+    public function testPwg5100Point11JobTemplateAttributesEncodeCorrectly(): void
+    {
+        $jobAttributes = new \obray\ipp\JobAttributes();
+        $jobAttributes->set('job-finished-state-message', 'Printed successfully');
+
+        $decoded = new \obray\ipp\JobAttributes();
+        $offset = 0;
+        $decoded->decode($jobAttributes->encode(), $offset);
+
+        $this->assertSame('Printed successfully', (string) $decoded->{'job-finished-state-message'});
+    }
+
 
 }

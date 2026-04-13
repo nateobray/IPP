@@ -207,4 +207,108 @@ class PrinterAttributesTest extends TestCase
         $this->assertSame('staple', (string) $decoded->{'finishings-ready'}[0]);
         $this->assertSame('punch',  (string) $decoded->{'finishings-ready'}[1]);
     }
+
+    // PWG5100.9 — Printer State Extensions
+
+    public function testPwg5100Point9PrinterAttributesEncodeCorrectly(): void
+    {
+        $printerAttributes = new \obray\ipp\PrinterAttributes();
+        $printerAttributes->{'printer-uuid'} = 'urn:uuid:10000000-0000-1000-8000-000000000000';
+        $printerAttributes->{'printer-state-change-time'} = 3600;
+        $printerAttributes->{'printer-state-change-date-time'} = '2026-04-13 12:00:00.0+0000';
+        $printerAttributes->{'printer-config-change-time'} = 1800;
+        $printerAttributes->{'printer-supply-info-uri'} = 'https://printer.example/supplies';
+        $printerAttributes->{'job-settable-attributes-supported'} = ['copies', 'sides'];
+        $printerAttributes->{'printer-settable-attributes-supported'} = ['printer-info', 'printer-location'];
+
+        $decoded = new \obray\ipp\PrinterAttributes();
+        $offset = 0;
+        $decoded->decode($printerAttributes->encode(), $offset);
+
+        $this->assertSame('urn:uuid:10000000-0000-1000-8000-000000000000', (string) $decoded->{'printer-uuid'});
+        $this->assertSame('3600', (string) $decoded->{'printer-state-change-time'});
+        $this->assertSame('1800', (string) $decoded->{'printer-config-change-time'});
+        $this->assertSame('https://printer.example/supplies', (string) $decoded->{'printer-supply-info-uri'});
+        $this->assertIsArray($decoded->{'job-settable-attributes-supported'});
+        $this->assertSame('copies', (string) $decoded->{'job-settable-attributes-supported'}[0]);
+        $this->assertIsArray($decoded->{'printer-settable-attributes-supported'});
+        $this->assertSame('printer-info', (string) $decoded->{'printer-settable-attributes-supported'}[0]);
+    }
+
+    // PWG5100.3 — Production Printing Attributes
+
+    public function testPwg5100Point3PrinterDescriptionAttributesEncodeCorrectly(): void
+    {
+        $printerAttributes = new \obray\ipp\PrinterAttributes();
+        $printerAttributes->{'job-account-id-supported'} = true;
+        $printerAttributes->{'job-accounting-user-id-supported'} = true;
+        $printerAttributes->{'job-sheet-message-supported'} = false;
+        $printerAttributes->{'multiple-document-handling-default'} = 'separate-documents-collated-copies';
+        $printerAttributes->{'multiple-document-handling-supported'} = ['separate-documents-collated-copies', 'single-document'];
+        $printerAttributes->{'output-device-supported'} = ['finisher-A', 'finisher-B'];
+        $printerAttributes->{'page-delivery-default'} = 'same-order-face-down';
+        $printerAttributes->{'page-delivery-supported'} = ['same-order-face-down', 'reverse-order-face-up'];
+        $printerAttributes->{'page-order-received-default'} = '1-to-n-order';
+        $printerAttributes->{'page-order-received-supported'} = ['1-to-n-order', 'n-to-1-order'];
+
+        $decoded = new \obray\ipp\PrinterAttributes();
+        $offset = 0;
+        $decoded->decode($printerAttributes->encode(), $offset);
+
+        $this->assertSame('true', (string) $decoded->{'job-account-id-supported'});
+        $this->assertSame('true', (string) $decoded->{'job-accounting-user-id-supported'});
+        $this->assertSame('false', (string) $decoded->{'job-sheet-message-supported'});
+        $this->assertSame('separate-documents-collated-copies', (string) $decoded->{'multiple-document-handling-default'});
+        $this->assertIsArray($decoded->{'multiple-document-handling-supported'});
+        $this->assertSame('same-order-face-down', (string) $decoded->{'page-delivery-default'});
+        $this->assertIsArray($decoded->{'page-delivery-supported'});
+        $this->assertSame('1-to-n-order', (string) $decoded->{'page-order-received-default'});
+        $this->assertIsArray($decoded->{'page-order-received-supported'});
+    }
+
+    // PWG5100.7 — IPP Job Extensions v2.0
+
+    public function testPwg5100Point7PrinterDescriptionAttributesEncodeCorrectly(): void
+    {
+        $printerAttributes = new \obray\ipp\PrinterAttributes();
+        $printerAttributes->{'sheet-collate-default'} = 'collated';
+        $printerAttributes->{'sheet-collate-supported'} = ['collated', 'uncollated'];
+        $printerAttributes->{'job-error-action-default'} = 'abort-job';
+        $printerAttributes->{'job-error-action-supported'} = ['abort-job', 'cancel-job', 'continue-job', 'suspend-job'];
+        $printerAttributes->{'job-mandatory-attributes-supported'} = true;
+        $printerAttributes->{'job-recipient-name-supported'} = false;
+        $printerAttributes->{'imposition-template-default'} = 'none';
+        $printerAttributes->{'imposition-template-supported'} = ['none', 'signature'];
+
+        $decoded = new \obray\ipp\PrinterAttributes();
+        $offset = 0;
+        $decoded->decode($printerAttributes->encode(), $offset);
+
+        $this->assertSame('collated', (string) $decoded->{'sheet-collate-default'});
+        $this->assertIsArray($decoded->{'sheet-collate-supported'});
+        $this->assertSame('abort-job', (string) $decoded->{'job-error-action-default'});
+        $this->assertIsArray($decoded->{'job-error-action-supported'});
+        $this->assertSame('true', (string) $decoded->{'job-mandatory-attributes-supported'});
+        $this->assertSame('false', (string) $decoded->{'job-recipient-name-supported'});
+        $this->assertSame('none', (string) $decoded->{'imposition-template-default'});
+        $this->assertIsArray($decoded->{'imposition-template-supported'});
+    }
+
+    // PWG5100.11 — Job and Printer Extensions Set 2
+
+    public function testPwg5100Point11PrinterDescriptionAttributesEncodeCorrectly(): void
+    {
+        $printerAttributes = new \obray\ipp\PrinterAttributes();
+        $printerAttributes->{'ipp-features-supported'} = ['ipp-everywhere', 'job-save'];
+        $printerAttributes->{'printer-get-attributes-supported'} = ['document-description', 'job-template'];
+
+        $decoded = new \obray\ipp\PrinterAttributes();
+        $offset = 0;
+        $decoded->decode($printerAttributes->encode(), $offset);
+
+        $this->assertIsArray($decoded->{'ipp-features-supported'});
+        $this->assertSame('ipp-everywhere', (string) $decoded->{'ipp-features-supported'}[0]);
+        $this->assertSame('job-save', (string) $decoded->{'ipp-features-supported'}[1]);
+        $this->assertIsArray($decoded->{'printer-get-attributes-supported'});
+    }
 }

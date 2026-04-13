@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.4.0] — 2026-04-13
+
+### Added
+- **PWG5100.9 Printer State Extensions** — `printer-uuid` (URI), `printer-state-change-date-time` / `printer-config-change-date-time` (dateTime), `printer-state-change-time` / `printer-config-change-time` (integer), `printer-supply` / `printer-alert` / `printer-input-tray` / `printer-output-tray` (1setOf octetString), `printer-supply-description` / `printer-alert-description` (1setOf text), `printer-supply-info-uri` (URI), `job-settable-attributes-supported` / `printer-settable-attributes-supported` (1setOf keyword) added to `PrinterAttributes`. Completes IPP/2.1 REQ coverage for PWG5100.9.
+- **PWG5100.3 Production Printing Attributes** — Job template: `job-account-id`, `job-accounting-user-id` (name), `job-sheet-message` (text), `output-device` (name), `page-delivery`, `page-order-received`, `presentation-direction-number-up` (keyword), `separator-sheets`, `insert-sheet` (collection). Printer description: `job-account-id-supported`, `job-accounting-user-id-supported`, `job-sheet-message-supported` (boolean), `multiple-document-handling-default/supported`, `output-device-supported`, `page-delivery-default/supported`, `page-order-received-default/supported`, `presentation-direction-number-up-default/supported`, `separator-sheets-default/supported`, `insert-sheet-default/supported`. Completes IPP/2.1 REQ coverage for PWG5100.3.
+- **PWG5100.6 Page Overrides** — `overrides` (collection) added to `JobAttributes`. Completes IPP/2.1 REQ coverage for PWG5100.6.
+- **PWG5100.7 IPP Job Extensions v2.0** — Job template: `sheet-collate`, `job-error-action`, `imposition-template` (keyword), `job-mandatory-attributes` (1setOf keyword), `job-recipient-name` (name), `cover-back`, `cover-front`, `job-error-sheet`, `proof-print`, `job-save-disposition` (collection), `job-message-to-operator` (text). Printer description: `sheet-collate-default/supported`, `job-error-action-default/supported`, `job-error-sheet-default/supported`, `job-mandatory-attributes-supported`, `job-message-to-operator-default/supported`, `job-recipient-name-supported`, `job-save-disposition-supported`, `proof-print-default/supported`, `cover-back-default/supported`, `cover-front-default/supported`, `imposition-template-default/supported`. Completes IPP/2.1 REQ coverage for PWG5100.7.
+- **PWG5100.11 Job and Printer Extensions Set 2** — Job template: `job-accounting-sheets`, `job-cover-back`, `job-cover-front` (collection), `job-finished-state-message` (text). Printer description: `ipp-features-supported`, `printer-get-attributes-supported` (1setOf keyword), `job-accounting-sheets-default/supported`, `job-cover-back-default/supported`, `job-cover-front-default/supported`. Completes IPP/2.1 REQ coverage for PWG5100.11.
+
 ## [1.3.0] — 2026-04-13
 
 ### Added
