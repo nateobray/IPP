@@ -407,4 +407,26 @@ class PrinterTest extends TestCase
         $this->assertSame(\obray\ipp\types\Operation::GET_SUBSCRIPTION, FakeRequest::$lastCall['operation']);
         $this->assertSame('42', (string) FakeRequest::$lastCall['operationAttributes']->{'notify-job-id'});
     }
+
+    public function testGetNotificationsBuildsExpectedPayload(): void
+    {
+        $this->printer->getNotifications([7, 8], 36);
+
+        $this->assertSame(\obray\ipp\types\Operation::GET_NOTIFICATION, FakeRequest::$lastCall['operation']);
+        $this->assertSame(36, FakeRequest::$lastCall['requestId']);
+        $this->assertSame('1.1', FakeRequest::$lastCall['version']);
+        $ids = FakeRequest::$lastCall['operationAttributes']->{'notify-subscription-ids'};
+        $this->assertIsArray($ids);
+        $this->assertSame('7', (string) $ids[0]);
+        $this->assertSame('8', (string) $ids[1]);
+    }
+
+    public function testGetNotificationsWithSequenceNumbersBuildsExpectedPayload(): void
+    {
+        $this->printer->getNotifications(7, 37, 5);
+
+        $this->assertSame(\obray\ipp\types\Operation::GET_NOTIFICATION, FakeRequest::$lastCall['operation']);
+        $seqNums = FakeRequest::$lastCall['operationAttributes']->{'notify-sequence-numbers'};
+        $this->assertSame('5', (string) (is_array($seqNums) ? $seqNums[0] : $seqNums));
+    }
 }

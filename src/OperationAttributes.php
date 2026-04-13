@@ -133,6 +133,15 @@ class OperationAttributes extends \obray\ipp\AttributeGroup
             case 'notify-lease-duration':
                 $this->attributes[$name] = new \obray\ipp\Attribute('notify-lease-duration', $value, \obray\ipp\enums\Types::INTEGER);
                 break;
+            case 'notify-subscription-ids':
+                $this->attributes[$name] = $this->createAttributeInstances($name, (array) $value, \obray\ipp\enums\Types::INTEGER);
+                break;
+            case 'notify-sequence-numbers':
+                $this->attributes[$name] = $this->createAttributeInstances($name, (array) $value, \obray\ipp\enums\Types::INTEGER);
+                break;
+            case 'notify-wait':
+                $this->attributes[$name] = new \obray\ipp\Attribute('notify-wait', $value, \obray\ipp\enums\Types::BOOLEAN);
+                break;
             case 'requested-attributes':
                 $this->attributes[$name] = $this->createAttributeInstances('requested-attributes', $value, \obray\ipp\enums\Types::KEYWORD);
                 break;

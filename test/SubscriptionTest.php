@@ -56,4 +56,25 @@ class SubscriptionTest extends TestCase
         $this->assertSame(203, FakeRequest::$lastCall['requestId']);
         $this->assertSame('7', (string) FakeRequest::$lastCall['operationAttributes']->{'notify-subscription-id'});
     }
+
+    public function testGetNotificationsBuildsExpectedPayload(): void
+    {
+        $this->subscription->getNotifications(204);
+
+        $this->assertSame(\obray\ipp\types\Operation::GET_NOTIFICATION, FakeRequest::$lastCall['operation']);
+        $this->assertSame(204, FakeRequest::$lastCall['requestId']);
+        $this->assertSame('1.1', FakeRequest::$lastCall['version']);
+        // Uses notify-subscription-ids (1setOf) not notify-subscription-id (singular target)
+        $ids = FakeRequest::$lastCall['operationAttributes']->{'notify-subscription-ids'};
+        $this->assertSame('7', (string) (is_array($ids) ? $ids[0] : $ids));
+    }
+
+    public function testGetNotificationsWithSequenceNumberBuildsExpectedPayload(): void
+    {
+        $this->subscription->getNotifications(205, 3);
+
+        $this->assertSame(\obray\ipp\types\Operation::GET_NOTIFICATION, FakeRequest::$lastCall['operation']);
+        $seqNums = FakeRequest::$lastCall['operationAttributes']->{'notify-sequence-numbers'};
+        $this->assertSame('3', (string) (is_array($seqNums) ? $seqNums[0] : $seqNums));
+    }
 }

@@ -903,6 +903,50 @@ class Printer
     }
 
     /**
+     * Get Notifications
+     *
+     * RFC 3996 §9.1:
+     * This OPTIONAL operation allows a client to fetch queued event
+     * notifications from one or more pull-delivery subscriptions. The
+     * operation attributes group MUST include `notify-subscription-ids`
+     * (one or more subscription IDs). The client MAY also supply
+     * `notify-sequence-numbers` (one per subscription, indicating the
+     * last sequence number already received) so that only new events are
+     * returned. The response contains one event-notification-attributes
+     * group (tag 0x07) per pending event.
+     *
+     * The `notify-get-interval` integer in the response operation
+     * attributes indicates how many seconds the client should wait before
+     * polling again.
+     *
+     * @param int|int[]    $subscriptionIds  One or more subscription IDs to poll
+     * @param int          $requestId        Client request id
+     * @param int|int[]|null $sequenceNumbers Last sequence numbers seen (one per ID)
+     * @param bool|null    $wait             If true, server blocks until an event is ready
+     *
+     * @return \obray\ipp\transport\IPPPayload
+     */
+    public function getNotifications(int|array $subscriptionIds, int $requestId = 1, int|array|null $sequenceNumbers = null, ?bool $wait = null): \obray\ipp\transport\IPPPayload
+    {
+        $operationAttributes = $this->createOperationAttributes();
+        $operationAttributes->{'notify-subscription-ids'} = (array) $subscriptionIds;
+        if ($sequenceNumbers !== null) {
+            $operationAttributes->{'notify-sequence-numbers'} = (array) $sequenceNumbers;
+        }
+        if ($wait !== null) {
+            $operationAttributes->{'notify-wait'} = $wait;
+        }
+
+        return $this->sendPayload(
+            $this->buildPayload(
+                \obray\ipp\types\Operation::GET_NOTIFICATION,
+                $requestId,
+                $operationAttributes
+            )
+        );
+    }
+
+    /**
      * Create Printer Subscription
      *
      * RFC 3995 §11.1.1:

@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.2.0] — 2026-04-11
 
 ### Added
+- **RFC 3996 pull-delivery notifications** — `Printer::getNotifications(int|array $subscriptionIds, ...)` and `Subscription::getNotifications(int $requestId, ?int $lastSequenceNumber, ...)` implement Get-Notifications (0x001C). The response payload exposes decoded event data in `IPPPayload::$eventNotificationAttributes` (array of `EventNotificationAttributes` objects, group tag 0x07). `notify-get-interval` is returned in the operation attributes group as usual.
+- **`EventNotificationAttributes` class** — AttributeGroup with tag `0x07` for decoding RFC 3996 event notification groups. Handles all standard event attributes (`notify-subscribed-event`, `notify-sequence-number`, `notify-text`, `notify-printer-uri`, `job-state`, etc.).
 - **RFC 3995 event notification subscriptions** — Create, inspect, renew, and cancel IPP event subscriptions.
 - **`Printer::createPrinterSubscription(array $subscriptionAttributes, int $requestId = 1)`** — Create-Printer-Subscription (0x0016); accepts a Subscription Template Attributes array (e.g. `notify-pull-method`, `notify-events`).
 - **`Printer::getSubscriptions(int $requestId, ?int $notifyJobId, ?array $requestedAttributes, ?bool $mySubscriptions)`** — Get-Subscriptions (0x0019); optional job-id and user filters.

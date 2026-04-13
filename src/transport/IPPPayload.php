@@ -19,6 +19,7 @@ class IPPPayload
     public $jobAttributes;
     public $printerAttributes;
     public $subscriptionAttributes;
+    public $eventNotificationAttributes;
     public $unsupportedAttributes;
     private $document;
 
@@ -125,6 +126,15 @@ class IPPPayload
                 $subscriptionAttributes = new \obray\ipp\SubscriptionAttributes();
                 $newTag = $subscriptionAttributes->decode($binary, $offset);
                 $this->subscriptionAttributes[] = $subscriptionAttributes;
+            }
+        }
+
+        if($newTag!==false && $newTag === 0x07){
+            $this->eventNotificationAttributes = [];
+            while($newTag !== false && $newTag === 0x07){
+                $eventNotificationAttributes = new \obray\ipp\EventNotificationAttributes();
+                $newTag = $eventNotificationAttributes->decode($binary, $offset);
+                $this->eventNotificationAttributes[] = $eventNotificationAttributes;
             }
         }
 

@@ -171,6 +171,78 @@ final class LocalPrinterIntegrationTest extends TestCase
         }
     }
 
+    public function testSubscribeAndPollEventNotifications(): void
+    {
+        $target = $this->requireJobTarget();
+
+        if (!$target->supportsSubscriptions()) {
+            $this->markTestSkipped('Target printer does not advertise Create-Printer-Subscription in operations-supported.');
+        }
+
+        $subscription = null;
+        $subscriptionId = null;
+        $jobId = null;
+        $job = null;
+
+        try {
+            // 1. Create a pull subscription for all events.
+            $createSubResponse = $target->printer()->createPrinterSubscription([
+                'notify-pull-method'    => 'ippget',
+                'notify-events'         => ['all'],
+                'notify-lease-duration' => 120,
+            ], 120);
+
+            $this->assertSuccessfulStatus($createSubResponse);
+            $subGroup = LocalPrinterTarget::firstAttributeGroup($createSubResponse->subscriptionAttributes);
+            $this->assertNotNull($subGroup);
+
+            $subscriptionId = (int)(string) $subGroup->{'notify-subscription-id'};
+            $subscription = $target->subscription($subscriptionId);
+
+            // 2. Submit a held job — this generates a job-created event.
+            $createJobResponse = $target->printer()->createJob(121, [
+                'job-name'        => 'IPP Notification Integration',
+                'job-hold-until'  => 'indefinite',
+            ]);
+
+            $this->assertSuccessfulStatus($createJobResponse);
+            $jobAttrs = LocalPrinterTarget::firstAttributeGroup($createJobResponse->jobAttributes);
+            $this->assertNotNull($jobAttrs);
+            $jobId = (int)(string) $jobAttrs->{'job-id'};
+            $job = $target->job($jobId);
+
+            // 3. Poll for notifications.
+            $notifResponse = $subscription->getNotifications(122);
+
+            $this->assertSuccessfulStatus($notifResponse);
+
+            // The response must include at least one event notification group (tag 0x07).
+            $this->assertIsArray($notifResponse->eventNotificationAttributes);
+            $this->assertNotEmpty($notifResponse->eventNotificationAttributes);
+
+            $event = LocalPrinterTarget::firstAttributeGroup($notifResponse->eventNotificationAttributes);
+            $this->assertNotNull($event);
+            $this->assertTrue($event->has('notify-subscribed-event'));
+            $this->assertTrue($event->has('notify-sequence-number'));
+            $this->assertSame((string) $subscriptionId, (string) $event->{'notify-subscription-id'});
+
+            // The operation attributes must include notify-get-interval.
+            $this->assertTrue($notifResponse->operationAttributes->has('notify-get-interval'));
+
+            // 4. Second poll with last sequence number — no new events, empty array expected.
+            $lastSeq = (int)(string) $event->{'notify-sequence-number'};
+            $emptyResponse = $subscription->getNotifications(123, $lastSeq);
+            $this->assertSuccessfulStatus($emptyResponse);
+        } finally {
+            if ($job !== null && $jobId !== null) {
+                try { $job->cancelJob(124); } catch (\Throwable) {}
+            }
+            if ($subscription !== null) {
+                try { $subscription->cancelSubscription(125); } catch (\Throwable) {}
+            }
+        }
+    }
+
     private function requireTarget(): LocalPrinterTarget
     {
         if (self::$target === null) {

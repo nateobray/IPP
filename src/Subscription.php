@@ -75,6 +75,43 @@ class Subscription
         );
     }
 
+    /**
+     * Get Notifications
+     *
+     * RFC 3996 §9.1 convenience wrapper — polls for pending events on this
+     * single subscription. Pass `$lastSequenceNumber` to retrieve only events
+     * newer than the last one the client has already processed.
+     *
+     * @param int      $requestId           Client request id
+     * @param int|null $lastSequenceNumber  Highest sequence number already seen (optional)
+     * @param bool|null $wait               Block until an event is available (optional)
+     *
+     * @return \obray\ipp\transport\IPPPayload
+     */
+    public function getNotifications(int $requestId = 1, ?int $lastSequenceNumber = null, ?bool $wait = null): \obray\ipp\transport\IPPPayload
+    {
+        $operationAttributes = new \obray\ipp\OperationAttributes();
+        $operationAttributes->{'printer-uri'} = $this->printerURI;
+        if (!empty($this->user)) {
+            $operationAttributes->{'requesting-user-name'} = $this->user;
+        }
+        $operationAttributes->{'notify-subscription-ids'} = $this->subscriptionId;
+        if ($lastSequenceNumber !== null) {
+            $operationAttributes->{'notify-sequence-numbers'} = $lastSequenceNumber;
+        }
+        if ($wait !== null) {
+            $operationAttributes->{'notify-wait'} = $wait;
+        }
+
+        return $this->sendPayload(
+            $this->buildPayload(
+                \obray\ipp\types\Operation::GET_NOTIFICATION,
+                $requestId,
+                $operationAttributes
+            )
+        );
+    }
+
     public function getSubscriptionAttributes(int $requestId = 1): \obray\ipp\transport\IPPPayload
     {
         $operationAttributes = $this->createOperationAttributes();
