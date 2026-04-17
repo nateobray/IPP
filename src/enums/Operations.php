@@ -36,7 +36,6 @@ class Operations extends \obray\ipp\types\Enum
     const GET_NOTIFICATION = 0x001C;
     const SEND_NOTIFICATION = 0x001D;
     const GET_RESOURCE_ATTRIBUTES = 0x001E;
-    const GET_RESOURCE_DATE = 0x001F;
     const GET_RESOURCE_DATA = 0x001F;
     const GET_RESOURCES = 0x0020;
     const GET_PRINTER_SUPPORTED_FILES = 0x0021;
@@ -59,9 +58,17 @@ class Operations extends \obray\ipp\types\Enum
     // IPP/2.1 (RFC 3380) Operation Codes:
     const SCHEDULE_JOB_AFTER = 0x0031;
 
+    // PWG5100.5 — Document Object Operation Codes:
+    const GET_DOCUMENT_ATTRIBUTES = 0x0033;
+    const GET_DOCUMENTS            = 0x0034;
+    const SET_DOCUMENT_ATTRIBUTES  = 0x0035;
+    const CANCEL_DOCUMENT          = 0x0036;
+    const CREATE_DOCUMENT          = 0x0037;
+
     const CANCEL_JOBS = 0x0038;
     const CANCEL_MY_JOBS = 0x0039;
-    const CLOSE_JOB = 0x003b;
+    const CLOSE_JOB = 0x003B;
+    const IDENTIFY_PRINTER = 0x003C;
 
     // CUPS specific operations
     const CUPS_GET_DEFAULT = 0x4001;

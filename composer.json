@@ -1,6 +1,6 @@
 {
     "name": "obray/ipp",
-    "description": "A PHP implemntation of the Internet Printing Protocol (IPP)",
+    "description": "A PHP implementation of the Internet Printing Protocol (IPP)",
     "license": "MIT",
     "minimum-stability": "dev",
     "prefer-stable": true,
