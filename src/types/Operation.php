@@ -36,7 +36,6 @@ class Operation extends \obray\ipp\types\Enum
     const GET_NOTIFICATION = 0x001C;
     const SEND_NOTIFICATION = 0x001D;
     const GET_RESOURCE_ATTRIBUTES = 0x001E;
-    const GET_RESOURCE_DATE = 0x001F;
     const GET_RESOURCE_DATA = 0x001F;
     const GET_RESOURCES = 0x0020;
     const GET_PRINTER_SUPPORTED_FILES = 0x0021;

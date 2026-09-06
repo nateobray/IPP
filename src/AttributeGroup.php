@@ -70,7 +70,7 @@ abstract class AttributeGroup implements \JsonSerializable
     public function encode()
     {
         $binary = pack('c',$this->attribute_group_tag);
-        forEach($this->attributes as $name => $attribute){
+        foreach($this->attributes as $name => $attribute){
             if (is_array($attribute)) {
                 foreach ($attribute as $attributeValue) {
                     $binary .= $attributeValue->encode();
