@@ -10,4 +10,20 @@ class JobState extends \obray\ipp\types\Enum
     const CANCELED = 7;
     const ABORTED = 8;
     const COMPLETED = 9;
+
+    public function __toString(): string
+    {
+        // Preserve the existing public constant names while displaying the
+        // standard RFC 8011 §5.3.7 names for these two compound states.
+        return match ((int) $this->value) {
+            self::PENDINGHELD => 'pending-held',
+            self::PROCESSINGSTOPPED => 'processing-stopped',
+            default => parent::__toString(),
+        };
+    }
+
+    public function jsonSerialize(): mixed
+    {
+        return (string) $this;
+    }
 }

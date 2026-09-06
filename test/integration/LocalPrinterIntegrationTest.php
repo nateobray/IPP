@@ -99,28 +99,36 @@ final class LocalPrinterIntegrationTest extends TestCase
         $documentFormat = $this->preferredDocumentFormat($target);
 
         try {
+            $heldResponse = $job->getJobAttributes(108, ['job-id', 'job-state']);
+            $this->assertSuccessfulStatus($heldResponse);
+            $heldAttributes = LocalPrinterTarget::firstAttributeGroup($heldResponse->jobAttributes);
+            $this->assertNotNull($heldAttributes);
+            $this->assertSame(4, $heldAttributes->{'job-state'}->getAttributeValue(), 'The job must be held before document submission.');
+
             $sendResponse = $job->sendDocument("IPP integration probe\n", true, 105, [
                 'document-format' => $documentFormat,
             ]);
+            $this->assertSuccessfulStatus($sendResponse);
+
+            $inspectResponse = $job->getJobAttributes(106, ['job-id', 'job-state', 'job-state-reasons']);
+            $this->assertSuccessfulStatus($inspectResponse);
+
+            $inspectedJobAttributes = LocalPrinterTarget::firstAttributeGroup($inspectResponse->jobAttributes);
+            $this->assertNotNull($inspectedJobAttributes);
+            $this->assertSame((string) $jobId, (string) $inspectedJobAttributes->{'job-id'});
+            $this->assertSame(4, $inspectedJobAttributes->{'job-state'}->getAttributeValue(), 'Sending a document must not release the held job.');
+            $this->assertSame('pending-held', (string) $inspectedJobAttributes->{'job-state'});
         } catch (\obray\ipp\exceptions\AuthenticationError $exception) {
-            $this->markTestSkipped('Send-Document requires authentication on this queue. Set IPP_TEST_USER/IPP_TEST_PASSWORD or target a queue managed by the current user.');
+            $this->markTestSkipped('Job management requires authentication on this queue. Set IPP_TEST_USER/IPP_TEST_PASSWORD or target a queue managed by the current user.');
         } finally {
-            if ($job instanceof \obray\ipp\Job) {
-                try {
-                    $job->cancelJob(107);
-                } catch (\Throwable) {
-                }
-            }
+            $cancelResponse = $job->cancelJob(107);
+            $this->assertSuccessfulStatus($cancelResponse);
+            $canceledResponse = $job->getJobAttributes(109, ['job-id', 'job-state']);
+            $this->assertSuccessfulStatus($canceledResponse);
+            $canceledAttributes = LocalPrinterTarget::firstAttributeGroup($canceledResponse->jobAttributes);
+            $this->assertNotNull($canceledAttributes);
+            $this->assertSame(7, $canceledAttributes->{'job-state'}->getAttributeValue(), 'Read back the canceled state instead of assuming cleanup succeeded.');
         }
-
-        $this->assertSuccessfulStatus($sendResponse);
-
-        $inspectResponse = $job->getJobAttributes(106, ['job-id', 'job-state', 'job-state-reasons']);
-        $this->assertSuccessfulStatus($inspectResponse);
-
-        $inspectedJobAttributes = LocalPrinterTarget::firstAttributeGroup($inspectResponse->jobAttributes);
-        $this->assertNotNull($inspectedJobAttributes);
-        $this->assertSame((string) $jobId, (string) $inspectedJobAttributes->{'job-id'});
     }
 
     public function testCreateInspectRenewAndCancelPrinterSubscription(): void

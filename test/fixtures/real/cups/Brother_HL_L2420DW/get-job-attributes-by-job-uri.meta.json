@@ -46,7 +46,7 @@
             "227"
         ],
         "job_states": [
-            "pendingheld"
+            "pending-held"
         ],
         "document_formats_supported": [],
         "operations_supported": [],

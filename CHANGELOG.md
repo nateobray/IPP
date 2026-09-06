@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Fixed
+- Render job states 4 and 6 as `pending-held` and `processing-stopped` in string and JSON output. Existing `PENDINGHELD` and `PROCESSINGSTOPPED` constants remain available.
 - Decode response attribute groups by tag, including Unsupported Attributes before Job or Printer Attributes, so accepted jobs with substituted settings retain their job IDs.
 - Map `ipps://` to HTTPS on port 631 by default; preserve explicit ports and query strings, and supply `/` for an absent path.
 - Encode `identifyPrinter()` actions as keyword values and its message as text instead of silently dropping them.
@@ -18,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Declare `ext-curl` as a Composer requirement.
 
 ### Tests
+- Require the live held-job test to verify the held state before and after sending the document, and read back the canceled state after cleanup.
 - Add independently encoded wire cases and isolated cURL-boundary tests for response ordering, identification options, timeout overrides, and error propagation.
 
 ## [1.6.0] — 2026-04-13
