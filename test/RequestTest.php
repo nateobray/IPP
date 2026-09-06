@@ -27,11 +27,27 @@ final class RequestTest extends \PHPUnit\Framework\TestCase
             ],
             'ipps default port' => [
                 'ipps://printer.example/ipp/print',
-                'https://printer.example:443/ipp/print',
+                'https://printer.example:631/ipp/print',
             ],
             'ipps explicit port' => [
                 'ipps://printer.example:8443/ipp/print',
                 'https://printer.example:8443/ipp/print',
+            ],
+            'ipps query preserved' => [
+                'ipps://printer.example/ipp/print?queue=labels%20A',
+                'https://printer.example:631/ipp/print?queue=labels%20A',
+            ],
+            'ipp query preserved' => [
+                'ipp://printer.example/ipp/print?queue=labels',
+                'http://printer.example:631/ipp/print?queue=labels',
+            ],
+            'ipps without path' => [
+                'ipps://printer.example',
+                'https://printer.example:631/',
+            ],
+            'ipp IPv6' => [
+                'ipp://[::1]:8631/ipp/print',
+                'http://[::1]:8631/ipp/print',
             ],
             'http unchanged' => [
                 'https://printer.example/ipp/print',

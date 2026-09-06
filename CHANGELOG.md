@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- Decode response attribute groups by tag, including Unsupported Attributes before Job or Printer Attributes, so accepted jobs with substituted settings retain their job IDs.
+- Map `ipps://` to HTTPS on port 631 by default; preserve explicit ports and query strings, and supply `/` for an absent path.
+- Encode `identifyPrinter()` actions as keyword values and its message as text instead of silently dropping them.
+- Capture cURL error codes before closing the transport handle.
+
+### Changed
+- Apply default transport deadlines of 10 seconds to connect and 120 seconds overall. Caller cURL options override these defaults, including millisecond options and `CURLOPT_TIMEOUT => 0` for unlimited total time.
+- Declare `ext-curl` as a Composer requirement.
+
+### Tests
+- Add independently encoded wire cases and isolated cURL-boundary tests for response ordering, identification options, timeout overrides, and error propagation.
+
 ## [1.6.0] — 2026-04-13
 
 ### Added

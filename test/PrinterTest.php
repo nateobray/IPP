@@ -246,6 +246,9 @@ class PrinterTest extends TestCase
 
         $this->assertSame(\obray\ipp\types\Operation::IDENTIFY_PRINTER, FakeRequest::$lastCall['operation']);
         $this->assertSame(23, FakeRequest::$lastCall['requestId']);
+        $attributes = FakeRequest::$lastCall['operationAttributes'];
+        $this->assertSame(['flash', 'sound'], array_map('strval', $attributes->{'identify-actions'}));
+        $this->assertSame('Hello', (string) $attributes->message);
     }
 
     public function testEnablePrinterBuildsExpectedPayload(): void

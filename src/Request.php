@@ -4,6 +4,9 @@ namespace obray\ipp;
 
 class Request implements \obray\ipp\interfaces\RequestInterface
 {
+    public const DEFAULT_CONNECT_TIMEOUT = 10;
+    public const DEFAULT_TIMEOUT = 120;
+
     public static function sendRaw(
         string $printerURI,
         string $encodedPayload,
@@ -28,6 +31,8 @@ class Request implements \obray\ipp\interfaces\RequestInterface
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
         curl_setopt($ch, CURLOPT_POST, 1);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $encodedPayload);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, self::DEFAULT_CONNECT_TIMEOUT);
+        curl_setopt($ch, CURLOPT_TIMEOUT, self::DEFAULT_TIMEOUT);
 
         foreach ($curlOptions as $curlOption) {
             if (!isset($curlOption['key']) || !isset($curlOption['value'])) {
@@ -40,13 +45,14 @@ class Request implements \obray\ipp\interfaces\RequestInterface
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
         $serverOutput = curl_exec($ch);
-        $curlError = curl_errno($ch) ? curl_error($ch) : null;
+        $curlErrorCode = curl_errno($ch);
+        $curlError = $curlErrorCode ? curl_error($ch) : null;
         $info = curl_getinfo($ch);
 
         curl_close($ch);
 
         if ($curlError !== null) {
-            throw new \obray\ipp\exceptions\NetworkError($printerURI, curl_errno($ch), $curlError);
+            throw new \obray\ipp\exceptions\NetworkError($printerURI, $curlErrorCode, $curlError);
         }
 
         return [
@@ -95,24 +101,17 @@ class Request implements \obray\ipp\interfaces\RequestInterface
     private static function buildPostUrl(string $printerURI): string
     {
         $results = parse_url($printerURI);
-        $postURL = $printerURI;
-
-        if (!is_array($results)) {
-            return $postURL;
+        if (!is_array($results) || !in_array($results['scheme'] ?? null, ['ipp', 'ipps'], true)) {
+            return $printerURI;
         }
 
-        if (empty($results['path'])) {
-            $results['path'] = '';
+        // RFC 8010 §4.2: both IPP schemes use port 631 by default.
+        $scheme = $results['scheme'] === 'ipps' ? 'https' : 'http';
+        $postURL = $scheme . '://' . $results['host'] . ':' . ($results['port'] ?? 631)
+            . ($results['path'] ?? '/');
+        if (isset($results['query'])) {
+            $postURL .= '?' . $results['query'];
         }
-
-        if (($results['scheme'] ?? null) === 'ipp') {
-            $postURL = 'http://' . $results['host'] . ':' . ($results['port'] ?? '631') . $results['path'];
-        }
-
-        if (($results['scheme'] ?? null) === 'ipps') {
-            $postURL = 'https://' . $results['host'] . ':' . ($results['port'] ?? '443') . $results['path'];
-        }
-
         return $postURL;
     }
 }

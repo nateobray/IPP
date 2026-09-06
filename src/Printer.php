@@ -866,7 +866,7 @@ class Printer
     /**
      * Identify Printer
      *
-     * RFC 8011 §4.2.22:
+     * PWG 5100.13 (IPP Driver Replacement Extensions):
      * This OPTIONAL operation causes the Printer to perform one or more
      * human-perceptible actions (e.g. flash a light, sound a tone, display
      * a message) so that a user can identify which physical device corresponds
@@ -880,15 +880,13 @@ class Printer
      */
     public function identifyPrinter(int $requestId = 1, ?array $identifyActions = null, ?string $message = null): \obray\ipp\transport\IPPPayload
     {
-        $attributes = [];
+        $operationAttributes = $this->createOperationAttributes();
         if ($identifyActions !== null) {
-            $attributes['identify-actions'] = $identifyActions;
+            $operationAttributes->{'identify-actions'} = $identifyActions;
         }
         if ($message !== null) {
-            $attributes['message'] = $message;
+            $operationAttributes->{'message'} = $message;
         }
-
-        $operationAttributes = $this->createOperationAttributes($attributes);
 
         return $this->sendPayload(
             $this->buildPayload(

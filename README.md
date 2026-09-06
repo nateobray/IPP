@@ -67,7 +67,7 @@ Install the stable release with Composer:
 composer require obray/ipp:^1.2
 ```
 
-This library currently supports PHP `8.1+` and is tested locally on PHP `8.1`, `8.2`, `8.3`, and `8.4`.
+This library requires PHP `8.1+` with the cURL extension (`ext-curl`) and is tested locally on PHP `8.1`, `8.2`, `8.3`, and `8.4`.
 
 If you need unreleased changes from the main branch, require the development version explicitly instead.
 
@@ -178,7 +178,18 @@ ipps://hostname.of.cups/printers/{queue-name}
 
 For USB printers and other locally attached devices, install the printer in CUPS and print through the exported queue URI.
 
-For secure transport, pass an `ipps://` printer URI. The library maps `ipp://` to HTTP on port `631` and `ipps://` to HTTPS on port `443`, with TLS handled by the underlying PHP cURL/OpenSSL stack. For self-signed or private CA deployments, supply the appropriate cURL SSL options when constructing the `Printer` or `Job` object.
+For secure transport, pass an `ipps://` printer URI. The library maps `ipp://` to HTTP and `ipps://` to HTTPS, both on port `631` by default, as specified by [RFC 7472](https://www.rfc-editor.org/rfc/rfc7472.html#section-4.3). Explicit ports and URI query strings are preserved. TLS is handled by the underlying PHP cURL/OpenSSL stack. For private CA deployments, supply `CURLOPT_CAINFO` with your CA certificate file when constructing the `Printer` or `Job` object.
+
+Requests allow **10 seconds to connect** and **120 seconds overall**, including document upload and the response. Override these limits through `curlOptions` for large documents, slow printers, or long-polling notifications:
+
+```php
+$printer = new \obray\ipp\Printer('ipps://printer.example/ipp/print', '', '', [
+    ['key' => CURLOPT_CONNECTTIMEOUT, 'value' => 30],
+    ['key' => CURLOPT_TIMEOUT, 'value' => 600],
+]);
+```
+
+The same options work with `Job`, `Document`, and `Subscription`. Millisecond options (`CURLOPT_CONNECTTIMEOUT_MS`, `CURLOPT_TIMEOUT_MS`) also override the defaults. Set `CURLOPT_TIMEOUT` to `0` to remove the overall deadline, for example when using `getNotifications(..., wait: true)`; the connection timeout still applies. Timeouts raise `NetworkError`. A timeout after submission does not establish whether the printer accepted a job, so check the printer's job state before retrying a print submission.
 
 For the full API surface, see [Printer Object and Methods](#printer-object-and-methods) and [Job Object and Methods](#job-object-and-methods).
 
@@ -394,7 +405,7 @@ $response = $printer->getClasses({request-id}, {[requested-attributes]}, {limit}
 | limit | no | Maximum number of classes to return. |
 
 ### Method `identifyPrinter`
-[RFC 8011 4.2.22](https://tools.ietf.org/html/rfc8011#section-4.2.22): Causes the printer to perform one or more human-perceptible identification actions (e.g. flash an LED, sound a tone, display a message) so a user can locate the physical device.
+[PWG 5100.13](https://ftp.pwg.org/pub/pwg/candidates/cs-ippnodriver20-20230301-5100.13.pdf): Causes the printer to perform one or more human-perceptible identification actions (e.g. flash an LED, sound a tone, display a message) so a user can locate the physical device.
 
 ###### Usage:
 ```PHP

@@ -148,6 +148,12 @@ class OperationAttributes extends \obray\ipp\AttributeGroup
             case 'requested-attributes':
                 $this->attributes[$name] = $this->createAttributeInstances('requested-attributes', $value, \obray\ipp\enums\Types::KEYWORD);
                 break;
+            case 'identify-actions':
+                $this->attributes[$name] = $this->createAttributeInstances($name, $value, \obray\ipp\enums\Types::KEYWORD);
+                break;
+            case 'message':
+                $this->attributes[$name] = new \obray\ipp\Attribute($name, $value, \obray\ipp\enums\Types::TEXT, 127, $this->naturalLanguageOverride);
+                break;
             default:
                 $this->attributes[$name] = $this->buildGenericAttribute($name, $value);
         }

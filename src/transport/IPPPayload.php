@@ -11,6 +11,15 @@ namespace obray\ipp\transport;
 
 class IPPPayload
 {
+    private const ATTRIBUTE_GROUPS = [
+        0x02 => ['jobAttributes', \obray\ipp\JobAttributes::class],
+        0x04 => ['printerAttributes', \obray\ipp\PrinterAttributes::class],
+        0x05 => ['unsupportedAttributes', \obray\ipp\UnsupportedAttributes::class],
+        0x06 => ['subscriptionAttributes', \obray\ipp\SubscriptionAttributes::class],
+        0x07 => ['eventNotificationAttributes', \obray\ipp\EventNotificationAttributes::class],
+        0x09 => ['documentAttributes', \obray\ipp\DocumentAttributes::class],
+    ];
+
     public $versionNumber;
     private $operation;
     public $requestId;
@@ -107,66 +116,26 @@ class IPPPayload
         $this->operationAttributes = new \obray\ipp\OperationAttributes();
         $newTag = $this->operationAttributes->decode($binary, $offset);
         
-        if($newTag!==false && $newTag === 0x02){
-            $this->jobAttributes = [];
-            while($newTag !== false && $newTag === 0x02){
-                $jobAttributes = new \obray\ipp\JobAttributes();
-                $newTag = $jobAttributes->decode($binary, $offset);
-                $this->jobAttributes[] = $jobAttributes;
-            }
+        foreach (self::ATTRIBUTE_GROUPS as [$property]) {
+            $this->{$property} = null;
         }
-        
-        if($newTag!==false && $newTag === 0x09){
-            $this->documentAttributes = [];
-            while($newTag !== false && $newTag === 0x09){
-                $documentAttributes = new \obray\ipp\DocumentAttributes();
-                $newTag = $documentAttributes->decode($binary, $offset);
-                $this->documentAttributes[] = $documentAttributes;
-            }
-        }
+        $this->document = null;
 
-        if($newTag!==false && $newTag === 0x04){
-            $this->printerAttributes = [];
-            while($newTag !== false && $newTag === 0x04){
-                $printerAttributes = new \obray\ipp\PrinterAttributes();
-                $newTag = $printerAttributes->decode($binary, $offset);
-                $this->printerAttributes[] = $printerAttributes;
+        // Response group order depends on the operation. In particular,
+        // Unsupported Attributes precede Job/Printer Attributes (RFC 8011).
+        while ($newTag !== false) {
+            if (!isset(self::ATTRIBUTE_GROUPS[$newTag])) {
+                throw new \UnexpectedValueException(sprintf(
+                    'Unexpected attribute group tag 0x%02x at offset %d.',
+                    $newTag,
+                    $offset
+                ));
             }
-        }
 
-        if($newTag!==false && $newTag === 0x06){
-            $this->subscriptionAttributes = [];
-            while($newTag !== false && $newTag === 0x06){
-                $subscriptionAttributes = new \obray\ipp\SubscriptionAttributes();
-                $newTag = $subscriptionAttributes->decode($binary, $offset);
-                $this->subscriptionAttributes[] = $subscriptionAttributes;
-            }
-        }
-
-        if($newTag!==false && $newTag === 0x07){
-            $this->eventNotificationAttributes = [];
-            while($newTag !== false && $newTag === 0x07){
-                $eventNotificationAttributes = new \obray\ipp\EventNotificationAttributes();
-                $newTag = $eventNotificationAttributes->decode($binary, $offset);
-                $this->eventNotificationAttributes[] = $eventNotificationAttributes;
-            }
-        }
-
-        if($newTag!==false && $newTag === 0x05){
-            $this->unsupportedAttributes = [];
-            while($newTag !== false && $newTag === 0x05){
-                $unsupportedAttributes = new \obray\ipp\UnsupportedAttributes();
-                $newTag = $unsupportedAttributes->decode($binary, $offset);
-                $this->unsupportedAttributes[] = $unsupportedAttributes;
-            }
-        }
-
-        if ($newTag !== false) {
-            throw new \UnexpectedValueException(sprintf(
-                'Unexpected attribute group tag 0x%02x at offset %d.',
-                $newTag,
-                $offset
-            ));
+            [$property, $class] = self::ATTRIBUTE_GROUPS[$newTag];
+            $group = new $class();
+            $newTag = $group->decode($binary, $offset);
+            $this->{$property}[] = $group;
         }
 
         if ($offset === strlen($binary)) {
